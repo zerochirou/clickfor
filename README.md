@@ -1,37 +1,97 @@
-# Turbopack Monorepo Template (NestJS & Next.js)
+<!-- PROJECT HEADER -->
 
-Template monorepo modern yang berkinerja tinggi menggunakan **Turborepo**, **pnpm Workspaces**, **NestJS** untuk backend, dan **Next.js** untuk frontend.
+<br />
+<div align="center">
+  <a id="readme-top"></a>
+  <h3 align="center">Clickfor</h3>
+
+  <p align="center">
+    Monorepo untuk aplikasi utama, website marketing, dan backend API Clickfor.
+    <br />
+    Dibangun menggunakan <strong>Next.js</strong>, <strong>NestJS</strong>, <strong>TypeScript</strong>, <strong>Node.js</strong>, <strong>npm Workspaces</strong>, dan <strong>Turborepo</strong>.
+    <br />
+    <br />
+    <a href="https://github.com/zerochirou/clickfor"><strong>Jelajahi Dokumentasi »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/zerochirou/clickfor/issues/new?labels=bug&template=bug-report---.md">Laporkan Bug</a>
+    &middot;
+    <a href="https://github.com/zerochirou/clickfor/issues/new?labels=enhancement&template=feature-request---.md">Ajukan Fitur Baru</a>
+  </p>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+
+<details>
+  <summary>Daftar Isi</summary>
+  <ol>
+    <li><a href="#tentang-proyek">Tentang Proyek</a></li>
+    <li><a href="#arsitektur-monorepo">Arsitektur Monorepo</a></li>
+    <li><a href="#dibuat-dengan">Dibuat Dengan</a></li>
+    <li><a href="#memulai">Memulai</a></li>
+    <li><a href="#cara-penggunaan">Cara Penggunaan</a></li>
+    <li><a href="#aturan-git--github">Aturan Git & GitHub</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#berkontribusi">Berkontribusi</a></li>
+    <li><a href="#lisensi">Lisensi</a></li>
+  </ol>
+</details>
+
+<!-- ABOUT THE PROJECT -->
+
+## Tentang Proyek
+
+**Clickfor** adalah monorepo TypeScript yang menggabungkan seluruh aplikasi utama dalam satu repository.
+
+Monorepo ini terdiri dari tiga aplikasi utama:
+
+- **`app`**: aplikasi utama Clickfor yang dibangun menggunakan Next.js.
+- **`marketing`**: website publik, landing page, dan halaman marketing yang dibangun menggunakan Next.js.
+- **`server`**: backend API dan business logic yang dibangun menggunakan NestJS.
+
+Pendekatan monorepo digunakan untuk:
+
+- Menyatukan pengelolaan dependency dan tooling.
+- Membagikan konfigurasi TypeScript, linting, dan formatting.
+- Mempermudah sinkronisasi tipe antara frontend dan backend.
+- Menjalankan build, test, lint, dan deployment secara terpusat.
+- Menjaga batas tanggung jawab setiap aplikasi tetap jelas.
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
 
-## Tech Stack
-
-*   **Monorepo Tool:** [Turborepo](https://turbo.build/)
-*   **Package Manager:** [pnpm Workspaces](https://pnpm.io/)
-*   **Backend:** [NestJS](https://nestjs.com/) + [Prisma ORM](https://www.prisma.io/) + PostgreSQL
-*   **Frontend:** 2x [Next.js](https://nextjs.org/) (App Router) + [Tailwind CSS v4](https://tailwindcss.com/)
-*   **Linting & Formatting:** ESLint (Flat Config) + Prettier + Husky
-
----
-
-## Project Structure
+## Arsitektur Monorepo
 
 ```text
-.
-├── apps
-│   ├── app         # Next.js App (Dashboard / Main Application)
-│   ├── marketing   # Next.js Marketing Website
-│   └── server      # NestJS Backend API (dengan Prisma & PostgreSQL)
-├── packages
-│   ├── eslint-config      # Konfigurasi ESLint bersama (shared)
-│   └── typescript-config  # Konfigurasi TypeScript bersama (shared)
+clickfor/
+├── apps/
+│   ├── app/                    # Aplikasi utama Next.js
+│   ├── marketing/              # Website marketing Next.js
+│   └── server/                 # Backend API NestJS
+│
+├── packages/
+│   ├── ui/                     # Shared UI components
+│   ├── types/                  # Shared TypeScript types
+│   ├── eslint-config/          # Shared ESLint configuration
+│   └── tsconfig/               # Shared TypeScript configuration
+│
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   ├── workflows/
+│   ├── CODEOWNERS
+│   └── pull_request_template.md
+│
+├── .husky/
+├── .gitignore
+├── package-lock.json
 ├── package.json
-├── pnpm-workspace.yaml
 ├── turbo.json
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
-## Tanggung Jawab Aplikasi
+### Tanggung Jawab Aplikasi
 
 | Workspace                | Teknologi  | Tanggung Jawab                                                         |
 | ------------------------ | ---------- | ---------------------------------------------------------------------- |
@@ -45,7 +105,21 @@ Template monorepo modern yang berkinerja tinggi menggunakan **Turborepo**, **pnp
 
 > Folder di dalam `packages` dapat ditambahkan sesuai kebutuhan. Jangan memindahkan business logic spesifik aplikasi ke shared package hanya untuk menghindari duplikasi kecil.
 
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
+---
+
+## Dibuat Dengan
+
+- [![TypeScript][TypeScript]][TypeScript-url]
+- [![Next.js][Next.js]][Next.js-url]
+- [![NestJS][NestJS]][NestJS-url]
+- [![Turborepo][Turborepo]][Turborepo-url]
+- [![Node.js][Node.js]][Node.js-url]
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+---
 
 <!-- GETTING STARTED -->
 
@@ -114,7 +188,7 @@ Secara default, setiap aplikasi disarankan menggunakan port berbeda:
 
 Port dapat diubah melalui environment variable masing-masing aplikasi.
 
-
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
 
@@ -242,7 +316,7 @@ Aturan environment:
 - Jangan menduplikasi secret backend ke aplikasi frontend.
 - Validasi environment variable saat aplikasi dijalankan.
 
-
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
 
@@ -268,7 +342,7 @@ Repository ini menggunakan:
 6. Jangan memasukkan generated file kecuali memang dibutuhkan oleh repository.
 7. Jangan melewati CI dengan menonaktifkan test, lint, atau type checking tanpa alasan yang terdokumentasi.
 
-
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ### Strategi Percabangan
 
@@ -324,7 +398,7 @@ update-code
 my-branch
 ```
 
-
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ### Konvensi Pesan Commit
 
@@ -485,7 +559,7 @@ feat: changes
 fix(all): fix everything
 ```
 
-
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
 
@@ -586,7 +660,7 @@ Gunakan merge commit hanya untuk:
 
 Jangan gunakan rebase merge jika menghasilkan histori yang sulit ditelusuri atau commit sementara masuk ke branch utama.
 
-
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
 
@@ -620,12 +694,225 @@ Branch `develop` disarankan memiliki aturan berikut:
 - Block branch deletion.
 - Restrict direct pushes.
 
+### Required Status Checks
+
+Status checks minimum:
+
+```text
+lint
+typecheck
+test
+build
+```
+
+Untuk monorepo, checks sebaiknya dijalankan berdasarkan path yang terdampak.
+
+| Path yang Berubah    | Checks                                             |
+| -------------------- | -------------------------------------------------- |
+| `apps/app/**`        | lint, typecheck, test, dan build untuk `app`       |
+| `apps/marketing/**`  | lint, typecheck, test, dan build untuk `marketing` |
+| `apps/server/**`     | lint, typecheck, test, dan build untuk `server`    |
+| `packages/ui/**`     | check `ui`, `app`, dan `marketing`                 |
+| `packages/types/**`  | check seluruh consumer tipe                        |
+| `packages/config/**` | check seluruh workspace                            |
+| Root config          | check seluruh workspace                            |
+| `package-lock.json`  | check seluruh workspace                            |
+
+Perubahan pada shared package harus memicu pemeriksaan seluruh workspace yang bergantung pada package tersebut.
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+---
+
+### CODEOWNERS
+
+Repository disarankan memiliki file `.github/CODEOWNERS`.
+
+Contoh:
+
+```text
+# Default owners
+* @zerochirou
+
+# Applications
+/apps/app/ @zerochirou
+/apps/marketing/ @zerochirou
+/apps/server/ @zerochirou
+
+# Shared packages
+/packages/ui/ @zerochirou
+/packages/types/ @zerochirou
+/packages/eslint-config/ @zerochirou
+/packages/tsconfig/ @zerochirou
+
+# Repository configuration
+/.github/ @zerochirou
+/turbo.json @zerochirou
+/package.json @zerochirou
+/package-lock.json @zerochirou
+```
+
+Tambahkan owner lain sesuai tanggung jawab tim.
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+---
+
+### Sinkronisasi Frontend dan Backend
+
+Perubahan API harus memperhatikan aplikasi yang menggunakannya.
+
+Jika kontrak API berubah:
+
+1. Perbarui implementasi pada `apps/server`.
+2. Perbarui shared types atau generated client.
+3. Perbarui consumer pada `apps/app`.
+4. Perbarui consumer pada `apps/marketing` jika menggunakan API tersebut.
+5. Tambahkan atau perbarui test.
+6. Dokumentasikan breaking change.
+7. Pastikan backward compatibility jika perubahan tidak dapat dirilis secara bersamaan.
+
+Jangan mengubah response API tanpa memeriksa seluruh consumer.
+
+Perubahan berikut harus dianggap berisiko tinggi:
+
+- Menghapus field response.
+- Mengubah nama field.
+- Mengubah tipe data.
+- Mengubah status code.
+- Mengubah struktur error.
+- Mengubah authentication flow.
+- Mengubah authorization rule.
+- Mengubah pagination.
+- Mengubah default sorting atau filtering.
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+---
+
+<!-- ROADMAP -->
+
+## Roadmap
+
+### Monorepo Foundation
+
+- [ ] Setup Node.js versi LTS.
+- [ ] Setup npm workspaces.
+- [ ] Setup Turborepo.
+- [ ] Setup shared TypeScript configuration.
+- [ ] Setup shared ESLint configuration.
+- [ ] Setup formatter.
+- [ ] Setup Husky dan lint-staged.
+- [ ] Setup Conventional Commits validation.
+- [ ] Setup GitHub Actions.
+- [ ] Setup CODEOWNERS.
+- [ ] Setup branch protection.
+
+### Main Application
+
+- [ ] Setup aplikasi Next.js pada `apps/app`.
+- [ ] Setup authentication.
+- [ ] Setup application layout.
+- [ ] Setup dashboard.
+- [ ] Setup API client.
+- [ ] Setup error handling.
+- [ ] Setup testing.
+
+### Marketing Website
+
+- [ ] Setup aplikasi Next.js pada `apps/marketing`.
+- [ ] Setup landing page.
+- [ ] Setup SEO metadata.
+- [ ] Setup sitemap dan robots.txt.
+- [ ] Setup analytics.
+- [ ] Setup content management.
+- [ ] Setup performance monitoring.
+
+### Backend Server
+
+- [ ] Setup NestJS pada `apps/server`.
+- [ ] Setup environment validation.
+- [ ] Setup database.
+- [ ] Setup authentication dan authorization.
+- [ ] Setup API documentation.
+- [ ] Setup structured logging.
+- [ ] Setup error handling.
+- [ ] Setup unit dan integration testing.
+- [ ] Setup health check.
+- [ ] Setup rate limiting.
+
+Lihat [open issues](https://github.com/zerochirou/clickfor/issues) untuk daftar fitur, bug, dan perubahan yang sedang direncanakan.
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+---
+
+<!-- CONTRIBUTING -->
+
+## Berkontribusi
+
+Kontribusi harus mengikuti alur berikut:
+
+1. Fork repository.
+
+2. Buat branch dari `develop`.
+
+   ```sh
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/app/nama-fitur
+   ```
+
+3. Lakukan perubahan secara fokus.
+
+4. Install dependency menggunakan lockfile.
+
+   ```sh
+   npm ci
+   ```
+
+5. Jalankan pemeriksaan lokal.
+
+   ```sh
+   npm run lint
+   npm run typecheck
+   npm run test
+   npm run build
+   ```
+
+6. Commit perubahan menggunakan Conventional Commits.
+
+   ```sh
+   git commit -m "feat(app): tambahkan nama fitur"
+   ```
+
+7. Push branch.
+
+   ```sh
+   git push origin feature/app/nama-fitur
+   ```
+
+8. Buat Pull Request menuju `develop`.
+
+9. Lengkapi template Pull Request.
+
+10. Tautkan issue terkait.
+
+11. Tunggu review dan pastikan seluruh CI checks berhasil.
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+---
+
+<!-- LICENSE -->
+
 ## Lisensi
 
-Distributed under the **MIT**.
+Distributed under the **Zense License**.
 
 Lihat file `LICENSE` untuk informasi lebih lanjut.
 
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
 
