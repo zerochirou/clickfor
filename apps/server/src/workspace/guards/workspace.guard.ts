@@ -25,6 +25,11 @@ export class WorkspaceGuard implements CanActivate {
 
     const userId = session.user.id;
     const workspaceId = request.params.workspaceId as string;
+
+    if (!workspaceId) {
+      throw new NotFoundException('workspace not found.');
+    }
+
     const workspace = await this.db.workspace.findUnique({
       where: { id: workspaceId },
     });
