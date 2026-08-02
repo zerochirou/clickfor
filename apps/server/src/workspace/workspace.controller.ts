@@ -16,6 +16,9 @@ import { WorkspaceTransformer } from './transformers/workspace.transformer';
 import { WorkspaceGuard } from './guards/workspace.guard';
 import { MembersTransformer } from './transformers/members.transformer';
 import { UpdateMemberDTO } from './dtos/update-member.dto';
+import { WorkspaceRoleGuard } from './guards/workspace-role-guard.guard';
+import { Roles } from './decorators/role.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -33,6 +36,8 @@ export class WorkspaceController {
 
   @Patch('/:workspaceId')
   @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async updateWorkspace(
     @Body() dto: CreateWorkspaceDTO,
     @Session() session: UserSession,
@@ -45,12 +50,16 @@ export class WorkspaceController {
 
   @Delete('/:workspaceId')
   @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.OWNER)
   async deleteWorkspace(@Param('workspaceId') workspaceId: string) {
     return await this.workspaceService.deleteWorkspace(workspaceId);
   }
 
   @Get('/:workspaceId')
   @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.STAFF)
   async getWorkspaceById(
     @Param('workspaceId') workspaceId: string,
   ): Promise<WorkspaceTransformer> {
@@ -80,6 +89,8 @@ export class WorkspaceController {
 
   @Patch('/:workspaceId/member/:memberId')
   @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async updateMember(
     @Body() dto: UpdateMemberDTO,
     @Param('workspaceId') workspaceId: string,

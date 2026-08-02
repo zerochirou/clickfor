@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
 import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
@@ -125,6 +129,9 @@ export class WorkspaceService {
     dto: UpdateMemberDTO,
   ) {
     try {
+      if (dto.role === 'OWNER') {
+        throw new ForbiddenException('Cannot update owner role');
+      }
       return await this.db.workspaceMember.update({
         where: {
           id: memberId,
