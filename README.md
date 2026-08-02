@@ -597,18 +597,139 @@ docs(repo): perbarui aturan kontribusi
 
 #### Isi Pull Request
 
-Setiap Pull Request harus menjelaskan:
+Setiap Pull Request wajib menjelaskan informasi berikut:
 
-- Masalah yang diselesaikan.
-- Pendekatan yang digunakan.
-- Workspace yang terdampak.
-- Perubahan perilaku aplikasi.
-- Cara melakukan pengujian.
-- Screenshot atau rekaman untuk perubahan UI.
-- Perubahan environment variable.
-- Perubahan database atau migration.
-- Risiko dan kemungkinan regresi.
-- Issue atau tiket terkait.
+* **Ringkasan perubahan**
+  Jelaskan secara singkat fitur, perbaikan, refactor, atau perubahan teknis yang dilakukan.
+
+* **Masalah yang diselesaikan**
+  Jelaskan masalah, kebutuhan bisnis, atau alasan perubahan ini diperlukan.
+
+* **Pendekatan implementasi**
+  Jelaskan solusi teknis yang digunakan, termasuk keputusan arsitektur atau trade-off jika ada.
+
+* **Workspace atau package yang terdampak**
+  Sebutkan aplikasi, service, package, atau modul yang berubah, misalnya:
+
+  * Web application
+  * Admin dashboard
+  * API atau backend service
+  * Worker atau background job
+  * Shared package
+  * Database
+  * Infrastructure
+
+* **Tenant atau workspace SaaS yang terdampak**
+  Jelaskan apakah perubahan berlaku untuk:
+
+  * Seluruh tenant
+  * Tenant tertentu
+  * Workspace tertentu
+  * User dengan role tertentu
+  * Paket atau subscription plan tertentu
+
+* **Perubahan perilaku aplikasi**
+  Jelaskan perbedaan perilaku sebelum dan sesudah perubahan, termasuk perubahan pada API, UI, proses bisnis, validasi, atau background job.
+
+* **Autentikasi dan otorisasi**
+  Jelaskan perubahan yang berkaitan dengan:
+
+  * Login atau session
+  * Role dan permission
+  * Workspace membership
+  * Tenant isolation
+  * Akses terhadap resource tertentu
+
+* **Dampak terhadap subscription dan billing**
+  Jelaskan apabila perubahan memengaruhi:
+
+  * Subscription plan
+  * Usage limit
+  * Trial
+  * Invoice
+  * Payment
+  * Entitlement atau feature access
+
+* **Cara melakukan pengujian**
+  Sertakan langkah-langkah pengujian yang dapat direproduksi, termasuk:
+
+  * Kondisi awal
+  * Akun atau role yang digunakan
+  * Langkah pengujian
+  * Hasil yang diharapkan
+
+* **Pengujian otomatis**
+  Sebutkan test yang ditambahkan atau dijalankan, seperti:
+
+  * Unit test
+  * Integration test
+  * End-to-end test
+  * Contract test
+  * Migration test
+
+* **Screenshot atau rekaman**
+  Wajib disertakan untuk perubahan UI atau perubahan alur pengguna. Jika tidak relevan, tuliskan `Tidak ada perubahan UI`.
+
+* **Perubahan API**
+  Jelaskan perubahan pada endpoint, request, response, validation, status code, webhook, atau API contract. Tandai secara jelas apabila terdapat breaking change.
+
+* **Perubahan environment variable**
+  Cantumkan:
+
+  * Nama environment variable
+  * Tujuan penggunaannya
+  * Nilai default jika ada
+  * Environment yang terdampak
+  * Apakah secret perlu ditambahkan ke deployment platform
+
+* **Perubahan database**
+  Jelaskan:
+
+  * Schema atau tabel yang berubah
+  * Migration yang ditambahkan
+  * Kebutuhan data migration atau backfill
+  * Potensi locking atau downtime
+  * Kompatibilitas dengan versi aplikasi sebelumnya
+
+* **Feature flag dan strategi rollout**
+  Jelaskan apakah perubahan menggunakan feature flag, dilakukan secara bertahap, atau langsung diaktifkan untuk seluruh tenant.
+
+* **Observability**
+  Jelaskan perubahan pada:
+
+  * Logging
+  * Metrics
+  * Tracing
+  * Error monitoring
+  * Audit log
+
+* **Keamanan dan privasi data**
+  Jelaskan apabila perubahan memengaruhi data pengguna, data tenant, permission, enkripsi, token, secret, file upload, atau informasi pribadi.
+
+* **Risiko dan kemungkinan regresi**
+  Sebutkan area yang berpotensi mengalami gangguan, edge case, dampak performa, atau risiko kebocoran data antar-tenant.
+
+* **Strategi rollback**
+  Jelaskan cara mengembalikan perubahan apabila terjadi masalah setelah deployment.
+
+* **Issue atau tiket terkait**
+  Cantumkan tautan atau nomor issue, task, bug report, atau product requirement yang berhubungan.
+
+#### Checklist Pull Request
+
+* [ ] Perubahan telah diuji secara lokal.
+* [ ] Test otomatis yang relevan telah dijalankan.
+* [ ] Tidak terdapat kebocoran data antar-tenant atau workspace.
+* [ ] Role dan permission telah diuji.
+* [ ] Perubahan UI telah dilengkapi screenshot atau rekaman.
+* [ ] Perubahan API telah didokumentasikan.
+* [ ] Environment variable baru telah didokumentasikan.
+* [ ] Database migration aman untuk dijalankan.
+* [ ] Dampak terhadap billing atau subscription telah diperiksa.
+* [ ] Logging dan error handling telah diperiksa.
+* [ ] Risiko dan strategi rollback telah dijelaskan.
+* [ ] Dokumentasi telah diperbarui jika diperlukan.
+
 
 Contoh referensi issue:
 
