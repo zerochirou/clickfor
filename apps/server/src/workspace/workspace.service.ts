@@ -3,6 +3,7 @@ import { DbService } from 'src/db/db.service';
 import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
 import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
 import { handlePrismaError } from 'src/common/utils/handle-prisma-error';
+import { UpdateMemberDTO } from './dtos/update-member.dto';
 
 @Injectable()
 export class WorkspaceService {
@@ -101,6 +102,72 @@ export class WorkspaceService {
         throw new NotFoundException('Workspace not found');
       }
       return workspace;
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  public async getAllMembers(workspaceId: string) {
+    try {
+      return await this.db.workspaceMember.findMany({
+        where: {
+          workspaceId: workspaceId,
+        },
+      });
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  public async updateMember(
+    workspaceId: string,
+    memberId: string,
+    dto: UpdateMemberDTO,
+  ) {
+    try {
+      return await this.db.workspaceMember.update({
+        where: {
+          id: memberId,
+          workspaceId: workspaceId,
+        },
+        data: dto,
+      });
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  public async getMemberByUserId(userId: string, workspaceId: string) {
+    try {
+      const member = await this.db.workspaceMember.findUnique({
+        where: {
+          workspaceId_userId: {
+            workspaceId,
+            userId,
+          },
+        },
+      });
+      if (!member) {
+        throw new NotFoundException('Member not found');
+      }
+      return member;
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  public async getMemberById(memberId: string, workspaceId: string) {
+    try {
+      const member = await this.db.workspaceMember.findUnique({
+        where: {
+          id: memberId,
+          workspaceId: workspaceId,
+        },
+      });
+      if (!member) {
+        throw new NotFoundException('Member not found');
+      }
+      return member;
     } catch (error) {
       handlePrismaError(error);
     }

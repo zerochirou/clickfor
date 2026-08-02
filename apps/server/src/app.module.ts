@@ -3,6 +3,7 @@ import { DbModule } from './db/db.module';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { WorkspaceInviteModule } from './workspace-invite/workspace-invite.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
       bodyParser: false,
     }),
     WorkspaceModule,
+    WorkspaceInviteModule,
   ],
   controllers: [],
   providers: [],
