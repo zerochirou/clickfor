@@ -90,6 +90,8 @@ model Workspace {
   owner              User                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   workspaceMembers   WorkspaceMember[]
   workspaceJoinCodes WorkspaceJoinCode[]
+  productCategories  ProductCategory[]
+  products           Product[]
 }
 
 model WorkspaceMember {
@@ -132,4 +134,49 @@ enum Role {
   MANAGER
   ADMIN
   STAFF
+}
+
+model ProductCategory {
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(150)
+  description String? @db.Text
+  icon        String? @db.VarChar(100)
+
+  workspaceId String    @map("workspace_id")
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  sku         String
+  barcode     String
+
+  purchasePrice Decimal? @map("purchase_price") @db.Decimal(15, 2)
+  salePrice     Decimal? @map("sale_price") @db.Decimal(15, 2)
+  stock         Int?     @default(0)
+  minStock      Int?     @default(10) @map("min_stock")
+  unit          String?  @default("pcs") @db.VarChar(20)
+  isActive      Boolean? @default(true) @map("is_active")
+  image         String?  @db.Text
+  isUp          Boolean? @default(false) @map("is_up")
+
+  categoryId  String @map("category_id")
+  workspaceId String @map("workspace_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  category  ProductCategory @relation(fields: [categoryId], references: [id])
+  workspace Workspace       @relation(fields: [workspaceId], references: [id])
+
+  @@map("products")
 }
