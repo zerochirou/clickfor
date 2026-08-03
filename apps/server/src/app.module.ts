@@ -5,6 +5,7 @@ import { auth } from './auth';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { WorkspaceInviteModule } from './workspace-invite/workspace-invite.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductCategoryModule } from './product-category/product-category.modul
     WorkspaceModule,
     WorkspaceInviteModule,
     ProductCategoryModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [],
