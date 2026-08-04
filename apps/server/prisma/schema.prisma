@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
@@ -93,6 +93,7 @@ model Workspace {
   workspaceJoinCodes WorkspaceJoinCode[]
   productCategories  ProductCategory[]
   products           Product[]
+  pages              Page[]
 }
 
 model WorkspaceMember {
@@ -115,7 +116,7 @@ model WorkspaceMember {
 
 model WorkspaceJoinCode {
   id           String  @id @default(uuid())
-  code         String
+  code         String  @unique
   message      String?
   isActive     Boolean @default(true) @map("is_active")
   isPersistent Boolean @default(false) @map("is_persistent")
@@ -139,7 +140,7 @@ enum Role {
 
 model ProductCategory {
   id          String  @id @default(uuid())
-  name        String  @db.VarChar(150)
+  name        String  @unique @db.VarChar(150)
   description String? @db.Text
   icon        String? @db.VarChar(100)
 
@@ -156,7 +157,7 @@ model ProductCategory {
 
 model Product {
   id          String  @id @default(uuid())
-  name        String
+  name        String  @unique
   description String?
   sku         String
   barcode     String
@@ -180,4 +181,40 @@ model Product {
   workspace Workspace       @relation(fields: [workspaceId], references: [id])
 
   @@map("products")
+}
+
+model Page {
+  id          String  @id @default(uuid())
+  title       String  @unique
+  description String?
+  icon        String?
+  coverImage  String?
+  isActive    Boolean @default(true)
+
+  workspaceId String
+  themeId     String?
+
+  theme     PageTheme? @relation(fields: [themeId], references: [id], onDelete: SetNull)
+  workspace Workspace  @relation(fields: [workspaceId], references: [id])
+}
+
+model PageTheme {
+  id              String    @id @default(uuid())
+  name            String    @unique
+  mode            ThemeMode @default(light)
+  primaryColor    String
+  secondaryColor  String?
+  backgroundColor String?
+  textColor       String?
+  accentColor     String?
+  borderRadius    String    @default("0.5rem")
+  fontFamily      String?
+
+  pages Page[]
+}
+
+enum ThemeMode {
+  light
+  dark
+  system
 }
