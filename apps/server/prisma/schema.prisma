@@ -94,6 +94,7 @@ model Workspace {
   productCategories  ProductCategory[]
   products           Product[]
   pages              Page[]
+  pageThemes         PageTheme[]
 }
 
 model WorkspaceMember {
@@ -209,6 +210,9 @@ model PageTheme {
   accentColor     String?
   borderRadius    String    @default("0.5rem")
   fontFamily      String?
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   pages Page[]
 }
