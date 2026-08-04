@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -10,6 +11,7 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
+import { ProductTransformer } from './transformers/product.transformer';
 
 @Controller('/workspace/:workspaceId/product')
 export class ProductController {
@@ -20,30 +22,70 @@ export class ProductController {
     @Body() dto: CreateProductDTO,
     @Param('categoryId') categoryId: string,
     @Param('workspaceId') workspaceId: string,
-  ) {
-    return this.productService.createProduct(dto, categoryId, workspaceId);
+  ): Promise<ProductTransformer> {
+    return new ProductTransformer(
+      await this.productService.createProduct(dto, categoryId, workspaceId),
+    );
   }
 
   @Patch(':productId')
   async updateProduct(
     @Body() dto: UpdateProductDTO,
     @Param('productId') productId: string,
-  ) {
-    return this.productService.updateProduct(dto, productId);
+  ): Promise<ProductTransformer> {
+    return new ProductTransformer(
+      await this.productService.updateProduct(dto, productId),
+    );
+  }
+
+  @Delete(':productId')
+  async deleteProduct(
+    @Param('productId') productId: string,
+  ): Promise<ProductTransformer> {
+    return new ProductTransformer(
+      await this.productService.deleteProduct(productId),
+    );
+  }
+
+  @Get('/category/:categoryId')
+  async getProductsByCategory(
+    @Param('categoryId') categoryId: string,
+  ): Promise<ProductTransformer[]> {
+    return this.productService
+      .getProductsByCategory(categoryId)
+      .then((products) =>
+        products.map((product) => new ProductTransformer(product)),
+      );
   }
 
   @Get('/search')
-  async searchProducts(@Query('query') query: string) {
-    return await this.productService.searchProducts(query);
+  async searchProducts(
+    @Query('query') query: string,
+  ): Promise<ProductTransformer[]> {
+    return await this.productService
+      .searchProducts(query)
+      .then((products) =>
+        products.map((product) => new ProductTransformer(product)),
+      );
   }
 
   @Get()
-  async getProducts(@Param('workspaceId') workspaceId: string) {
-    return this.productService.getProducts(workspaceId);
+  async getProducts(
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<ProductTransformer[]> {
+    return this.productService
+      .getProducts(workspaceId)
+      .then((products) =>
+        products.map((product) => new ProductTransformer(product)),
+      );
   }
 
   @Get(':productId')
-  async getProductById(@Param('productId') productId: string) {
-    return this.productService.getProductById(productId);
+  async getProductById(
+    @Param('productId') productId: string,
+  ): Promise<ProductTransformer> {
+    return new ProductTransformer(
+      await this.productService.getProductById(productId),
+    );
   }
 }
