@@ -7,17 +7,25 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductTransformer } from './transformers/product.transformer';
+import { WorkspaceGuard } from 'src/workspace/guards/workspace.guard';
+import { WorkspaceRoleGuard } from 'src/workspace/guards/workspace-role-guard.guard';
+import { Role } from '@prisma/client';
+import { Roles } from 'src/workspace/decorators/role.decorator';
 
 @Controller('/workspace/:workspaceId/product')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post('/category/:categoryId')
+  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async createProduct(
     @Body() dto: CreateProductDTO,
     @Param('categoryId') categoryId: string,
@@ -29,6 +37,9 @@ export class ProductController {
   }
 
   @Patch(':productId')
+  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async updateProduct(
     @Body() dto: UpdateProductDTO,
     @Param('productId') productId: string,
@@ -39,6 +50,9 @@ export class ProductController {
   }
 
   @Delete(':productId')
+  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async deleteProduct(
     @Param('productId') productId: string,
   ): Promise<ProductTransformer> {
