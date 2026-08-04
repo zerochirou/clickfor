@@ -6,6 +6,8 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { WorkspaceInviteModule } from './workspace-invite/workspace-invite.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { ProductModule } from './product/product.module';
+import { PageModule } from './page/page.module';
+import { PageThemeModule } from './page-theme/page-theme.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ProductModule } from './product/product.module';
     WorkspaceInviteModule,
     ProductCategoryModule,
     ProductModule,
+    PageModule,
+    PageThemeModule,
   ],
   controllers: [],
   providers: [],
