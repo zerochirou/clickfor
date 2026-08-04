@@ -7,6 +7,6 @@ import { DbModule } from 'src/db/db.module';
 @Module({
   controllers: [PageThemeController],
   providers: [PageThemeService],
-  exports: [PageThemeService, WorkspaceModule, DbModule],
+  imports: [WorkspaceModule, DbModule],
 })
 export class PageThemeModule {}
