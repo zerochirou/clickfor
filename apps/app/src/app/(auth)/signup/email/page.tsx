@@ -1,0 +1,90 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { ArrowRight, LogIn } from "lucide-react";
+import Link from "next/link";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+export default function EmailPage() {
+  return (
+    <div>
+      <div className="sticky top-0 z-50 flex items-center justify-between p-4">
+        <div>
+          <h1 className="font-semibold text-2xl">Clickfor.</h1>
+        </div>
+        <Link href={"/signin"}>
+          <Button variant={"outline"}>
+            Sign In <LogIn />
+          </Button>
+        </Link>
+      </div>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="w-full max-w-xl">
+          <CardHeader className="mx-auto max-w-md w-full text-center py-4 mt-8">
+            <h2 className="text-3xl font-semibold">Email Signup</h2>
+          </CardHeader>
+          <CardContent className="mx-auto max-w-md w-full">
+            <FieldSet>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="name">Full name</FieldLabel>
+                  <Input
+                    id="name"
+                    autoComplete="off"
+                    placeholder="Evil Rabbit"
+                  />
+                  <FieldDescription>
+                    This appears on invoices and emails.
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
+                    id="email"
+                    autoComplete="off"
+                    placeholder="you@example.com"
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <Input id="password" autoComplete="off" placeholder="" />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="confirmPassword">
+                    Confirm Password
+                  </FieldLabel>
+                  <Input
+                    id="confirmPassword"
+                    autoComplete="off"
+                    placeholder=""
+                  />
+                </Field>
+              </FieldGroup>
+            </FieldSet>
+          </CardContent>
+          <CardFooter className="flex mt-6 items-end flex-col justify-end mx-auto max-w-md w-full">
+            <Button variant={"default"} className="">
+              Create Account <ArrowRight />
+            </Button>
+          </CardFooter>
+        </div>
+      </div>
+    </div>
+  );
+}
