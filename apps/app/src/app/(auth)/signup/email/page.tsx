@@ -20,6 +20,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import FlickerUnboxing from "@/components/commons/flicker-loading/flicker-unboxing";
 
 export default function EmailPage() {
   return (
@@ -80,7 +81,8 @@ export default function EmailPage() {
           </CardContent>
           <CardFooter className="flex mt-6 items-end flex-col justify-end mx-auto max-w-md w-full">
             <Button variant={"default"} className="">
-              Create Account <ArrowRight />
+              {/*Create Account <ArrowRight />*/}
+              Loading <FlickerUnboxing />
             </Button>
           </CardFooter>
         </div>

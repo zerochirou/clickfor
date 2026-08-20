@@ -1,14 +1,28 @@
 import type { Metadata } from "next";
+import localFont from 'next/font/local'
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistMono = Geist_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+});
+
+const Garet = localFont({
+  src: [
+    {
+      path: './fonts/Garet Book.woff2'
+    },
+    {
+      path: './fonts/Garet Heavy.woff2'
+    }
+  ],
+  variable: '--font-garet',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -20,10 +34,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        geistMono.variable,
+        geist.variable,
+        Garet.variable,
+        "font-sans",
+      )}
     >
-      <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+      <body className="min-h-full flex flex-col overscroll-none overflow-hidden">
+        <TooltipProvider>
+          {children}
+        </TooltipProvider>
       </body>
     </html>
   );
