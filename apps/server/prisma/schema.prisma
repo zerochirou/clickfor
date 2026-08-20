@@ -1,3 +1,4 @@
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearchPostgres"]
@@ -41,6 +42,7 @@ model Session {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+  @@index([userId])
 }
 
 model Account {
@@ -61,7 +63,13 @@ model Account {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+
   @@map("accounts")
+  @@index([userId])
 }
 
 model Verification {
@@ -76,6 +84,7 @@ model Verification {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("verifications")
+  @@index([identifier])
 }
 
 model Workspace {
