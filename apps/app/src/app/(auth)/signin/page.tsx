@@ -1,5 +1,4 @@
 import {
-  SignIn,
   SignInBackground,
   SignInContent,
   SignInHeader,

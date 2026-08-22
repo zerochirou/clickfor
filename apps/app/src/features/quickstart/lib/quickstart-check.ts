@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Workspace } from "./types/workspace";
+import { Workspace } from "../../../lib/types/workspace";
 
 const QUICKSTART_COOKIE_NAME = "quickstart_completed";
 
@@ -10,8 +10,10 @@ export async function checkIsQuickStart(workspaces: Workspace[]) {
   const cookiesStore = await cookies();
   const quickstartCookie = cookiesStore.get(QUICKSTART_COOKIE_NAME);
   const hasCompletedQuickstart = quickstartCookie?.value === "true";
-  if (workspaces.length === 0 || !hasCompletedQuickstart) {
-    redirect("/quickstart");
+  if (!hasCompletedQuickstart) {
+    if (workspaces.length === 0) {
+      redirect("/quickstart");
+    }
   }
 }
 

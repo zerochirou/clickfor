@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { setQuickstartCompleted } from "@/lib/quickstart-check";
+import { setQuickstartCompleted } from "@/features/quickstart/lib/quickstart-check";
 import {
   UserType,
   UserTypeForm,
