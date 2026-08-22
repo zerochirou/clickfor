@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import localFont from 'next/font/local'
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const geistMono = Geist_Mono({
   variable: "--font-mono",
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         "h-full",
         "antialiased",
         geistMono.variable,
-        geist.variable,
+        inter.variable,
         Garet.variable,
         "font-sans",
       )}

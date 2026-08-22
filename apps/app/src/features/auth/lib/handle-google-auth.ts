@@ -1,4 +1,4 @@
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 
 export async function handleGoogleAuth() {
   const test = await authClient.signIn.social({
