@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import localFont from 'next/font/local'
+import localFont from "next/font/local";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/lib/theme-provider";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistMono = Geist_Mono({
   variable: "--font-mono",
@@ -15,14 +16,14 @@ const geistMono = Geist_Mono({
 const Garet = localFont({
   src: [
     {
-      path: './fonts/Garet Book.woff2'
+      path: "./fonts/Garet Book.woff2",
     },
     {
-      path: './fonts/Garet Heavy.woff2'
-    }
+      path: "./fonts/Garet Heavy.woff2",
+    },
   ],
-  variable: '--font-garet',
-  display: 'swap',
+  variable: "--font-garet",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -45,9 +46,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col overscroll-none overflow-hidden">
-        <TooltipProvider>
-          {children}
-        </TooltipProvider>
+        <ThemeProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

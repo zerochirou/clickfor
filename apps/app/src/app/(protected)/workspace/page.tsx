@@ -1,7 +1,7 @@
 import { getWorkspaces } from "@/features/workspace/api/get-workspaces";
 import { SearchBar } from "@/features/workspace/components/command/search-bar";
 import { WorkspaceLobbyLayout } from "@/features/workspace/components/lobby/layout";
-import { WorkspaceProvider } from "@/features/workspace/lib/workspaces-provider";
+import { WorkspacesProvider } from "@/features/workspace/lib/workspaces-provider";
 import { checkIsQuickStart } from "@/features/quickstart/lib/quickstart-check";
 import { WorkspaceLobbyCard } from "@/features/workspace/components/lobby/card";
 
@@ -9,7 +9,7 @@ export default async function WorkspacesPage() {
   const workspaces = await getWorkspaces();
   await checkIsQuickStart(workspaces);
   return (
-    <WorkspaceProvider initialWorkspaces={workspaces}>
+    <WorkspacesProvider initialWorkspaces={workspaces}>
       <WorkspaceLobbyLayout>
         <SearchBar />
         <ul className="grid grid-cols-1 mt-4 gap-4">
@@ -18,6 +18,6 @@ export default async function WorkspacesPage() {
           ))}
         </ul>
       </WorkspaceLobbyLayout>
-    </WorkspaceProvider>
+    </WorkspacesProvider>
   );
 }

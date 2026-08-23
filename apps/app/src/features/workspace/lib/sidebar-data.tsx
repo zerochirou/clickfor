@@ -1,152 +1,99 @@
-import { TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TerminalIcon } from "lucide-react"
+import {
+  Settings2Icon,
+  LifeBuoyIcon,
+  SendIcon,
+  LayoutGrid,
+  Package,
+  LayoutTemplate,
+  MousePointerClick,
+} from "lucide-react";
 
-export const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+export const navMainData = [
+  {
+    title: "Overview",
+    url: "/",
+    icon: <LayoutGrid />,
+    isActive: true,
   },
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: (
-        <TerminalSquareIcon
-        />
-      ),
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: (
-        <BotIcon
-        />
-      ),
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: (
-        <BookOpenIcon
-        />
-      ),
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: (
-        <Settings2Icon
-        />
-      ),
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: (
-        <LifeBuoyIcon
-        />
-      ),
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: (
-        <SendIcon
-        />
-      ),
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: (
-        <FrameIcon
-        />
-      ),
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: (
-        <PieChartIcon
-        />
-      ),
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: (
-        <MapIcon
-        />
-      ),
-    },
-  ],
-}
+  {
+    title: "Produk",
+    url: "/products",
+    icon: <Package />,
+    items: [
+      {
+        title: "Kategori",
+        url: "#",
+      },
+      {
+        title: "Favorit",
+        url: "#",
+      },
+    ],
+  },
+  {
+    title: "Halaman",
+    url: "/pages",
+    icon: <LayoutTemplate />,
+    items: [
+      {
+        title: "Atur Layout",
+        url: "#",
+      },
+      {
+        title: "Publish",
+        url: "#",
+      },
+    ],
+  },
+  {
+    title: "Anggota",
+    url: "/team",
+    icon: <MousePointerClick />,
+    items: [
+      {
+        title: "Tambah anggota",
+        url: "/team/add",
+      },
+      {
+        title: "Atur anggota",
+        url: "/team/manage",
+      },
+    ],
+  },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: <Settings2Icon />,
+    items: [
+      {
+        title: "General",
+        url: "#",
+      },
+      {
+        title: "Team",
+        url: "#",
+      },
+      {
+        title: "Billing",
+        url: "#",
+      },
+      {
+        title: "Limits",
+        url: "#",
+      },
+    ],
+  },
+];
+
+export const navSecondaryData = [
+  {
+    title: "Support",
+    url: "/support",
+    icon: <LifeBuoyIcon />,
+  },
+  {
+    title: "Feedback",
+    url: "/feedback",
+    icon: <SendIcon />,
+  },
+];

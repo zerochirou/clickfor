@@ -2,17 +2,13 @@
 
 import * as React from "react";
 import {
-  CalculatorIcon,
-  CalendarIcon,
   CreditCardIcon,
   GitMerge,
   LayoutTemplate,
+  LogOut,
   Plus,
   SettingsIcon,
-  SmileIcon,
-  UserIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandDialog,
@@ -25,8 +21,8 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { useWorkspaces } from "../../lib/workspaces-provider";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { handleLogout } from "@/features/auth/lib/handle-logout";
 
 interface MenuProps {
   open: boolean;
@@ -44,7 +40,11 @@ export function Menu({ open, onOpenChange }: MenuProps) {
           <CommandEmpty>Hasil tidak ditemukan.</CommandEmpty>
           <CommandGroup heading="Workspaces">
             {workspaces.map((workspace) => (
-              <Link href={`/workspace/${workspace.id}`} key={workspace.id} prefetch="auto">
+              <Link
+                href={`/workspace/${workspace.id}`}
+                key={workspace.id}
+                prefetch="auto"
+              >
                 <CommandItem>
                   <LayoutTemplate />
                   <span>{workspace.workspaceName}</span>
@@ -74,6 +74,13 @@ export function Menu({ open, onOpenChange }: MenuProps) {
               <span>Pengaturan</span>
               <CommandShortcut>⌘S</CommandShortcut>
             </CommandItem>
+            <div onClick={handleLogout}>
+              <CommandItem>
+                <LogOut />
+                <span>Keluar</span>
+                <CommandShortcut>⌘O</CommandShortcut>
+              </CommandItem>
+            </div>
           </CommandGroup>
         </CommandList>
       </Command>

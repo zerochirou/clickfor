@@ -3,24 +3,24 @@
 import { Workspace } from "@/lib/types/workspace";
 import { createContext, useContext, useState, ReactNode } from "react";
 
-interface WorkspaceContextType {
+interface WorkspacesContextType {
   workspaces: Workspace[];
   setWorkspaces: (workspace: Workspace[]) => void;
 }
 
-const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
+const WorkspaceContext = createContext<WorkspacesContextType | undefined>(
   undefined,
 );
 
-interface WorkspaceProviderProps {
+interface WorkspacesProviderProps {
   children: ReactNode;
   initialWorkspaces: Workspace[];
 }
 
-export function WorkspaceProvider({
+export function WorkspacesProvider({
   children,
   initialWorkspaces,
-}: WorkspaceProviderProps) {
+}: WorkspacesProviderProps) {
   const [workspaces, setWorkspacess] = useState<Workspace[]>(initialWorkspaces);
 
   return (

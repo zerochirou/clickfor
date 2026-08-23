@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -8,13 +10,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { TerminalIcon } from "lucide-react";
-import { NavProjects } from "./nav-projects";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
-import { data } from "../../lib/sidebar-data";
 import { NavMain } from "./nav-main";
+import { useWorkspace } from "../../lib/workspace-provider";
+import { navMainData, navSecondaryData } from "../../lib/sidebar-data";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { workspace } = useWorkspace();
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -25,7 +29,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <TerminalIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-start text-sm leading-tight">
-                <span className="truncate font-medium">Resto Kuvy</span>
+                <span className="truncate font-medium">
+                  {workspace.workspaceName}
+                </span>
                 <span className="truncate text-xs">Free Plan</span>
               </div>
             </SidebarMenuButton>
@@ -33,12 +39,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navMainData} />
+        <NavSecondary items={navSecondaryData} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

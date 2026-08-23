@@ -24,7 +24,6 @@ import {
 } from "@/features/quickstart/components/create-workspace";
 import { createWorkspace } from "@/features/workspace/api/post-workspaces";
 import { Spinner } from "@/components/ui/spinner";
-import { use } from "motion/react-m";
 
 interface OnBoardingFrameProps {
   steps: ReactNode[];
@@ -332,10 +331,11 @@ export function OnBoardingView() {
 
     if (onboardingData.userType === "owner") {
       startTransitionCreateWorkspace(async () => {
-        await createWorkspace({
+        const { id } = await createWorkspace({
           workspaceName: workspaceName,
           description: workspaceDescription,
         });
+        setWorkspaceId(id);
       });
     }
 
