@@ -4,6 +4,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -15,6 +16,7 @@ import { NavUser } from "./nav-user";
 import { NavMain } from "./nav-main";
 import { useWorkspace } from "../../lib/workspace-provider";
 import { navMainData, navSecondaryData } from "../../lib/sidebar-data";
+import { SearchForm } from "./search-form";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { workspace } = useWorkspace();
@@ -39,6 +41,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroup>
+          <SearchForm />
+        </SidebarGroup>
         <NavMain items={navMainData} />
         <NavSecondary items={navSecondaryData} className="mt-auto" />
       </SidebarContent>
