@@ -1,6 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "base-vega",
+  "style": "base-maia",
   "rsc": true,
   "tsx": true,
   "tailwind": {
@@ -22,6 +22,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@magicui": "https://magicui.design/r/{name}"
+    "@magicui": "https://magicui.design/r/{name}",
+    "@react-bits": "https://reactbits.dev/r/{name}.json"
   }
 }

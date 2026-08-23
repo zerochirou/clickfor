@@ -1,55 +1,23 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { getWorkspaces } from "@/features/workspace/api/get-workspaces";
+import { SearchBar } from "@/features/workspace/components/command/lobby-search-bar";
+import { WorkspaceLobbyLayout } from "@/features/workspace/components/lobby/layout";
+import { WorkspacesProvider } from "@/features/workspace/lib/workspaces-provider";
+import { checkIsQuickStart } from "@/features/quickstart/lib/quickstart-check";
+import { WorkspaceLobbyCard } from "@/features/workspace/components/lobby/card";
 
-export default function Page() {
+export default async function WorkspacesPage() {
+  const workspaces = await getWorkspaces();
+  await checkIsQuickStart(workspaces);
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ms-1" />
-            <Separator
-              orientation="vertical"
-              className="me-2 data-vertical:h-4 data-vertical:self-auto"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Build Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
-  )
+    <WorkspacesProvider initialWorkspaces={workspaces}>
+      <WorkspaceLobbyLayout>
+        <SearchBar />
+        <ul className="grid grid-cols-1 mt-4 gap-4">
+          {workspaces.map((workspace) => (
+            <WorkspaceLobbyCard workspace={workspace} key={workspace.id} />
+          ))}
+        </ul>
+      </WorkspaceLobbyLayout>
+    </WorkspacesProvider>
+  );
 }

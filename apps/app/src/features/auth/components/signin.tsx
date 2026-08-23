@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Card,
@@ -16,35 +16,10 @@ import Link from "next/link";
 import { handleGoogleAuth } from "../lib/handle-google-auth";
 import { handleGithubAuth } from "../lib/handle-github-auth";
 import { handleMicrosoftAuth } from "../lib/handle-microsoft-auth";
+import { OrangeGradientBackground } from "@/components/commons/background/orange-gradient";
 
 export function SignInBackground({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative overflow-hidden min-h-screen">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(rgba(0,0,0,0) 0%, rgba(255,230,180,0.12) 28%, rgb(255,255,255) 18%, rgb(255,200,140) 68%, rgb(230,170,100) 100%)",
-          mixBlendMode: "multiply",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Layer 2 */}
-      <div
-        className="absolute inset-0 pointer-events-none blur-[90px] md:blur-[130px]"
-        style={{
-          background:
-            "linear-gradient(rgba(0,0,0,0) 0%, rgba(255,230,180,0.22) 34%, rgb(255,255,255) 66%, rgb(255,200,140) 82%, rgb(230,170,100) 100%)",
-          mixBlendMode: "multiply",
-        }}
-        aria-hidden="true"
-      />
-      <div className="relative flex min-h-screen flex-col items-center justify-center z-1">
-        {children}
-      </div>
-    </div>
-  );
+  return <OrangeGradientBackground>{children}</OrangeGradientBackground>;
 }
 
 export function SignInHeader() {
@@ -64,9 +39,21 @@ export function SignInHeader() {
 
 export function SignInContent() {
   const providers = [
-    { name: "Google", icon: "/icons/social-auth/google.svg", onClick: handleGoogleAuth },
-    { name: "GitHub", icon: "/icons/social-auth/github.svg", onClick: handleGithubAuth },
-    { name: "Microsoft", icon: "/icons/social-auth/microsoft.svg", onClick: handleMicrosoftAuth },
+    {
+      name: "Google",
+      icon: "/icons/social-auth/google.svg",
+      onClick: handleGoogleAuth,
+    },
+    {
+      name: "GitHub",
+      icon: "/icons/social-auth/github.svg",
+      onClick: handleGithubAuth,
+    },
+    {
+      name: "Microsoft",
+      icon: "/icons/social-auth/microsoft.svg",
+      onClick: handleMicrosoftAuth,
+    },
   ];
   const rotatePromotions = [
     "Login into clickfor.",
