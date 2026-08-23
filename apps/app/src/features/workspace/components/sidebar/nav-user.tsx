@@ -17,7 +17,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { handleLogout } from "@/features/auth/lib/handle-logout";
-import { authClient } from "@/lib/auth/auth-client";
+import { User } from "better-auth";
+
 import {
   ChevronsUpDownIcon,
   SparklesIcon,
@@ -29,11 +30,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function NavUser() {
+export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
-  const { data } = authClient.useSession();
-  const router = useRouter()
-  
+  const router = useRouter(); 
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -43,17 +43,19 @@ export function NavUser() {
               <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
             }
           >
-            <Avatar>
+            <Avatar suppressHydrationWarning>
               <AvatarImage
-                src={data?.user.image || "/images/background/green-hills.jpg"}
-                alt={data?.user.name}
+                src={user.image || "/images/background/green-hills.jpg"}
+                alt={user.name}
               />
-              <AvatarFallback>{data?.user.name.slice(0, 2)}</AvatarFallback>
+              <AvatarFallback suppressHydrationWarning>
+                {user.name.slice(0, 2)}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-start text-sm leading-tight">
-              <span className="truncate font-medium">{data?.user.name}</span>
+              <span className="truncate font-medium">{user.name}</span>
               <span className="truncate text-xs">
-                {data?.user.emailVerified ? "Verified" : "Not Verified"}
+                {user.emailVerified ? "Verified" : "Not Verified"}
               </span>
             </div>
             <ChevronsUpDownIcon className="ms-auto size-4" />
@@ -67,27 +69,25 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                  <Avatar>
+                  <Avatar suppressHydrationWarning>
                     <AvatarImage
-                      src={
-                        data?.user.image || "/images/background/green-hills.jpg"
-                      }
-                      alt={data?.user.name}
+                      src={user.image || "/images/background/green-hills.jpg"}
+                      alt={user.name}
                     />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarFallback suppressHydrationWarning>
+                      {user.name.slice(0, 2)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-start text-sm leading-tight">
-                    <span className="truncate font-medium">
-                      {data?.user.name}
-                    </span>
-                    <span className="truncate text-xs">{data?.user.email}</span>
+                    <span className="truncate font-medium">{user.name}</span>
+                    <span className="truncate text-xs">{user.email}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {!data?.user.emailVerified && (
+              {!user.emailVerified && (
                 <>
                   <DropdownMenuItem variant="destructive">
                     <ShieldAlert />
@@ -103,7 +103,7 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push('/account')}>
+              <DropdownMenuItem onClick={() => router.push("/account")}>
                 <BadgeCheckIcon />
                 Account
               </DropdownMenuItem>

@@ -1,5 +1,4 @@
 import {
-  Settings2Icon,
   LayoutGrid,
   Package,
   LayoutTemplate,

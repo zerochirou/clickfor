@@ -2,21 +2,26 @@
 
 import {
   SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import WorkspaceSearchCommand from "../command/workspace-search-command";
 import { Button } from "@/components/ui/button";
-import { BellRing, PanelLeft, PanelRight } from "lucide-react";
+import { BellRing, PanelLeft } from "lucide-react";
 import { ModeToggle } from "@/components/commons/theme-toggle/mode";
+import { User } from "better-auth";
 
-export function SidebarLayout({ children }: React.PropsWithChildren) {
+export function SidebarLayout({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: User;
+}) {
   const { toggleSidebar, state } = useSidebar();
   return (
     <>
-      <AppSidebar />
+      <AppSidebar user={user} />
       <SidebarInset className="bg-sidebar border-none! shadow-none!">
         <header className="flex bg-sidebar h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2">

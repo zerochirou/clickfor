@@ -15,12 +15,12 @@ import { NavUser } from "./nav-user";
 import { NavMain } from "./nav-main";
 import { useWorkspace } from "../../lib/workspace-provider";
 import { navMainData, navSecondaryData } from "../../lib/sidebar-data";
+import { User } from "better-auth";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user }: { user: User }) {
   const { workspace } = useWorkspace();
-
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -43,7 +43,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={navSecondaryData} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
