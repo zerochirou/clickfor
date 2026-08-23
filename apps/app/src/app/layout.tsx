@@ -45,7 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col overscroll-none overflow-hidden">
+      <body className="min-h-full flex flex-col bg-sidebar!">
         <ThemeProvider>
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>

@@ -8,10 +8,10 @@ import { Suspense } from "react";
 export default async function WorkspacePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ workspaceId: string }>;
 }) {
-  const { id } = await params;
-  const workspace = await getWorkspaceById(id);
+  const { workspaceId } = await params;
+  const workspace = await getWorkspaceById(workspaceId);
   if (!workspace) {
     redirect("/workspace");
   }

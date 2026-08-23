@@ -9,11 +9,11 @@ export default async function WorkspaceLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ workspaceId: string }>;
 }) {
   const { user } = await isAuthenticated();
-  const { id } = await params;
-  const workspace = await getWorkspaceById(id);
+  const { workspaceId } = await params;
+  const workspace = await getWorkspaceById(workspaceId);
   return (
     <WorkspaceProvider initialWorkspace={workspace}>
       <SidebarProvider>
