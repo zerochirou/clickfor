@@ -17,7 +17,7 @@ export const navMainData = [
   },
   {
     title: "Produk",
-    url: "/products",
+    url: "/product",
     icon: <Package />,
     items: [
       {
@@ -31,8 +31,8 @@ export const navMainData = [
     ],
   },
   {
-    title: "Halaman",
-    url: "/pages",
+    title: "Halaman menu",
+    url: "/menu",
     icon: <LayoutTemplate />,
     items: [
       {
@@ -62,7 +62,7 @@ export const navMainData = [
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "/setting",
     icon: <Settings2Icon />,
     items: [
       {
