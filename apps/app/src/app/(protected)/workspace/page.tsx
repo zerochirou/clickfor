@@ -1,5 +1,5 @@
 import { getWorkspaces } from "@/features/workspace/api/get-workspaces";
-import { SearchBar } from "@/features/workspace/components/command/search-bar";
+import { SearchBar } from "@/features/workspace/components/command/lobby-search-bar";
 import { WorkspaceLobbyLayout } from "@/features/workspace/components/lobby/layout";
 import { WorkspacesProvider } from "@/features/workspace/lib/workspaces-provider";
 import { checkIsQuickStart } from "@/features/quickstart/lib/quickstart-check";

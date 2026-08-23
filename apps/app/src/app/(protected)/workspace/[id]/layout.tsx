@@ -1,3 +1,4 @@
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { getWorkspaceById } from "@/features/workspace/api/get-workspaces";
 import { SidebarLayout } from "@/features/workspace/components/sidebar/sidebar-layout";
 import { WorkspaceProvider } from "@/features/workspace/lib/workspace-provider";
@@ -14,7 +15,9 @@ export default async function WorkspaceLayout({
   const workspace = await getWorkspaceById(id);
   return (
     <WorkspaceProvider initialWorkspace={workspace}>
-      <SidebarLayout>{children}</SidebarLayout>
+      <SidebarProvider>
+        <SidebarLayout>{children}</SidebarLayout>
+      </SidebarProvider>
     </WorkspaceProvider>
   );
 }

@@ -12,5 +12,6 @@ export default async function WorkspacePage({
     redirect('/workspace')
   }
   
-  return <div></div>;
+  return <div>
+  </div>;
 }

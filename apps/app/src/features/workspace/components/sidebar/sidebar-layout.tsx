@@ -1,48 +1,41 @@
+"use client";
+
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
-import { Separator } from "@/components/ui/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import WorkspaceSearchCommand from "../command/workspace-search-command";
+import { Button } from "@/components/ui/button";
+import { BellRing, PanelLeft, PanelRight } from "lucide-react";
+import { ModeToggle } from "@/components/commons/theme-toggle/mode";
 
 export function SidebarLayout({ children }: React.PropsWithChildren) {
+  const { toggleSidebar, state } = useSidebar();
   return (
-    <SidebarProvider>
+    <>
       <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ms-1" />
-            <Separator
-              orientation="vertical"
-              className="me-2 data-vertical:h-4 data-vertical:self-auto"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Build Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+      <SidebarInset className="bg-sidebar border-none! shadow-none!">
+        <header className="flex bg-sidebar h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2">
+            <Button variant={"ghost"} size={"icon-lg"} onClick={toggleSidebar}>
+              <PanelLeft
+                className={`transition-transform duration-300 ease-in-out ${
+                  state === "collapsed" ? "scale-x-[-1]" : "scale-x-100"
+                }`}
+              />
+            </Button>
+            <WorkspaceSearchCommand />
+            <Button variant={"outline"} size={"icon-lg"}>
+              <BellRing />
+            </Button>
+            <ModeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
+        <div className="bg-background h-full rounded-2xl">{children}</div>
       </SidebarInset>
-    </SidebarProvider>
+    </>
   );
 }
