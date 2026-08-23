@@ -30,3 +30,29 @@ export async function getWorkspaces() {
     throw new Error("Failed to get workspaces");
   }
 }
+
+export async function getWorkspaceById(workspaceId: string) {
+  try {
+    await isAuthenticated();
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${workspaceId}`,
+      {
+        credentials: "include",
+        headers: await headers(),
+      },
+    );
+    if (!response.ok) {
+      const errorData = (await response.json()) as ErrorResponse;
+      throw new Error(
+        Array.isArray(errorData.message)
+          ? errorData.message.join(", ")
+          : errorData.message,
+      );
+    }
+    const workspace = (await response.json()) as Workspace;
+    return workspace;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get workspace by id");
+  }
+}
