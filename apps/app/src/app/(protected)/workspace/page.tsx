@@ -4,12 +4,10 @@ import { WorkspaceLobbyLayout } from "@/features/workspace/components/lobby/layo
 import { WorkspaceProvider } from "@/features/workspace/lib/workspaces-provider";
 import { checkIsQuickStart } from "@/features/quickstart/lib/quickstart-check";
 import { WorkspaceLobbyCard } from "@/features/workspace/components/lobby/card";
-import { openLastWorkspace } from "@/features/workspace/lib/open-last-worspace";
 
 export default async function WorkspacesPage() {
   const workspaces = await getWorkspaces();
   await checkIsQuickStart(workspaces);
-  await openLastWorkspace();
   return (
     <WorkspaceProvider initialWorkspaces={workspaces}>
       <WorkspaceLobbyLayout>
