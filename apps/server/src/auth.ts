@@ -4,7 +4,7 @@ import { prisma } from './db/db.service';
 import { bearer } from 'better-auth/plugins';
 
 const baseURL = process.env.BASE_URL || 'http://localhost:4000';
-const clientURL = process.env.CLIENT_URL || 'http://localhost:3000';
+const clientURL = process.env.CLIENT_URL || 'http://localhost:3001';
 
 export const auth = betterAuth({
   baseURL: baseURL,
@@ -13,6 +13,12 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
