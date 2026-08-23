@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from 'next/font/local'
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         Garet.variable,
         "font-sans",
       )}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col overscroll-none overflow-hidden">
         <TooltipProvider>
