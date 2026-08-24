@@ -90,7 +90,7 @@ export default function FileUpload04() {
 
   return (
     <div className="">
-      <form className="w-full" onSubmit={(e) => e.preventDefault()}>
+      <div className="w-full" onSubmit={(e) => e.preventDefault()}>
         <div
           className="mt-2 flex justify-center rounded-md border border-input border-dashed px-6 py-12"
           onDragOver={(e) => e.preventDefault()}
@@ -217,7 +217,7 @@ export default function FileUpload04() {
             Upload
           </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

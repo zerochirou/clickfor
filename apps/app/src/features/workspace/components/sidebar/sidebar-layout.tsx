@@ -39,7 +39,7 @@ export function SidebarLayout({
             <ModeToggle />
           </div>
         </header>
-        <div className="bg-background h-full rounded-2xl">{children}</div>
+        <div className="bg-background h-full rounded-2xl overflow-y-auto!">{children}</div>
       </SidebarInset>
     </>
   );
