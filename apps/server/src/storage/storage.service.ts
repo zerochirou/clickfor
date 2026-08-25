@@ -31,8 +31,9 @@ export class StorageService {
   constructor(private configService: ConfigService) {
     const accessKey = this.configService.get<string>('S3_ROOT_USER');
     const secretKey = this.configService.get<string>('S3_ROOT_PASSWORD');
+    const endpoint = this.configService.get<string>('S3_ENDPOINT');
 
-    if (!accessKey || !secretKey) {
+    if (!accessKey || !secretKey || !endpoint) {
       throw new Error(
         'The S3_ACCESS_KEY or S3_SECRET_KEY configuration has not been set in .env.',
       );
@@ -40,7 +41,7 @@ export class StorageService {
 
     this.s3Client = new S3Client({
       region: 'us-east-1',
-      endpoint: this.configService.get<string>('S3_ENDPOINT'),
+      endpoint: endpoint,
       credentials: {
         accessKeyId: accessKey,
         secretAccessKey: secretKey,
