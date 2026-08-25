@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  SidebarInset,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import WorkspaceSearchCommand from "../command/workspace-search-command";
 import { Button } from "@/components/ui/button";
@@ -39,7 +36,9 @@ export function SidebarLayout({
             <ModeToggle />
           </div>
         </header>
-        <div className="bg-background h-full rounded-2xl overflow-y-auto!">{children}</div>
+        <div className="bg-background h-full rounded-2xl border border-input overflow-y-auto!">
+          {children}
+        </div>
       </SidebarInset>
     </>
   );
