@@ -113,6 +113,14 @@ export class ProductService {
         where: {
           workspaceId,
         },
+        include: {
+          category: {
+            select: {
+              name: true,
+              icon: true,
+            },
+          },
+        },
       });
     } catch (error) {
       handlePrismaError(error);
@@ -124,6 +132,14 @@ export class ProductService {
       return await this.db.product.findMany({
         where: {
           categoryId,
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+              icon: true,
+            },
+          },
         },
       });
     } catch (error) {
