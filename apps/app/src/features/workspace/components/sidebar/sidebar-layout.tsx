@@ -36,7 +36,7 @@ export function SidebarLayout({
             <ModeToggle />
           </div>
         </header>
-        <div className="bg-background h-full rounded-2xl border border-input overflow-y-auto!">
+        <div className="bg-background h-full rounded-4xl border border-input overflow-y-auto!">
           {children}
         </div>
       </SidebarInset>

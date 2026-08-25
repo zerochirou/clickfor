@@ -131,9 +131,8 @@ export function CreateProductForm() {
         toast.success("Produk berhasil dibuat!");
         deleteDraft();
       });
-      setTimeout(() => {
-        router.back();
-      }, 2000);
+      router.back();
+      router.refresh();
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error saat submit produk:", error);

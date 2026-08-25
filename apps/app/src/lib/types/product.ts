@@ -1,5 +1,6 @@
 export interface Product {
   id: string;
+  sku: string;
   name: string;
   description: string;
   purchasePrice: number;
@@ -10,9 +11,13 @@ export interface Product {
   isActive: boolean;
   image: string;
   isUp: boolean;
-
   createdAt: string;
   updatedAt: string;
+  category: {
+    name: string;
+    icon: string;
+    description: string;
+  };
 }
 
 export interface ProductCategory {

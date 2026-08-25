@@ -118,6 +118,7 @@ export class ProductService {
             select: {
               name: true,
               icon: true,
+              description: true,
             },
           },
         },
@@ -138,6 +139,7 @@ export class ProductService {
             select: {
               name: true,
               icon: true,
+              description: true,
             },
           },
         },
