@@ -1,6 +1,6 @@
 'use client';
 
-import { File, FileSpreadsheet, X } from 'lucide-react';
+import { FileText, Image as ImageIcon, X } from 'lucide-react';
 import { type ChangeEvent, type DragEvent, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -8,7 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
-export default function FileUpload04() {
+interface FileUploadProps {
+  onFileSelect?: (file: File | null) => void;
+}
+
+export default function FileUpload({ onFileSelect }: FileUploadProps) {
   const [uploadState, setUploadState] = useState<{
     file: File | null;
     progress: number;
@@ -18,33 +22,31 @@ export default function FileUpload04() {
     progress: 0,
     uploading: false,
   });
-  const [showDummy, setShowDummy] = useState(true);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validFileTypes = [
-    'text/csv',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  ];
+  // Ubah tipe file valid menjadi gambar (JPEG, PNG, WebP)
+  const validFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
 
     if (validFileTypes.includes(file.type)) {
       setUploadState({ file, progress: 0, uploading: true });
+      if (onFileSelect) onFileSelect(file); // Kirim file ke parent form
 
       const interval = setInterval(() => {
         setUploadState((prev) => {
-          const newProgress = prev.progress + 5;
+          const newProgress = prev.progress + 10;
           if (newProgress >= 100) {
             clearInterval(interval);
             return { ...prev, progress: 100, uploading: false };
           }
           return { ...prev, progress: newProgress };
         });
-      }, 200);
+      }, 150);
     } else {
-      toast.error('Please upload a CSV, XLSX, or XLS file.', {
+      toast.error('Format file tidak didukung. Harap unggah gambar (PNG, JPG, JPEG, WebP).', {
         position: 'bottom-right',
         duration: 3000,
       });
@@ -65,17 +67,7 @@ export default function FileUpload04() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  };
-
-  const getFileIcon = () => {
-    if (!uploadState.file) return <File />;
-
-    const fileExt = uploadState.file.name.split('.').pop()?.toLowerCase() || '';
-    return ['csv', 'xlsx', 'xls'].includes(fileExt) ? (
-      <FileSpreadsheet className="h-5 w-5 text-foreground" />
-    ) : (
-      <File className="h-5 w-5 text-foreground" />
-    );
+    if (onFileSelect) onFileSelect(null); // Reset file di parent form
   };
 
   const formatFileSize = (bytes: number) => {
@@ -90,133 +82,72 @@ export default function FileUpload04() {
 
   return (
     <div className="">
-      <div className="w-full" onSubmit={(e) => e.preventDefault()}>
+      <div className="w-full">
         <div
-          className="mt-2 flex justify-center rounded-md border border-input border-dashed px-6 py-12"
+          className="mt-2 flex justify-center rounded-2xl border border-input border-dashed px-6 py-8 hover:bg-muted/50 transition-colors cursor-pointer"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
         >
-          <div>
-            <File
+          <div className="text-center">
+            <ImageIcon
               aria-hidden={true}
-              className="mx-auto h-12 w-12 text-muted-foreground"
+              className="mx-auto h-10 w-10 text-muted-foreground"
             />
-            <div className="flex text-muted-foreground text-sm leading-6">
-              <p>Drag and drop or</p>
-              <label
-                className="relative cursor-pointer rounded-sm pl-1 font-medium text-primary hover:underline hover:underline-offset-4"
-                htmlFor="file-upload-03"
-              >
-                <span>choose file</span>
-                <input
-                  accept=".csv, .xlsx, .xls"
-                  className="sr-only"
-                  id="file-upload-03"
-                  name="file-upload-03"
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                  type="file"
-                />
-              </label>
-              <p className="text-pretty pl-1">to upload</p>
+            <div className="mt-4 flex text-muted-foreground text-sm leading-6 justify-center">
+              <span className="font-medium text-primary hover:underline">
+                Klik untuk unggah
+              </span>
+              <p className="pl-1">atau seret dan lepas di sini</p>
+              <input
+                accept="image/png, image/jpeg, image/webp, image/jpg"
+                className="sr-only"
+                id="product-image-upload"
+                name="product-image-upload"
+                onChange={handleFileChange}
+                ref={fileInputRef}
+                type="file"
+              />
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              PNG, JPG, JPEG, atau WebP (Maks. 5MB)
+            </p>
           </div>
         </div>
 
-        <p className="mt-2 text-pretty text-muted-foreground text-xs leading-5 sm:flex sm:items-center sm:justify-between">
-          <span>Accepted file types: CSV, XLSX or XLS files.</span>
-          <span className="pl-1 sm:pl-0">Max. size: 10MB</span>
-        </p>
-
-        {!file && showDummy && (
-          <Card className="relative mt-8 gap-4 bg-muted p-4 shadow-none">
-            <Button
-              aria-label="Remove"
-              className="absolute top-1 right-1 text-muted-foreground hover:text-foreground"
-              onClick={() => setShowDummy(false)}
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-            >
-              <X aria-hidden={true} className="h-5 w-5 shrink-0" />
-            </Button>
-
-            <div className="flex items-center space-x-2.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-background shadow-sm ring-1 ring-border ring-inset">
-                <FileSpreadsheet
-                  aria-hidden={true}
-                  className="h-5 w-5 text-foreground"
-                />
-              </span>
-              <div>
-                <p className="text-pretty font-medium text-foreground text-xs">
-                  Revenue_Q1_2024.xlsx
-                </p>
-                <p className="mt-0.5 text-pretty text-muted-foreground text-xs">
-                  3.1 MB
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Progress className="h-1.5" value={45} />
-              <span className="text-muted-foreground text-xs">45%</span>
-            </div>
-          </Card>
-        )}
-
         {file && (
-          <Card className="relative mt-8 gap-4 bg-muted p-4 shadow-none">
+          <Card className="relative mt-4 gap-4 bg-muted/60 p-4 shadow-none rounded-2xl border">
             <Button
               aria-label="Remove"
-              className="absolute top-1 right-1 text-muted-foreground hover:text-foreground"
+              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
               onClick={resetFile}
               size="icon-sm"
               type="button"
               variant="ghost"
             >
-              <X aria-hidden={true} className="h-5 w-5 shrink-0" />
+              <X aria-hidden={true} className="h-4 w-4 shrink-0" />
             </Button>
 
-            <div className="flex items-center space-x-2.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-background shadow-sm ring-1 ring-border ring-inset">
-                {getFileIcon()}
+            <div className="flex items-center space-x-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background shadow-sm ring-1 ring-border">
+                <ImageIcon className="h-5 w-5 text-primary" />
               </span>
-              <div>
-                <p className="text-pretty font-medium text-foreground text-xs">
-                  {file?.name}
+              <div className="overflow-hidden pr-6">
+                <p className="text-pretty font-medium text-foreground text-xs truncate">
+                  {file.name}
                 </p>
                 <p className="mt-0.5 text-pretty text-muted-foreground text-xs">
-                  {file && formatFileSize(file.size)}
+                  {formatFileSize(file.size)}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 mt-3">
               <Progress className="h-1.5" value={progress} />
-              <span className="text-muted-foreground text-xs">{progress}%</span>
+              <span className="text-muted-foreground text-xs font-medium">{progress}%</span>
             </div>
           </Card>
         )}
-
-        <div className="mt-8 flex items-center justify-end space-x-3">
-          <Button
-            className="whitespace-nowrap"
-            disabled={!file}
-            onClick={resetFile}
-            type="button"
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button
-            className="whitespace-nowrap"
-            disabled={!file || uploading || progress < 100}
-            type="submit"
-          >
-            Upload
-          </Button>
-        </div>
       </div>
     </div>
   );
