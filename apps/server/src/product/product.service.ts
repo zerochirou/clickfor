@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { handlePrismaError } from 'src/common/utils/handle-prisma-error';
 import { generateSKU } from 'src/common/utils/gen-sku-code';
+import { ConfigService } from '@nestjs/config';
+import { StorageService } from 'src/storage/storage.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private db: DbService) {}
+  constructor(
+    private db: DbService,
+    private configService: ConfigService,
+    private storageService: StorageService,
+  ) {}
   // WARN: the barcode is generated from the SKU, not from the EAN13 standard, if the EAN13 field is provided, it will be ignored
   public async createProduct(
     dto: CreateProductDTO,
@@ -123,5 +129,27 @@ export class ProductService {
     } catch (error) {
       handlePrismaError(error);
     }
+  }
+
+  public async uploadProductImage(fileName: string, contentType?: string) {
+    if (!fileName) {
+      throw new BadRequestException('Parameter fileName wajib diisi!');
+    }
+
+    const uniqueFileName = `images/${Date.now()}-${fileName}`;
+    const bucketName = this.configService.getOrThrow<string>('BUCKET_PRODUCT');
+
+    const uploadURL = await this.storageService.generatePresignedUploadURL({
+      bucketName: bucketName,
+      fileName: uniqueFileName,
+      contentType: contentType || 'application/octet-stream',
+      expiresIn: 600,
+    });
+
+    return {
+      success: true,
+      uploadURL: uploadURL,
+      fileKey: uniqueFileName,
+    };
   }
 }

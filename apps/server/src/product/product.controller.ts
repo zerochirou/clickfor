@@ -36,6 +36,21 @@ export class ProductController {
     );
   }
 
+  @Get('presigned-url')
+  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
+  async getProductImageUploadURL(
+    @Query('fileName') fileName: string,
+    @Query('contentType') contentType: string,
+  ) {
+    const presignedURL = await this.productService.uploadProductImage(
+      fileName,
+      contentType,
+    );
+    return presignedURL;
+  }
+
   @Patch(':productId')
   @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
