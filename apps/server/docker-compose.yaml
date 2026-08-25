@@ -18,7 +18,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  clickfor-rustfs:
+    image: rustfs/rustfs:latest
+    container_name: clickfor-rustfs
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - RUSTFS_ACCESS_KEY=${S3_ROOT_USER}
+      - RUSTFS_SECRET_KEY=${S3_ROOT_PASSWORD}
+    volumes:
+      - rustfs_data:/var/lib/rustfs_data
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+  rustfs_data:
     driver: local
