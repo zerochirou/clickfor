@@ -116,6 +116,7 @@ export function ProductTable({ products }: ProductTableProps) {
                         <TableAction
                           workspaceId={workspace.id}
                           productId={item.id}
+                          isOptimized={item.isUp}
                         />
                       </TableCell>
                     </TableRow>

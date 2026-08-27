@@ -17,15 +17,19 @@ import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { updateProductOptimazOptimization } from "../../api/update-product";
 
 export function TableAction({
   workspaceId,
   productId,
+  isOptimized,
 }: {
   workspaceId: string;
   productId: string;
+  isOptimized: boolean;
 }) {
   const [isDeletePending, startDeleteTransition] = useTransition();
+  const [isOptimizedPending, startOptimizedTransition] = useTransition();
   const router = useRouter();
   async function handleDelete() {
     startDeleteTransition(async () => {
@@ -37,6 +41,19 @@ export function TableAction({
       toast.success("Produk berhasil dihapus");
     });
   }
+
+  async function handleOptimization(isOptimized: boolean) {
+    startOptimizedTransition(async () => {
+      console.log(!isOptimized)
+      await updateProductOptimazOptimization({
+        productId: productId,
+        workspaceId: workspaceId,
+        data: { isOptimized: !isOptimized },
+      });
+      router.refresh();
+      toast.success(`${isOptimized ? "Produk berhasil dioptimalkan" : "Produk tidak dioptimalkan"}`);
+    });
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="ghost" />}>
@@ -45,8 +62,15 @@ export function TableAction({
       <DropdownMenuContent>
         <DropdownMenuGroup>
           <DropdownMenuLabel>Aksi Cepat</DropdownMenuLabel>
-          <DropdownMenuItem>Nonaktifkan</DropdownMenuItem>
-          <DropdownMenuItem>Optimalkan</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleOptimization(isOptimized)}>
+            {isOptimizedPending ? (
+              <>
+                Loading <Spinner />
+              </>
+            ) : (
+              <>{isOptimized ? "Optimalkan" : "Nonaktifkan"}</>
+            )}
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
