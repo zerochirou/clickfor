@@ -20,7 +20,17 @@ import {
 import { Card } from "@/components/ui/card";
 import { useProducts } from "../../lib/products-provider";
 import { Product } from "@/lib/types/product";
-import { TrendingDown, TrendingUp, Zap } from "lucide-react";
+import {
+  ArrowBigUp,
+  Coins,
+  DecimalsArrowRight,
+  Package,
+  Tag,
+  TextAlignStart,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { CategoryTooltip } from "./category-tooltip";
 import Image from "next/image";
@@ -38,23 +48,37 @@ export function ProductTable({ products }: ProductTableProps) {
       <Card className="p-0">
         <Table className="rounded-2xl">
           <TableHeader>
-            <TableRow className="border-b hover:bg-transparent">
-              {/*<TableHead className="h-12 px-4 font-medium w-40">SKU</TableHead>*/}
+            <TableRow className="border-b hover:bg-transparent opacity-50">
               <TableHead className="h-12 px-4 font-medium">
-                Nama produk
-              </TableHead>
-              <TableHead className="h-12 px-4 font-medium">Kategori</TableHead>
-              <TableHead className="h-12 px-4 font-medium">
-                Harga Beli
+                <span className="flex items-center gap-2">
+                  <TextAlignStart className="w-4 h-4" /> Nama produk
+                </span>
               </TableHead>
               <TableHead className="h-12 px-4 font-medium">
-                Harga Jual
+                <span className="flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  Kategori
+                </span>
+              </TableHead>
+              <TableHead className="h-12 px-4 font-medium">
+                <span className="flex items-center gap-2">
+                  <ArrowBigUp className="w-4 h-4" /> Harga Beli
+                </span>
+              </TableHead>
+              <TableHead className="h-12 px-4 font-medium">
+                <span className="flex items-center gap-2">
+                  <Coins className="w-4 h-4" /> Harga Jual
+                </span>
               </TableHead>
               <TableHead className="h-12 px-4 font-medium text-end w-20">
-                Stok
+                <span className="flex items-center gap-2">
+                  <Package className="w-4 h-4" /> Stok
+                </span>
               </TableHead>
               <TableHead className="h-12 px-4 font-medium">
-                Dioptimalkan
+                <span className="flex items-center gap-2">
+                  <Zap className="w-4 h-4" /> Dioptimalkan
+                </span>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -63,7 +87,7 @@ export function ProductTable({ products }: ProductTableProps) {
               <>
                 {products.map((item) => {
                   return (
-                    <TableRow key={item.id}>
+                    <TableRow key={item.id} className="group">
                       <TableCell>
                         <span className="flex items-center gap-4">
                           <Image
@@ -75,7 +99,7 @@ export function ProductTable({ products }: ProductTableProps) {
                             unoptimized
                           />
                           <span className="flex flex-col">
-                            <span className="font-semibold">{item.name}</span>
+                            <span className="font-semibold group-hover:text-primary transition-all ease-in-out">{item.name}</span>
                             <span className="opacity-50">{item.sku}</span>
                           </span>
                         </span>

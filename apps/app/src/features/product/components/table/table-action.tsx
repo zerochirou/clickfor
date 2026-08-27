@@ -44,14 +44,16 @@ export function TableAction({
 
   async function handleOptimization(isOptimized: boolean) {
     startOptimizedTransition(async () => {
-      console.log(!isOptimized)
+      console.log(!isOptimized);
       await updateProductOptimazOptimization({
         productId: productId,
         workspaceId: workspaceId,
         data: { isOptimized: !isOptimized },
       });
       router.refresh();
-      toast.success(`${isOptimized ? "Produk berhasil dioptimalkan" : "Produk tidak dioptimalkan"}`);
+      toast.success(
+        `${isOptimized ? "Produk tidak dioptimalkan" : "Produk berhasil dioptimalkan"}`,
+      );
     });
   }
   return (
@@ -68,7 +70,7 @@ export function TableAction({
                 Loading <Spinner />
               </>
             ) : (
-              <>{isOptimized ? "Optimalkan" : "Nonaktifkan"}</>
+              <>{isOptimized ? "Berhenti dari optimasi" : "Optimalkan"}</>
             )}
           </DropdownMenuItem>
         </DropdownMenuGroup>
