@@ -9,7 +9,7 @@ interface GetProductsParams {
 }
 
 export async function getProducts(params: GetProductsParams) {
-  try {
+  // try {
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
@@ -32,8 +32,8 @@ export async function getProducts(params: GetProductsParams) {
     }
     const result = (await response.json()) as Product[];
     return result;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to get product category");
-  }
+  // } catch (error) {
+  //   console.error(error);
+  //   throw new Error("Failed to get product category");
+  // }
 }

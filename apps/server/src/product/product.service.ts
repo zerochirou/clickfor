@@ -122,6 +122,7 @@ export class ProductService {
             },
           },
         },
+        orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
       });
     } catch (error) {
       handlePrismaError(error);
