@@ -332,8 +332,10 @@ export function OnBoardingView() {
     if (onboardingData.userType === "owner") {
       startTransitionCreateWorkspace(async () => {
         const { id } = await createWorkspace({
-          workspaceName: workspaceName,
-          description: workspaceDescription,
+          data: {
+            workspaceName: workspaceName,
+            description: workspaceDescription,
+          },
         });
         setWorkspaceId(id);
       });
