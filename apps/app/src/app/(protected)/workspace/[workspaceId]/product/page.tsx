@@ -12,7 +12,7 @@ export default async function ProductPage({
   params: Promise<{ workspaceId: string }>;
 }) {
   const { workspaceId } = await params;
-  const products = await getProducts(workspaceId);
+  const products = await getProducts({ workspaceId: workspaceId });
   return (
     <ProductsProvider initialProducts={products}>
       <div className="p-8">

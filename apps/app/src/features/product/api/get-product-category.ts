@@ -4,12 +4,16 @@ import { ProductCategory } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
 
-export async function getProductCategory(workspaceId: string) {
+interface GetProductCategoryParams {
+  workspaceId: string;
+}
+
+export async function getProductCategory(params: GetProductCategoryParams) {
   try {
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${workspaceId}/product/category`,
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product/category`,
       {
         method: "GET",
         headers: {

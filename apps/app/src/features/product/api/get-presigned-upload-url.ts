@@ -4,12 +4,18 @@ import { PresignedUploadURL } from "@/lib/types/presigned-upload-url";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
 
-export async function getPresignedUploadURL(workspaceId: string, fileName: string, contentType: string) {
+interface GetPresignedUploadURLParams {
+  workspaceId: string;
+  fileName: string;
+  contentType: string;
+}
+
+export async function getPresignedUploadURL(params: GetPresignedUploadURLParams) {
   try {
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${workspaceId}/product/presigned-url?fileName=${fileName}&contentType=${contentType}`,
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product/presigned-url?fileName=${params.fileName}&contentType=${params.contentType}`,
       {
         method: "GET",
         headers: {

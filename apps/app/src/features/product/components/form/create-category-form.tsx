@@ -59,7 +59,10 @@ export function CreateCategoryForm({
   // 2. Fungsi Submit Form
   const onSubmit = (data: CreateProductCategoryInput) => {
     startTransition(async () => {
-      await postProductCategory(data, workspaceId);
+      await postProductCategory({
+        data: data,
+        workspaceId: workspaceId,
+      });
       toast.success("Kategori berhasil dibuat");
       setTimeout(() => {
         onOpenChange(false);

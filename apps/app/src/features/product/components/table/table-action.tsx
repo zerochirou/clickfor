@@ -26,12 +26,15 @@ export function TableAction({
   productId: string;
 }) {
   const [isDeletePending, startDeleteTransition] = useTransition();
-  const router = useRouter()
+  const router = useRouter();
   async function handleDelete() {
     startDeleteTransition(async () => {
-      await deleteProduct(workspaceId, productId);
-      router.refresh()
-      toast.success("Produk berhasil dihapus")
+      await deleteProduct({
+        productId: productId,
+        workspaceId: workspaceId,
+      });
+      router.refresh();
+      toast.success("Produk berhasil dihapus");
     });
   }
   return (

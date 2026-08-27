@@ -4,12 +4,17 @@ import { Product } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
 
-export async function deleteProduct(workspaceId: string, productId: string) {
+interface DeleteProductParams {
+  workspaceId: string;
+  productId: string;
+}
+
+export async function deleteProduct(params: DeleteProductParams) {
   try {
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${workspaceId}/product/${productId}`,
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product/${params.productId}`,
       {
         method: "DELETE",
         headers: {

@@ -4,12 +4,16 @@ import { Product } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
 
-export async function getProducts(workspaceId: string) {
+interface GetProductsParams {
+  workspaceId: string;
+}
+
+export async function getProducts(params: GetProductsParams) {
   try {
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${workspaceId}/product`,
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product`,
       {
         method: "GET",
         headers: {

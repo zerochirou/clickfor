@@ -80,11 +80,11 @@ export function CreateProductForm() {
         console.log("Meminta presigned URL...");
         const fileName = encodeURIComponent(selectedFile.name);
         const contentType = encodeURIComponent(selectedFile.type);
-        const presignedData = await getPresignedUploadURL(
-          workspace.id,
-          fileName,
-          contentType,
-        );
+        const presignedData = await getPresignedUploadURL({
+          workspaceId: workspace.id,
+          fileName: fileName,
+          contentType: contentType,
+        });
 
         if (presignedData?.uploadURL) {
           console.log("Mengunggah file ke RustFS...");
@@ -112,8 +112,8 @@ export function CreateProductForm() {
 
       console.log("Payload Final ke Backend:", finalPayload);
       startTransition(async () => {
-        await postProduct(
-          {
+        await postProduct({
+          data: {
             name: finalPayload.name,
             description: finalPayload.description,
             purchasePrice: Number(finalPayload.purchasePrice),
@@ -125,9 +125,9 @@ export function CreateProductForm() {
             isUp: finalPayload.isUp,
             image: finalPayload.image,
           },
-          workspace.id,
-          categoryId,
-        );
+          workspaceId: workspace.id,
+          categoryId: categoryId,
+        });
         toast.success("Produk berhasil dibuat!");
         deleteDraft();
       });
@@ -142,7 +142,7 @@ export function CreateProductForm() {
   }
 
   async function handleGetProductCategory() {
-    const categories = await getProductCategory(workspace.id);
+    const categories = await getProductCategory({ workspaceId: workspace.id });
     setProductCategory(categories);
   }
 

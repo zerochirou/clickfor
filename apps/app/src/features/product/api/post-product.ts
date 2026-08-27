@@ -5,23 +5,25 @@ import { Product } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
 
-export async function postProduct(
-  data: CreateProduct,
-  workspaceId: string,
-  categoryId: string,
-) {
+interface PostProductParams {
+  data: CreateProduct;
+  workspaceId: string;
+  categoryId: string;
+}
+
+export async function postProduct(params: PostProductParams) {
   try {
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${workspaceId}/product/category/${categoryId}`,
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product/category/${params.categoryId}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(cookieHeader ? { Cookie: cookieHeader } : {}),
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(params.data),
       },
     );
     if (!response.ok) {
