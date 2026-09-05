@@ -25,7 +25,7 @@ export default async function ProductPage({
 
   return (
     <ProductsProvider initialProducts={products}>
-      <div className="p-8">
+      <div className="p-4">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
           <ProductSearchBar workspaceId={workspaceId} />
           <Link href={`/workspace/${workspaceId}/product/add`} prefetch>

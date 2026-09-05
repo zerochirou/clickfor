@@ -14,7 +14,6 @@ import {
   HardDriveUpload,
   Image as ImageIcon,
   RotateCcw,
-  Sparkles,
   TrendingUp,
   Upload,
   Zap,
@@ -285,7 +284,9 @@ export function UpdateProductForm({
               {/*<div className="size-16 sm:size-20 rounded-2xl border-4 bg-card border-card flex items-center justify-center text-3xl shrink-0 -mt-8 sm:-mt-10 relative z-10 select-none ring-1 ring-border/20">
               </div>*/}
               <Card className="p-2">
-                <CardContent className="text-4xl p-2">{product.category?.icon || "📦"}</CardContent>
+                <CardContent className="text-4xl p-2">
+                  {product.category?.icon || "📦"}
+                </CardContent>
               </Card>
 
               <div>
@@ -651,8 +652,7 @@ export function UpdateProductForm({
                 <div className="p-3.5 rounded-2xl border bg-muted/30 space-y-2">
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span className="flex items-center gap-1.5">
-                      <TrendingUp className="size-3.5" /> Estimasi
-                      Profit
+                      <TrendingUp className="size-3.5" /> Estimasi Profit
                     </span>
                     <Badge
                       variant={profit > 0 ? "secondary" : "destructive"}
@@ -696,10 +696,7 @@ export function UpdateProductForm({
                     Menipis
                   </Badge>
                 ) : (
-                  <Badge
-                    variant="secondary"
-                    className="h-6"
-                  >
+                  <Badge variant="secondary" className="h-6">
                     <Check className="size-3 mr-1" /> Aman
                   </Badge>
                 )}

@@ -146,7 +146,7 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
   return (
     <div className="space-y-4">
       <Card className="p-0 overflow-hidden">
-        <Table className="rounded-2xl">
+        <Table className="rounded-2xl w-full overflow-x-auto">
           <TableHeader>
             <TableRow className="border-b hover:bg-transparent">
               <TableHead
@@ -321,32 +321,35 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
                       }}
                       className={cn(
                         "group border-b transition-colors duration-500",
-                        isJustUpdated
-                          ? "bg-primary/10 ring-1 ring-inset ring-primary/30"
-                          : "hover:bg-muted/50",
+                        isJustUpdated ? "bg-secondary" : "hover:bg-muted/50",
                       )}
                     >
-                      <TableCell>
+                      <TableCell className="max-w-[280px]">
                         <Link
                           href={`/workspace/${workspace.id}/product/${item.id}`}
-                          className="flex items-center gap-4 group/item cursor-pointer"
+                          className="flex items-center gap-4 group/item cursor-pointer min-w-0"
                         >
-                          <Image
-                            src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${item.image}`}
-                            alt={item.name}
-                            className="rounded-md object-cover size-12 shrink-0 border group-hover/item:shadow-sm transition-all"
-                            width={48}
-                            height={48}
-                            unoptimized
-                          />
-                          <span className="flex flex-col">
-                            <span className="font-semibold group-hover/item:text-primary transition-colors">
+                          {/* 3. Gunakan wrapper kaku (48px) dengan Next.js Image fill */}
+                          <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] shrink-0 overflow-hidden rounded-md border bg-muted">
+                            <Image
+                              src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${item.image}`}
+                              alt={item.name}
+                              fill
+                              sizes="48px"
+                              className="object-cover group-hover/item:scale-105 transition-all"
+                              unoptimized
+                            />
+                          </div>
+
+                          {/* 4. Beri min-w-0 dan truncate agar teks tidak mendorong kolom */}
+                          <div className="flex flex-col min-w-0 overflow-hidden">
+                            <span className="font-semibold group-hover/item:text-primary transition-colors truncate">
                               {item.name}
                             </span>
-                            <span className="opacity-50 text-xs font-mono">
+                            <span className="opacity-50 text-xs font-mono truncate">
                               {item.sku}
                             </span>
-                          </span>
+                          </div>
                         </Link>
                       </TableCell>
                       <TableCell>
@@ -463,7 +466,8 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
                     <div className="flex flex-col items-center justify-center gap-2">
                       <PackageSearch className="w-8 h-8 text-muted-foreground stroke-1" />
                       <p className="text-sm font-medium">
-                        Tidak ada produk yang cocok dengan &quot;{searchQuery}&quot;
+                        Tidak ada produk yang cocok dengan &quot;{searchQuery}
+                        &quot;
                       </p>
                       <p className="text-xs text-muted-foreground">
                         Coba periksa kata kunci atau gunakan ejaan lain.
