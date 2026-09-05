@@ -464,7 +464,7 @@ export function CreateProductForm() {
 
                       {/* STOCK */}
                       <Field>
-                        <FieldLabel htmlFor="stock">Minimal Stok</FieldLabel>
+                        <FieldLabel htmlFor="stock">Stok Produk</FieldLabel>
 
                         <Input
                           id="stock"
@@ -475,11 +475,11 @@ export function CreateProductForm() {
                         />
 
                         <FieldDescription>
-                          Minimal stok yang harus tersedia untuk produk ini.
+                          Stok yang harus tersedia untuk produk ini.
                         </FieldDescription>
 
                         <FieldError>
-                          {form.formState.errors.minStock?.message}
+                          {form.formState.errors.stock?.message}
                         </FieldError>
                       </Field>
 

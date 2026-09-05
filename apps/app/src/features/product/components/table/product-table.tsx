@@ -129,7 +129,7 @@ export function ProductTable({ products }: ProductTableProps) {
                       </TableCell>
                       <TableCell>
                         {item.isUp ? (
-                          <Badge>
+                          <Badge variant={'outline'} className="bg-primary-blue">
                             Dioptimalkan <Zap />
                           </Badge>
                         ) : (
