@@ -30,9 +30,14 @@ export class PageThemeController {
   @UseGuards(WorkspaceGuard)
   async updatePageTheme(
     @Body() dto: UpdateThemeDTO,
+    @Param('workspaceId') workspaceId: string,
     @Param('themeId') themeId: string,
   ) {
-    return await this.pageThemeService.updatePageTheme(dto, themeId);
+    return await this.pageThemeService.updatePageTheme(
+      dto,
+      themeId,
+      workspaceId,
+    );
   }
 
   @Get()
@@ -43,13 +48,19 @@ export class PageThemeController {
 
   @Get(':themeId')
   @UseGuards(WorkspaceGuard)
-  async getPageThemeById(@Param('themeId') themeId: string) {
-    return await this.pageThemeService.getPageThemeById(themeId);
+  async getPageThemeById(
+    @Param('workspaceId') workspaceId: string,
+    @Param('themeId') themeId: string,
+  ) {
+    return await this.pageThemeService.getPageThemeById(themeId, workspaceId);
   }
 
   @Delete(':themeId')
   @UseGuards(WorkspaceGuard)
-  async deletePageTheme(@Param('themeId') themeId: string) {
-    return await this.pageThemeService.deletePageTheme(themeId);
+  async deletePageTheme(
+    @Param('workspaceId') workspaceId: string,
+    @Param('themeId') themeId: string,
+  ) {
+    return await this.pageThemeService.deletePageTheme(themeId, workspaceId);
   }
 }

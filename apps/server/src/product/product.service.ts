@@ -25,6 +25,7 @@ export class ProductService {
         const category = await tx.productCategory.findFirstOrThrow({
           where: {
             id: categoryId,
+            workspaceId,
           },
         });
         const sku = generateSKU({ category: category.name });
@@ -52,9 +53,19 @@ export class ProductService {
     }
   }
 
-  public async updateProduct(dto: UpdateProductDTO, productId: string) {
+  public async updateProduct(
+    dto: UpdateProductDTO,
+    productId: string,
+    workspaceId: string,
+  ) {
     try {
       return this.db.$transaction(async (tx) => {
+        await tx.product.findFirstOrThrow({
+          where: {
+            id: productId,
+            workspaceId,
+          },
+        });
         const updatedProduct = await tx.product.update({
           where: {
             id: productId,
@@ -68,23 +79,41 @@ export class ProductService {
     }
   }
 
-  public async deleteProduct(productId: string) {
+  public async deleteProduct(productId: string, workspaceId: string) {
     try {
-      return await this.db.product.delete({
-        where: {
-          id: productId,
-        },
+      return this.db.$transaction(async (tx) => {
+        await tx.product.findFirstOrThrow({
+          where: {
+            id: productId,
+            workspaceId,
+          },
+        });
+        return await tx.product.delete({
+          where: {
+            id: productId,
+          },
+        });
       });
     } catch (error) {
       handlePrismaError(error);
     }
   }
 
-  public async getProductById(productId: string) {
+  public async getProductById(productId: string, workspaceId: string) {
     try {
       const product = await this.db.product.findFirstOrThrow({
         where: {
           id: productId,
+          workspaceId,
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+              icon: true,
+              description: true,
+            },
+          },
         },
       });
       return product;
@@ -93,12 +122,22 @@ export class ProductService {
     }
   }
 
-  public async searchProducts(query: string) {
+  public async searchProducts(query: string, workspaceId: string) {
     try {
       return await this.db.product.findMany({
         where: {
+          workspaceId,
           name: {
             search: query,
+          },
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+              icon: true,
+              description: true,
+            },
           },
         },
       });
@@ -129,11 +168,12 @@ export class ProductService {
     }
   }
 
-  public async getProductsByCategory(categoryId: string) {
+  public async getProductsByCategory(categoryId: string, workspaceId: string) {
     try {
       return await this.db.product.findMany({
         where: {
           categoryId,
+          workspaceId,
         },
         include: {
           category: {

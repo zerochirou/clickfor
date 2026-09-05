@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateInviteCodeDTO } from './dtos/create-invite-code.dto';
 import { JoinCodeDTO } from './dtos/join-code.dto';
@@ -38,7 +42,7 @@ export class WorkspaceInviteService {
           where: { workspaceId: workspaceCode.workspaceId, userId: userId },
         });
         if (isUserExist) {
-          throw new NotFoundException('User already exists in workspace');
+          throw new ConflictException('User already exists in workspace');
         }
         if (!workspaceCode.isPersistent) {
           await tx.workspaceJoinCode.delete({

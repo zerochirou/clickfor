@@ -4,6 +4,7 @@ import {
   Param,
   Post,
   Session,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { WorkspaceGuard } from 'src/workspace/guards/workspace.guard';
@@ -32,7 +33,11 @@ export class WorkspaceInviteController {
     @Body() dto: JoinCodeDTO,
     @Session() session: UserSession,
   ): Promise<JoinSuccessTransformer> {
-    await this.workspaceInviteService.joinWithCode(dto, session.session.userId);
+    const userId = session?.user?.id ?? session?.session?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('You must login first.');
+    }
+    await this.workspaceInviteService.joinWithCode(dto, userId);
     return new JoinSuccessTransformer({ isSuccess: true });
   }
 }

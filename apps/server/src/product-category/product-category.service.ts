@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateProductCategoryDTO } from './dtos/create-product-category.dto';
 import { UpdateProductCategoryDTO } from './dtos/update-product-category.dto';
@@ -27,37 +27,49 @@ export class ProductCategoryService {
   public async updateProductCategory(
     dto: UpdateProductCategoryDTO,
     productCategoryId: string,
+    workspaceId: string,
   ) {
     try {
-      return await this.db.productCategory.update({
-        where: { id: productCategoryId },
-        data: {
-          ...dto,
-        },
+      return await this.db.$transaction(async (tx) => {
+        await tx.productCategory.findFirstOrThrow({
+          where: { id: productCategoryId, workspaceId },
+        });
+        return await tx.productCategory.update({
+          where: { id: productCategoryId },
+          data: dto,
+        });
       });
     } catch (error) {
       handlePrismaError(error);
     }
   }
 
-  public async deleteProductCategory(productCategoryId: string) {
+  public async deleteProductCategory(
+    productCategoryId: string,
+    workspaceId: string,
+  ) {
     try {
-      return await this.db.productCategory.delete({
-        where: { id: productCategoryId },
+      return await this.db.$transaction(async (tx) => {
+        await tx.productCategory.findFirstOrThrow({
+          where: { id: productCategoryId, workspaceId },
+        });
+        return await tx.productCategory.delete({
+          where: { id: productCategoryId },
+        });
       });
     } catch (error) {
       handlePrismaError(error);
     }
   }
 
-  public async getProductCategoryById(productCategoryId: string) {
+  public async getProductCategoryById(
+    productCategoryId: string,
+    workspaceId: string,
+  ) {
     try {
-      const productCategory = await this.db.productCategory.findUnique({
-        where: { id: productCategoryId },
+      const productCategory = await this.db.productCategory.findFirstOrThrow({
+        where: { id: productCategoryId, workspaceId },
       });
-      if (!productCategory) {
-        throw new NotFoundException(`Product category not found`);
-      }
       return productCategory;
     } catch (error) {
       handlePrismaError(error);

@@ -34,12 +34,14 @@ export class ProductCategoryController {
   @UseGuards(WorkspaceGuard)
   async updateProductCategory(
     @Body() dto: UpdateProductCategoryDTO,
+    @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
   ): Promise<ProductCategoryTransformer> {
     return new ProductCategoryTransformer(
       await this.productCategoryService.updateProductCategory(
         dto,
         productCategoryId,
+        workspaceId,
       ),
     );
   }
@@ -47,19 +49,25 @@ export class ProductCategoryController {
   @Delete('/:productCategoryId')
   @UseGuards(WorkspaceGuard)
   async deleteProductCategory(
+    @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
   ): Promise<void> {
-    await this.productCategoryService.deleteProductCategory(productCategoryId);
+    await this.productCategoryService.deleteProductCategory(
+      productCategoryId,
+      workspaceId,
+    );
   }
 
   @Get('/:productCategoryId')
   @OptionalAuth()
   async getProductCategoryById(
+    @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
   ): Promise<ProductCategoryTransformer> {
     return new ProductCategoryTransformer(
       await this.productCategoryService.getProductCategoryById(
         productCategoryId,
+        workspaceId,
       ),
     );
   }
