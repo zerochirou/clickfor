@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Pencil, Trash2, Zap, ZapOff } from "lucide-react";
+import { Ellipsis, ExternalLink, Pencil, Trash2, Zap, ZapOff } from "lucide-react";
 import { deleteProduct } from "../../api/delete-product";
 import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
@@ -116,11 +116,11 @@ export function TableAction({
         <DropdownMenuGroup>
           <DropdownMenuItem
             onClick={() =>
-              router.push(`/workspace/${workspaceId}/product/${productId}/edit`)
+              router.push(`/workspace/${workspaceId}/product/${productId}`)
             }
           >
             <span className="flex items-center gap-2">
-              <Pencil className="size-3.5" /> Ubah
+              <Pencil className="size-3.5" /> Detail & Edit
             </span>
           </DropdownMenuItem>
           <DropdownMenuItem

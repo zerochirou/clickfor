@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -321,29 +322,32 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
                       className={cn(
                         "group border-b transition-colors duration-500",
                         isJustUpdated
-                          ? "bg-accent"
+                          ? "bg-primary/10 ring-1 ring-inset ring-primary/30"
                           : "hover:bg-muted/50",
                       )}
                     >
                       <TableCell>
-                        <span className="flex items-center gap-4">
+                        <Link
+                          href={`/workspace/${workspace.id}/product/${item.id}`}
+                          className="flex items-center gap-4 group/item cursor-pointer"
+                        >
                           <Image
                             src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${item.image}`}
                             alt={item.name}
-                            className="rounded-sm object-cover"
-                            width={50}
-                            height={50}
+                            className="rounded-md object-cover size-12 shrink-0 border group-hover/item:shadow-sm transition-all"
+                            width={48}
+                            height={48}
                             unoptimized
                           />
                           <span className="flex flex-col">
-                            <span className="font-semibold group-hover:text-primary transition-all ease-in-out">
+                            <span className="font-semibold group-hover/item:text-primary transition-colors">
                               {item.name}
                             </span>
-                            <span className="opacity-50 text-xs">
+                            <span className="opacity-50 text-xs font-mono">
                               {item.sku}
                             </span>
                           </span>
-                        </span>
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <CategoryTooltip
@@ -376,19 +380,16 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
                               initial={{
                                 opacity: 0,
                                 scale: 0.8,
-                                y: 20,
                                 filter: "blur(2px)",
                               }}
                               animate={{
                                 opacity: 1,
                                 scale: 1,
-                                y: 0,
                                 filter: "blur(0px)",
                               }}
                               exit={{
                                 opacity: 0,
                                 scale: 0.8,
-                                y: 20,
                                 filter: "blur(2px)",
                               }}
                               transition={{
