@@ -1,5 +1,6 @@
 "use server";
 
+import { isAuthenticated } from "@/lib/auth/auth-check";
 import { Product } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
@@ -10,10 +11,11 @@ interface UpdateProductParams {
   data: { isOptimized: boolean };
 }
 
-export async function updateProductOptimazOptimization(
+export async function updateProductOptimization(
   params: UpdateProductParams,
 ) {
   try {
+    await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
@@ -42,3 +44,6 @@ export async function updateProductOptimazOptimization(
     throw new Error("Failed to update product");
   }
 }
+
+// Backward compatibility alias for the typo version
+export const updateProductOptimazOptimization = updateProductOptimization;

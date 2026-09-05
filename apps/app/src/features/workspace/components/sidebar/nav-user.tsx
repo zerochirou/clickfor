@@ -117,7 +117,7 @@ export function NavUser({ user }: { user: User }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} variant="destructive">
+            <DropdownMenuItem onClick={() => handleLogout(router)} variant="destructive">
               <LogOutIcon />
               Log out
             </DropdownMenuItem>

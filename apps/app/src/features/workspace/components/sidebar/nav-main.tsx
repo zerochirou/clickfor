@@ -20,6 +20,12 @@ import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useWorkspace } from "../../lib/workspace-provider";
 
+function buildWorkspaceUrl(workspaceId: string, path: string) {
+  if (!path || path === "#") return "#";
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  return cleanPath ? `/workspace/${workspaceId}/${cleanPath}` : `/workspace/${workspaceId}`;
+}
+
 export function NavMain({
   items,
 }: {
@@ -49,8 +55,7 @@ export function NavMain({
               tooltip={item.title}
               render={
                 <Link
-                  href={`/workspace/${workspace.id}/${item.url}`}
-                  prefetch="auto"
+                  href={buildWorkspaceUrl(workspace.id, item.url)}
                 />
               }
             >
@@ -74,8 +79,7 @@ export function NavMain({
                         <SidebarMenuSubButton
                           render={
                             <Link
-                              href={`/workspace/${workspace.id}/${subItem.url}`}
-                              prefetch="auto"
+                              href={buildWorkspaceUrl(workspace.id, subItem.url)}
                             />
                           }
                         >

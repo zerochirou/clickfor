@@ -5,6 +5,8 @@ import { TopProductBar } from "@/features/workspace/components/overview/top-prod
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function WorkspacePage({
   params,
 }: {
@@ -20,10 +22,10 @@ export default async function WorkspacePage({
     <div className="p-4">
       <div className="flex items-center justify-center gap-4 flex-row">
         <ParameterCard
-          title="Pendapat Hari Ini"
+          title="Pendapatan Hari Ini"
           amount="8.750.000"
           isPositive={true}
-          description="Pendapat hari ini"
+          description="Pendapatan hari ini"
           percentage="8.32"
         />
         <ParameterCard
@@ -41,10 +43,10 @@ export default async function WorkspacePage({
           percentage="8.32"
         />
         <ParameterCard
-          title="Pendapat Bulan Ini"
+          title="Pendapatan Bulan Ini"
           amount="8.750.000"
           isPositive={false}
-          description="Pendapat bulan ini"
+          description="Pendapatan bulan ini"
           percentage="8.32"
         />
       </div>

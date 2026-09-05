@@ -318,32 +318,33 @@ export function OnBoardingView() {
     setStep((prev) => prev - 1);
   };
 
-  const handleFinish = async () => {
-    /**
-     * Data onboarding sekarang tersedia
-     * di satu tempat.
-     */
-    const onboardingData = {
-      userType,
-      workspaceName,
-      workspaceDescription,
-    };
+  const handleFinish = () => {
+    startTransitionCreateWorkspace(async () => {
+      try {
+        let targetWorkspaceId = workspaceId;
 
-    if (onboardingData.userType === "owner") {
-      startTransitionCreateWorkspace(async () => {
-        const { id } = await createWorkspace({
-          data: {
-            workspaceName: workspaceName,
-            description: workspaceDescription,
-          },
-        });
-        setWorkspaceId(id);
-      });
-    }
+        if (userType === "owner") {
+          const res = await createWorkspace({
+            data: {
+              workspaceName: workspaceName,
+              description: workspaceDescription,
+            },
+          });
+          targetWorkspaceId = res.id;
+          setWorkspaceId(res.id);
+        }
 
-    await setQuickstartCompleted();
+        await setQuickstartCompleted();
 
-    router.push(`/workspace/${workspaceId}`);
+        if (targetWorkspaceId) {
+          router.push(`/workspace/${targetWorkspaceId}`);
+        } else {
+          router.push("/workspace");
+        }
+      } catch (error) {
+        console.error("Gagal menyelesaikan onboarding:", error);
+      }
+    });
   };
 
   return (

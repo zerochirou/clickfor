@@ -1,4 +1,3 @@
-import { ProductCategory } from "@/lib/types/product";
 import {
   Tooltip,
   TooltipContent,

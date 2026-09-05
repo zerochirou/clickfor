@@ -2,8 +2,14 @@
 
 import { CreateProductInput } from "./product-schema";
 
-  const DRAFT_KEY = "create-product-draft";
+const getDraftKey = (workspaceId?: string) =>
+  workspaceId ? `create-product-draft:${workspaceId}` : "create-product-draft";
 
-export function saveDraft(payload: CreateProductInput) {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
+export function saveDraft(payload: CreateProductInput, workspaceId?: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(getDraftKey(workspaceId), JSON.stringify(payload));
+  } catch (error) {
+    console.error("Gagal menyimpan draft ke localStorage:", error);
+  }
 }

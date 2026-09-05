@@ -1,9 +1,13 @@
-'use client'
+'use client';
 
 import { authClient } from "@/lib/auth/auth-client";
-import { redirect } from "next/navigation";
 
-export async function handleLogout() {
+export async function handleLogout(router?: { push: (url: string) => void }) {
   await authClient.signOut();
-  redirect("/signin")
+  if (router) {
+    router.push("/signin");
+  } else if (typeof window !== "undefined") {
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.href = "/signin";
+  }
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { isAuthenticated } from "@/lib/auth/auth-check";
 import { CreateProductCategory } from "@/lib/contracts/product";
 import { ProductCategory } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
@@ -12,6 +13,7 @@ interface PostProductCategoryParams {
 
 export async function postProductCategory(params: PostProductCategoryParams) {
   try {
+    await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
@@ -37,6 +39,6 @@ export async function postProductCategory(params: PostProductCategoryParams) {
     return result;
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to post workspaces");
+    throw new Error("Failed to post product category");
   }
 }

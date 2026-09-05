@@ -4,6 +4,7 @@ import { WorkspaceLobbyLayout } from "@/features/workspace/components/lobby/layo
 import { WorkspacesProvider } from "@/features/workspace/lib/workspaces-provider";
 import { checkIsQuickStart } from "@/features/quickstart/lib/quickstart-check";
 import { WorkspaceLobbyCard } from "@/features/workspace/components/lobby/card";
+export const dynamic = "force-dynamic";
 
 export default async function WorkspacesPage() {
   const workspaces = await getWorkspaces();

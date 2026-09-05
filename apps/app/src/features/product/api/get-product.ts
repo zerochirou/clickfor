@@ -1,5 +1,6 @@
 'use server'
 
+import { isAuthenticated } from "@/lib/auth/auth-check";
 import { Product } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
@@ -10,6 +11,7 @@ interface GetProductsParams {
 
 export async function getProducts(params: GetProductsParams) {
   try {
+    await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
@@ -34,6 +36,6 @@ export async function getProducts(params: GetProductsParams) {
     return result;
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to get product category");
+    throw new Error("Failed to get products");
   }
 }

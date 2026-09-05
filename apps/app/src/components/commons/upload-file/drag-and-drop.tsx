@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Check,
   Image as ImageIcon,
   X,
 } from 'lucide-react';
@@ -15,7 +14,6 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -33,6 +31,12 @@ const VALID_FILE_TYPES = [
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
+function createClipboardFile(blob: Blob, extension: string, imageType: string) {
+  return new File([blob], `clipboard-image.${extension}`, {
+    type: imageType,
+  });
+}
+
 export default function FileUpload({
   onFileSelect,
 }: FileUploadProps) {
@@ -45,12 +49,6 @@ export default function FileUpload({
     progress: 0,
     uploading: false,
   });
-
-  const [clipboardHasImage, setClipboardHasImage] =
-    useState(false);
-
-  const [checkingClipboard, setCheckingClipboard] =
-    useState(false);
 
   const fileInputRef =
     useRef<HTMLInputElement>(null);
@@ -96,39 +94,31 @@ export default function FileUpload({
   };
 
   /**
-   * Check apakah clipboard mengandung gambar
+   * Handle tempel dari clipboard melalui aksi eksplisit pengguna
    */
-  const checkClipboard = async () => {
-    if (
-      !navigator.clipboard ||
-      !navigator.clipboard.read
-    ) {
-      setClipboardHasImage(false);
+  const handlePasteFromClipboard = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!navigator.clipboard || !navigator.clipboard.read) {
+      toast.info('Gunakan pintasan keyboard ⌘V / Ctrl+V untuk menempel gambar.');
       return;
     }
 
     try {
-      setCheckingClipboard(true);
-
-      const clipboardItems =
-        await navigator.clipboard.read();
-
-      const hasImage = clipboardItems.some(
-        (item) =>
-          item.types.some((type) =>
-            type.startsWith('image/'),
-          ),
-      );
-
-      setClipboardHasImage(hasImage);
+      const clipboardItems = await navigator.clipboard.read();
+      for (const item of clipboardItems) {
+        const imageType = item.types.find((type) => type.startsWith('image/'));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          const extension = imageType.split('/')[1] || 'png';
+          const file = createClipboardFile(blob, extension, imageType);
+          handleFile(file);
+          toast.success('Gambar dari clipboard berhasil digunakan!');
+          return;
+        }
+      }
+      toast.info('Tidak ditemukan file gambar di clipboard.');
     } catch {
-      /**
-       * Browser bisa menolak akses clipboard
-       * jika tidak ada permission/user gesture.
-       */
-      setClipboardHasImage(false);
-    } finally {
-      setCheckingClipboard(false);
+      toast.error('Gagal mengakses clipboard. Gunakan ⌘V / Ctrl+V untuk menempel.');
     }
   };
 
@@ -175,12 +165,6 @@ export default function FileUpload({
       progress: 0,
       uploading: true,
     });
-
-    /**
-     * Karena gambar sudah digunakan,
-     * clipboard indicator tidak diperlukan lagi.
-     */
-    setClipboardHasImage(false);
 
     onFileSelect?.(file);
 
@@ -281,11 +265,6 @@ export default function FileUpload({
     }
 
     onFileSelect?.(null);
-
-    /**
-     * Cek lagi clipboard setelah reset.
-     */
-    checkClipboard();
   };
 
   /**
@@ -300,7 +279,6 @@ export default function FileUpload({
   const {
     file,
     progress,
-    uploading,
   } = uploadState;
 
   return (
@@ -328,48 +306,27 @@ export default function FileUpload({
         tabIndex={0}
         onClick={() => {
           fileInputRef.current?.click();
-          checkClipboard();
         }}
-        onFocus={checkClipboard}
-        onMouseEnter={checkClipboard}
         onDragOver={(event) => {
           event.preventDefault();
         }}
         onDrop={handleDrop}
         onPaste={handlePaste}
       >
-        {/* Clipboard Badge */}
-        {clipboardHasImage && !file && (
-          <Badge
-            variant="secondary"
-            className="
-              absolute
-              right-3
-              top-3
-              gap-1.5
-              border
-              bg-background
-              shadow-sm
-            "
+        {/* Tombol tempel dari clipboard jika belum ada file */}
+        {!file && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="absolute right-3 top-3 gap-1 text-xs"
+            onClick={handlePasteFromClipboard}
           >
-            <Check className="h-3 w-3" />
-
-            Gambar tersedia
-
-            <kbd
-              className="
-                rounded
-                border
-                bg-muted
-                px-1.5
-                py-0.5
-                font-mono
-                text-[10px]
-              "
-            >
+            <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">
               ⌘V
             </kbd>
-          </Badge>
+            <span>Tempel</span>
+          </Button>
         )}
 
         <div className="text-center">
@@ -405,33 +362,9 @@ export default function FileUpload({
           {/* Clipboard hint */}
           {!file && (
             <div className="mt-3">
-              {checkingClipboard ? (
-                <p className="text-xs text-muted-foreground">
-                  Memeriksa clipboard...
-                </p>
-              ) : clipboardHasImage ? (
-                <p className="text-xs font-medium text-primary">
-                  Tekan{' '}
-                  <kbd
-                    className="
-                      rounded
-                      border
-                      bg-muted
-                      px-1.5
-                      py-0.5
-                      font-mono
-                      text-[10px]
-                    "
-                  >
-                    ⌘V
-                  </kbd>{' '}
-                  untuk menggunakan gambar
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Kamu juga bisa copy gambar lalu paste di sini
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground">
+                Kamu juga bisa copy gambar lalu paste (⌘V / Ctrl+V) di sini
+              </p>
             </div>
           )}
         </div>

@@ -1,14 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -23,12 +15,9 @@ import { Product } from "@/lib/types/product";
 import {
   ArrowBigUp,
   Coins,
-  DecimalsArrowRight,
   Package,
   Tag,
   TextAlignStart,
-  TrendingDown,
-  TrendingUp,
   Zap,
 } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
@@ -38,11 +27,13 @@ import { TableAction } from "./table-action";
 import { useWorkspace } from "@/features/workspace/lib/workspace-provider";
 
 interface ProductTableProps {
-  products: Product[];
+  products?: Product[];
 }
 
-export function ProductTable({ products }: ProductTableProps) {
+export function ProductTable({ products: propProducts }: ProductTableProps) {
   const { workspace } = useWorkspace();
+  const context = useProducts();
+  const products = propProducts ?? context.products;
   return (
     <div className="space-y-4">
       <Card className="p-0">
@@ -79,6 +70,9 @@ export function ProductTable({ products }: ProductTableProps) {
                 <span className="flex items-center gap-2">
                   <Zap className="w-4 h-4" /> Dioptimalkan
                 </span>
+              </TableHead>
+              <TableHead className="h-12 px-4 font-medium text-end">
+                Aksi
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -129,14 +123,14 @@ export function ProductTable({ products }: ProductTableProps) {
                       </TableCell>
                       <TableCell>
                         {item.isUp ? (
-                          <Badge variant={'outline'} className="bg-primary-blue">
+                          <Badge variant={'default'} className="h-6">
                             Dioptimalkan <Zap />
                           </Badge>
                         ) : (
-                          <Badge variant={"outline"}>Tidak dioptimalkan</Badge>
+                          <Badge variant={"outline"} className="h-6">Tidak dioptimalkan</Badge>
                         )}
                       </TableCell>
-                      <TableCell className="">
+                      <TableCell className="text-end">
                         <TableAction
                           workspaceId={workspace.id}
                           productId={item.id}
@@ -149,7 +143,7 @@ export function ProductTable({ products }: ProductTableProps) {
               </>
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center">
+                <TableCell colSpan={7} className="text-center">
                   Tidak ada produk
                 </TableCell>
               </TableRow>

@@ -58,7 +58,12 @@ export default function EmailPage() {
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input id="password" autoComplete="off" placeholder="" />
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                  />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="confirmPassword">
@@ -66,8 +71,9 @@ export default function EmailPage() {
                   </FieldLabel>
                   <Input
                     id="confirmPassword"
-                    autoComplete="off"
-                    placeholder=""
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
                   />
                 </Field>
               </FieldGroup>

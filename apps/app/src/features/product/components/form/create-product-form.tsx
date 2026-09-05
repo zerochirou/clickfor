@@ -73,11 +73,15 @@ export function CreateProductForm() {
 
   async function onSubmit(values: CreateProductInput) {
     try {
+      if (!categoryId) {
+        toast.error("Silakan pilih kategori produk terlebih dahulu");
+        return;
+      }
+
       let fileKey = null;
 
-      // TAHAP 1 & 2: Jika user memilih file, minta URL lalu upload langsung ke RustFS
+      // TAHAP 1 & 2: Jika user memilih file, minta URL lalu upload langsung ke storage
       if (selectedFile) {
-        console.log("Meminta presigned URL...");
         const fileName = encodeURIComponent(selectedFile.name);
         const contentType = encodeURIComponent(selectedFile.type);
         const presignedData = await getPresignedUploadURL({
@@ -87,7 +91,6 @@ export function CreateProductForm() {
         });
 
         if (presignedData?.uploadURL) {
-          console.log("Mengunggah file ke RustFS...");
           const uploadRes = await fetch(presignedData.uploadURL, {
             method: "PUT",
             body: selectedFile,
@@ -100,43 +103,47 @@ export function CreateProductForm() {
             throw new Error("Gagal mengunggah file gambar ke storage.");
           }
 
-          fileKey = presignedData.fileKey; // Ambil key string-nya (misal: "images/123-file.png")
+          fileKey = presignedData.fileKey;
         }
       }
 
-      // TAHAP 3: Kirim data produk lengkap beserta `fileKey` ke Backend NestJS utama (Database)
+      // TAHAP 3: Kirim data produk lengkap beserta `fileKey` ke Backend
       const finalPayload = {
         ...values,
         image: fileKey,
       };
 
-      console.log("Payload Final ke Backend:", finalPayload);
       startTransition(async () => {
-        await postProduct({
-          data: {
-            name: finalPayload.name,
-            description: finalPayload.description,
-            purchasePrice: Number(finalPayload.purchasePrice),
-            salePrice: Number(finalPayload.salePrice),
-            stock: Number(finalPayload.stock),
-            minStock: Number(finalPayload.minStock),
-            unit: finalPayload.unit,
-            isActive: finalPayload.isActive,
-            isUp: finalPayload.isUp,
-            image: finalPayload.image,
-          },
-          workspaceId: workspace.id,
-          categoryId: categoryId,
-        });
-        toast.success("Produk berhasil dibuat!");
-        deleteDraft();
+        try {
+          await postProduct({
+            data: {
+              name: finalPayload.name,
+              description: finalPayload.description,
+              purchasePrice: Number(finalPayload.purchasePrice),
+              salePrice: Number(finalPayload.salePrice),
+              stock: Number(finalPayload.stock),
+              minStock: Number(finalPayload.minStock),
+              unit: finalPayload.unit,
+              isActive: finalPayload.isActive,
+              isUp: finalPayload.isUp,
+              image: finalPayload.image,
+            },
+            workspaceId: workspace.id,
+            categoryId: categoryId,
+          });
+          toast.success("Produk berhasil dibuat!");
+          deleteDraft(workspace.id);
+          router.back();
+          router.refresh();
+        } catch (error) {
+          console.error("Error saat submit produk:", error);
+          toast.error(error instanceof Error ? error.message : "Gagal membuat produk.");
+        }
       });
-      router.back();
-      router.refresh();
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error saat submit produk:", error);
-        alert(error.message || "Terjadi kesalahan.");
+        toast.error(error.message || "Terjadi kesalahan.");
       }
     }
   }
@@ -147,19 +154,19 @@ export function CreateProductForm() {
   }
 
   useEffect(() => {
-    const draft = getDraft();
+    const draft = getDraft(workspace.id);
     if (!draft) return;
     try {
       const parsedDraft = JSON.parse(draft);
       form.reset(parsedDraft);
     } catch {
-      deleteDraft();
+      deleteDraft(workspace.id);
     }
-  }, [form]);
+  }, [form, workspace.id]);
 
   function discard() {
     form.reset();
-    deleteDraft();
+    deleteDraft(workspace.id);
   }
 
   return (
@@ -189,7 +196,7 @@ export function CreateProductForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => saveDraft(form.getValues())}
+                onClick={() => saveDraft(form.getValues(), workspace.id)}
               >
                 Simpan Draft
               </Button>

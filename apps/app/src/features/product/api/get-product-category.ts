@@ -1,5 +1,6 @@
 "use server";
 
+import { isAuthenticated } from "@/lib/auth/auth-check";
 import { ProductCategory } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
@@ -10,6 +11,7 @@ interface GetProductCategoryParams {
 
 export async function getProductCategory(params: GetProductCategoryParams) {
   try {
+    await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(

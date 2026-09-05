@@ -1,5 +1,6 @@
 'use server'
 
+import { isAuthenticated } from "@/lib/auth/auth-check";
 import { Product } from "@/lib/types/product";
 import { ErrorResponse } from "@/lib/types/response";
 import { headers } from "next/headers";
@@ -11,6 +12,7 @@ interface DeleteProductParams {
 
 export async function deleteProduct(params: DeleteProductParams) {
   try {
+    await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
     const response = await fetch(
