@@ -124,12 +124,38 @@ export class ProductService {
 
   public async searchProducts(query: string, workspaceId: string) {
     try {
+      const trimmedQuery = query?.trim();
+      if (!trimmedQuery) {
+        return await this.getProducts(workspaceId);
+      }
+
+      const sanitizedTerms = trimmedQuery
+        .replace(/[&|!():*]/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean);
+      const tsqueryFormatted =
+        sanitizedTerms.length > 0
+          ? sanitizedTerms.map((t) => `${t}:*`).join(' & ')
+          : undefined;
+
       return await this.db.product.findMany({
         where: {
           workspaceId,
-          name: {
-            search: query,
-          },
+          OR: [
+            ...(tsqueryFormatted
+              ? [{ name: { search: tsqueryFormatted } }]
+              : []),
+            { name: { contains: trimmedQuery, mode: 'insensitive' as const } },
+            { sku: { contains: trimmedQuery, mode: 'insensitive' as const } },
+            {
+              barcode: { contains: trimmedQuery, mode: 'insensitive' as const },
+            },
+            {
+              category: {
+                name: { contains: trimmedQuery, mode: 'insensitive' as const },
+              },
+            },
+          ],
         },
         include: {
           category: {
@@ -140,6 +166,7 @@ export class ProductService {
             },
           },
         },
+        orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
       });
     } catch (error) {
       handlePrismaError(error);

@@ -18,7 +18,7 @@ export function CategoryTooltip({
     <Tooltip>
       <TooltipTrigger
         render={
-          <Badge variant="outline">
+          <Badge variant="secondary" className="h-6">
             {name} {icon}
           </Badge>
         }
