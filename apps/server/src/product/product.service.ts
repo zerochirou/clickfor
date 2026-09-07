@@ -122,11 +122,16 @@ export class ProductService {
     }
   }
 
-  public async searchProducts(query: string, workspaceId: string) {
+  public async searchProducts(
+    query: string,
+    workspaceId: string,
+    page = 1,
+    limit = 10,
+  ) {
     try {
       const trimmedQuery = query?.trim();
       if (!trimmedQuery) {
-        return await this.getProducts(workspaceId);
+        return await this.getProducts(workspaceId, page, limit);
       }
 
       const sanitizedTerms = trimmedQuery
@@ -138,58 +143,80 @@ export class ProductService {
           ? sanitizedTerms.map((t) => `${t}:*`).join(' & ')
           : undefined;
 
-      return await this.db.product.findMany({
-        where: {
-          workspaceId,
-          OR: [
-            ...(tsqueryFormatted
-              ? [{ name: { search: tsqueryFormatted } }]
-              : []),
-            { name: { contains: trimmedQuery, mode: 'insensitive' as const } },
-            { sku: { contains: trimmedQuery, mode: 'insensitive' as const } },
-            {
-              barcode: { contains: trimmedQuery, mode: 'insensitive' as const },
-            },
-            {
-              category: {
-                name: { contains: trimmedQuery, mode: 'insensitive' as const },
-              },
-            },
-          ],
-        },
-        include: {
-          category: {
-            select: {
-              name: true,
-              icon: true,
-              description: true,
+      const where = {
+        workspaceId,
+        OR: [
+          ...(tsqueryFormatted ? [{ name: { search: tsqueryFormatted } }] : []),
+          { name: { contains: trimmedQuery, mode: 'insensitive' as const } },
+          { sku: { contains: trimmedQuery, mode: 'insensitive' as const } },
+          {
+            barcode: { contains: trimmedQuery, mode: 'insensitive' as const },
+          },
+          {
+            category: {
+              name: { contains: trimmedQuery, mode: 'insensitive' as const },
             },
           },
-        },
-        orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
-      });
+        ],
+      };
+
+      const skip = (page - 1) * limit;
+
+      const [data, total] = await Promise.all([
+        this.db.product.findMany({
+          where,
+          include: {
+            category: {
+              select: {
+                name: true,
+                icon: true,
+                description: true,
+              },
+            },
+          },
+          orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
+          skip,
+          take: limit,
+        }),
+        this.db.product.count({ where }),
+      ]);
+
+      return {
+        data,
+        meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      };
     } catch (error) {
       handlePrismaError(error);
     }
   }
 
-  public async getProducts(workspaceId: string) {
+  public async getProducts(workspaceId: string, page = 1, limit = 10) {
     try {
-      return await this.db.product.findMany({
-        where: {
-          workspaceId,
-        },
-        include: {
-          category: {
-            select: {
-              name: true,
-              icon: true,
-              description: true,
+      const skip = (page - 1) * limit;
+      const [data, total] = await Promise.all([
+        this.db.product.findMany({
+          where: {
+            workspaceId,
+          },
+          include: {
+            category: {
+              select: {
+                name: true,
+                icon: true,
+                description: true,
+              },
             },
           },
-        },
-        orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
-      });
+          orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
+          skip,
+          take: limit,
+        }),
+        this.db.product.count({ where: { workspaceId } }),
+      ]);
+      return {
+        data,
+        meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      };
     } catch (error) {
       handlePrismaError(error);
     }

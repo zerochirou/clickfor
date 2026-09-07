@@ -11,10 +11,14 @@ import {
   useRef,
 } from "react";
 
+import { PaginationMeta } from "../api/get-product";
+
 interface ProductsContextType {
   products: Product[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   initialProducts: Product[];
+  meta: PaginationMeta | null;
+  setMeta: React.Dispatch<React.SetStateAction<PaginationMeta | null>>;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   isSearching: boolean;
@@ -36,15 +40,18 @@ const ProductContext = createContext<ProductsContextType | undefined>(
 interface ProductsProviderProps {
   children: ReactNode;
   initialProducts: Product[];
+  meta?: PaginationMeta;
 }
 
 export function ProductsProvider({
   children,
   initialProducts,
+  meta: initialMeta = null,
 }: ProductsProviderProps) {
   const [prevInitialProducts, setPrevInitialProducts] =
     useState(initialProducts);
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [meta, setMeta] = useState<PaginationMeta | null>(initialMeta);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [updatedProductId, setUpdatedProductIdState] = useState<string | null>(
@@ -55,6 +62,7 @@ export function ProductsProvider({
   if (initialProducts !== prevInitialProducts) {
     setPrevInitialProducts(initialProducts);
     setProducts(initialProducts);
+    setMeta(initialMeta);
   }
 
   const setUpdatedProductId = useCallback((id: string | null) => {
@@ -88,13 +96,16 @@ export function ProductsProvider({
     setSearchQuery("");
     setIsSearching(false);
     setProducts(initialProducts);
-  }, [initialProducts]);
+    setMeta(initialMeta);
+  }, [initialProducts, initialMeta]);
 
   const value = useMemo(
     () => ({
       products,
       setProducts,
       initialProducts,
+      meta,
+      setMeta,
       searchQuery,
       setSearchQuery,
       isSearching,
@@ -108,6 +119,7 @@ export function ProductsProvider({
     [
       products,
       initialProducts,
+      meta,
       searchQuery,
       isSearching,
       resetSearch,

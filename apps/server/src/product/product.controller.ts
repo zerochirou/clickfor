@@ -13,6 +13,7 @@ import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductTransformer } from './transformers/product.transformer';
+import { PaginationProductQueryDTO } from './dtos/pagination-product-query.dto';
 import { WorkspaceGuard } from 'src/workspace/guards/workspace.guard';
 import { WorkspaceRoleGuard } from 'src/workspace/guards/workspace-role-guard.guard';
 import { Role } from '@prisma/client';
@@ -96,24 +97,41 @@ export class ProductController {
   async searchProducts(
     @Param('workspaceId') workspaceId: string,
     @Query('query') query: string,
-  ): Promise<ProductTransformer[]> {
-    return await this.productService
-      .searchProducts(query, workspaceId)
-      .then((products) =>
-        products.map((product) => new ProductTransformer(product)),
-      );
+    @Query() pagination: PaginationProductQueryDTO,
+  ) {
+    const page = pagination.page ? Number(pagination.page) : 1;
+    const limit = pagination.limit ? Number(pagination.limit) : 10;
+    const result = await this.productService.searchProducts(
+      query,
+      workspaceId,
+      page,
+      limit,
+    );
+
+    return {
+      data: result.data.map((product) => new ProductTransformer(product)),
+      meta: result.meta,
+    };
   }
 
   @Get()
   @UseGuards(WorkspaceGuard)
   async getProducts(
     @Param('workspaceId') workspaceId: string,
-  ): Promise<ProductTransformer[]> {
-    return this.productService
-      .getProducts(workspaceId)
-      .then((products) =>
-        products.map((product) => new ProductTransformer(product)),
-      );
+    @Query() pagination: PaginationProductQueryDTO,
+  ) {
+    const page = pagination.page ? Number(pagination.page) : 1;
+    const limit = pagination.limit ? Number(pagination.limit) : 10;
+    const result = await this.productService.getProducts(
+      workspaceId,
+      page,
+      limit,
+    );
+
+    return {
+      data: result.data.map((product) => new ProductTransformer(product)),
+      meta: result.meta,
+    };
   }
 
   @Get(':productId')

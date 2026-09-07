@@ -13,18 +13,20 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ workspaceId: string }>;
-  searchParams?: Promise<{ query?: string }>;
+  searchParams?: Promise<{ query?: string; page?: string; limit?: string }>;
 }) {
   const { workspaceId } = await params;
   const resolvedSearchParams = await searchParams;
   const initialQuery = resolvedSearchParams?.query?.trim();
+  const page = resolvedSearchParams?.page ? parseInt(resolvedSearchParams.page) : 1;
+  const limit = resolvedSearchParams?.limit ? parseInt(resolvedSearchParams.limit) : 10;
 
-  const products = initialQuery
-    ? await searchProducts({ workspaceId, query: initialQuery })
-    : await getProducts({ workspaceId });
+  const result = initialQuery
+    ? await searchProducts({ workspaceId, query: initialQuery, page, limit })
+    : await getProducts({ workspaceId, page, limit });
 
   return (
-    <ProductsProvider initialProducts={products}>
+    <ProductsProvider initialProducts={result.data} meta={result.meta}>
       <div className="p-4">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
           <ProductSearchBar workspaceId={workspaceId} />

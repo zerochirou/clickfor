@@ -33,11 +33,12 @@ export function ProductSearchBar({
 
   const {
     setProducts,
-    initialProducts,
+    setMeta,
     searchQuery,
     setSearchQuery,
     isSearching,
     setIsSearching,
+    resetSearch,
   } = useProducts();
 
   const [, startTransition] = useTransition();
@@ -52,6 +53,7 @@ export function ProductSearchBar({
     } else {
       params.delete("query");
     }
+    params.delete("page"); // Reset page to 1 when search changes
     const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
     startTransition(() => {
       router.replace(newUrl, { scroll: false });
@@ -63,9 +65,7 @@ export function ProductSearchBar({
       clearTimeout(debounceTimerRef.current);
     }
     activeRequestIdRef.current += 1;
-    setSearchQuery("");
-    setIsSearching(false);
-    setProducts(initialProducts);
+    resetSearch();
     syncUrl("");
     inputRef.current?.focus();
   };
@@ -115,8 +115,7 @@ export function ProductSearchBar({
     // If query is emptied, restore initial products immediately without network request
     if (!trimmed) {
       activeRequestIdRef.current += 1;
-      setIsSearching(false);
-      setProducts(initialProducts);
+      resetSearch();
       syncUrl("");
       return;
     }
@@ -136,7 +135,8 @@ export function ProductSearchBar({
 
         // Ensure we only update if this is still the freshest request (anti-race condition)
         if (requestId === activeRequestIdRef.current) {
-          setProducts(results);
+          setProducts(results.data);
+          setMeta(results.meta);
           setIsSearching(false);
           syncUrl(trimmed);
         }

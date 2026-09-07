@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +21,8 @@ import {
   ArrowBigUp,
   ArrowDown,
   ArrowUp,
+  ChevronLeft,
+  ChevronRight,
   ChevronsUpDown,
   Coins,
   Package,
@@ -72,15 +75,25 @@ function SortIcon({
 }
 
 export function ProductTable({ products: propProducts }: ProductTableProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { workspace } = useWorkspace();
   const {
     products: contextProducts,
+    meta,
     searchQuery,
     isSearching,
     resetSearch,
     updatedProductId,
   } = useProducts();
   const products = propProducts ?? contextProducts;
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder | null>(null);
@@ -492,6 +505,37 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
           </TableBody>
         </Table>
       </Card>
+
+      {meta && meta.totalPages > 1 && (
+        <div className="flex items-center justify-between px-2 py-4">
+          <div className="text-sm text-muted-foreground">
+            Menampilkan halaman <span className="font-medium text-foreground">{meta.page}</span> dari{" "}
+            <span className="font-medium text-foreground">{meta.totalPages}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(meta.page - 1)}
+              disabled={meta.page <= 1 || isSearching}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Halaman sebelumnya</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(meta.page + 1)}
+              disabled={meta.page >= meta.totalPages || isSearching}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Halaman selanjutnya</span>
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
