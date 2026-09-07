@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import EmojiPicker, {
-  EmojiClickData,
-  Theme,
-} from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useTheme } from "next-themes";
 
 import {
@@ -20,10 +17,7 @@ interface EmojiSelectorProps {
   onChange?: (emoji: string) => void;
 }
 
-export function EmojiSelector({
-  value,
-  onChange,
-}: EmojiSelectorProps) {
+export function EmojiSelector({ value, onChange }: EmojiSelectorProps) {
   const [open, setOpen] = useState(false);
 
   const { theme } = useTheme();

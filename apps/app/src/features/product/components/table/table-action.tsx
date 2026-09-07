@@ -10,7 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, ExternalLink, Pencil, Trash2, Zap, ZapOff } from "lucide-react";
+import {
+  Ellipsis,
+  ExternalLink,
+  Pencil,
+  Trash2,
+  Zap,
+  ZapOff,
+} from "lucide-react";
 import { deleteProduct } from "../../api/delete-product";
 import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";

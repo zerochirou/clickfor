@@ -1,9 +1,6 @@
-'use client';
+"use client";
 
-import {
-  Image as ImageIcon,
-  X,
-} from 'lucide-react';
+import { Image as ImageIcon, X } from "lucide-react";
 import {
   type ChangeEvent,
   type ClipboardEvent,
@@ -11,23 +8,18 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import { toast } from 'sonner';
+} from "react";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 interface FileUploadProps {
   onFileSelect?: (file: File | null) => void;
 }
 
-const VALID_FILE_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/jpg',
-];
+const VALID_FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -37,9 +29,7 @@ function createClipboardFile(blob: Blob, extension: string, imageType: string) {
   });
 }
 
-export default function FileUpload({
-  onFileSelect,
-}: FileUploadProps) {
+export default function FileUpload({ onFileSelect }: FileUploadProps) {
   const [uploadState, setUploadState] = useState<{
     file: File | null;
     progress: number;
@@ -50,11 +40,9 @@ export default function FileUpload({
     uploading: false,
   });
 
-  const fileInputRef =
-    useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const intervalRef =
-    useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * Clear progress interval
@@ -70,27 +58,14 @@ export default function FileUpload({
    * Format file size
    */
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
 
     const k = 1024;
-    const sizes = [
-      'Bytes',
-      'KB',
-      'MB',
-      'GB',
-    ];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
 
-    const i = Math.floor(
-      Math.log(bytes) / Math.log(k),
-    );
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-    return (
-      Number.parseFloat(
-        (bytes / k ** i).toFixed(1),
-      ) +
-      ' ' +
-      sizes[i]
-    );
+    return Number.parseFloat((bytes / k ** i).toFixed(1)) + " " + sizes[i];
   };
 
   /**
@@ -99,26 +74,30 @@ export default function FileUpload({
   const handlePasteFromClipboard = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!navigator.clipboard || !navigator.clipboard.read) {
-      toast.info('Gunakan pintasan keyboard ⌘V / Ctrl+V untuk menempel gambar.');
+      toast.info(
+        "Gunakan pintasan keyboard ⌘V / Ctrl+V untuk menempel gambar.",
+      );
       return;
     }
 
     try {
       const clipboardItems = await navigator.clipboard.read();
       for (const item of clipboardItems) {
-        const imageType = item.types.find((type) => type.startsWith('image/'));
+        const imageType = item.types.find((type) => type.startsWith("image/"));
         if (imageType) {
           const blob = await item.getType(imageType);
-          const extension = imageType.split('/')[1] || 'png';
+          const extension = imageType.split("/")[1] || "png";
           const file = createClipboardFile(blob, extension, imageType);
           handleFile(file);
-          toast.success('Gambar dari clipboard berhasil digunakan!');
+          toast.success("Gambar dari clipboard berhasil digunakan!");
           return;
         }
       }
-      toast.info('Tidak ditemukan file gambar di clipboard.');
+      toast.info("Tidak ditemukan file gambar di clipboard.");
     } catch {
-      toast.error('Gagal mengakses clipboard. Gunakan ⌘V / Ctrl+V untuk menempel.');
+      toast.error(
+        "Gagal mengakses clipboard. Gunakan ⌘V / Ctrl+V untuk menempel.",
+      );
     }
   };
 
@@ -133,9 +112,9 @@ export default function FileUpload({
      */
     if (!VALID_FILE_TYPES.includes(file.type)) {
       toast.error(
-        'Format file tidak didukung. Harap unggah gambar PNG, JPG, JPEG, atau WebP.',
+        "Format file tidak didukung. Harap unggah gambar PNG, JPG, JPEG, atau WebP.",
         {
-          position: 'bottom-right',
+          position: "bottom-right",
           duration: 3000,
         },
       );
@@ -147,13 +126,10 @@ export default function FileUpload({
      * Validate size
      */
     if (file.size > MAX_FILE_SIZE) {
-      toast.error(
-        'Ukuran gambar terlalu besar. Maksimal 5MB.',
-        {
-          position: 'bottom-right',
-          duration: 3000,
-        },
-      );
+      toast.error("Ukuran gambar terlalu besar. Maksimal 5MB.", {
+        position: "bottom-right",
+        duration: 3000,
+      });
 
       return;
     }
@@ -173,8 +149,7 @@ export default function FileUpload({
      */
     intervalRef.current = setInterval(() => {
       setUploadState((prev) => {
-        const newProgress =
-          prev.progress + 10;
+        const newProgress = prev.progress + 10;
 
         if (newProgress >= 100) {
           clearProgressInterval();
@@ -198,42 +173,29 @@ export default function FileUpload({
   /**
    * File picker
    */
-  const handleFileChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    handleFile(
-      event.target.files?.[0],
-    );
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    handleFile(event.target.files?.[0]);
   };
 
   /**
    * Drag & Drop
    */
-  const handleDrop = (
-    event: DragEvent<HTMLDivElement>,
-  ) => {
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
 
-    handleFile(
-      event.dataTransfer.files?.[0],
-    );
+    handleFile(event.dataTransfer.files?.[0]);
   };
 
   /**
    * Paste
    */
-  const handlePaste = (
-    event: ClipboardEvent<HTMLDivElement>,
-  ) => {
-    const items =
-      event.clipboardData?.items;
+  const handlePaste = (event: ClipboardEvent<HTMLDivElement>) => {
+    const items = event.clipboardData?.items;
 
     if (!items) return;
 
     for (const item of items) {
-      if (
-        !item.type.startsWith('image/')
-      ) {
+      if (!item.type.startsWith("image/")) {
         continue;
       }
 
@@ -261,7 +223,7 @@ export default function FileUpload({
     });
 
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
 
     onFileSelect?.(null);
@@ -276,10 +238,7 @@ export default function FileUpload({
     };
   }, []);
 
-  const {
-    file,
-    progress,
-  } = uploadState;
+  const { file, progress } = uploadState;
 
   return (
     <div className="w-full">
@@ -340,9 +299,7 @@ export default function FileUpload({
               Klik untuk unggah
             </span>
 
-            <p className="pl-1">
-              atau seret dan lepas di sini
-            </p>
+            <p className="pl-1">atau seret dan lepas di sini</p>
 
             <input
               ref={fileInputRef}
@@ -387,10 +344,7 @@ export default function FileUpload({
             "
             onClick={resetFile}
           >
-            <X
-              aria-hidden
-              className="h-4 w-4 shrink-0"
-            />
+            <X aria-hidden className="h-4 w-4 shrink-0" />
           </Button>
 
           <div className="flex items-center space-x-3">
@@ -409,9 +363,7 @@ export default function FileUpload({
                 ring-border
               "
             >
-              <ImageIcon
-                className="h-5 w-5 text-primary"
-              />
+              <ImageIcon className="h-5 w-5 text-primary" />
             </span>
 
             <div className="overflow-hidden pr-6">
@@ -426,10 +378,7 @@ export default function FileUpload({
           </div>
 
           <div className="mt-3 flex items-center space-x-3">
-            <Progress
-              className="h-1.5"
-              value={progress}
-            />
+            <Progress className="h-1.5" value={progress} />
 
             <span className="text-xs font-medium text-muted-foreground">
               {progress}%

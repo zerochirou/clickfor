@@ -337,13 +337,13 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
                         isJustUpdated ? "bg-secondary" : "hover:bg-muted/50",
                       )}
                     >
-                      <TableCell className="max-w-[280px]">
+                      <TableCell className="max-w-70">
                         <Link
                           href={`/workspace/${workspace.id}/product/${item.id}`}
                           className="flex items-center gap-4 group/item cursor-pointer min-w-0"
                         >
                           {/* 3. Gunakan wrapper kaku (48px) dengan Next.js Image fill */}
-                          <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] shrink-0 overflow-hidden rounded-md border bg-muted">
+                          <div className="relative w-12 h-12 min-w-12 min-h-12 shrink-0 overflow-hidden rounded-md border bg-muted">
                             <Image
                               src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${item.image}`}
                               alt={item.name}
@@ -509,8 +509,12 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between px-2 py-4">
           <div className="text-sm text-muted-foreground">
-            Menampilkan halaman <span className="font-medium text-foreground">{meta.page}</span> dari{" "}
-            <span className="font-medium text-foreground">{meta.totalPages}</span>
+            Menampilkan halaman{" "}
+            <span className="font-medium text-foreground">{meta.page}</span>{" "}
+            dari{" "}
+            <span className="font-medium text-foreground">
+              {meta.totalPages}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Button

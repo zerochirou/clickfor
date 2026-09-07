@@ -18,8 +18,12 @@ export default async function ProductPage({
   const { workspaceId } = await params;
   const resolvedSearchParams = await searchParams;
   const initialQuery = resolvedSearchParams?.query?.trim();
-  const page = resolvedSearchParams?.page ? parseInt(resolvedSearchParams.page) : 1;
-  const limit = resolvedSearchParams?.limit ? parseInt(resolvedSearchParams.limit) : 10;
+  const page = resolvedSearchParams?.page
+    ? parseInt(resolvedSearchParams.page)
+    : 1;
+  const limit = resolvedSearchParams?.limit
+    ? parseInt(resolvedSearchParams.limit)
+    : 10;
 
   const result = initialQuery
     ? await searchProducts({ workspaceId, query: initialQuery, page, limit })

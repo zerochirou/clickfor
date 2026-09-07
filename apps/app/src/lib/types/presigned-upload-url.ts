@@ -1,5 +1,5 @@
 export interface PresignedUploadURL {
-  success: boolean,
-  uploadURL: string,
-  fileKey: string,
+  success: boolean;
+  uploadURL: string;
+  fileKey: string;
 }

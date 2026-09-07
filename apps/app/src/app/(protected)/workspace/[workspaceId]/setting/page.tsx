@@ -1,7 +1,3 @@
 export default function SettingPage() {
-  return (
-    <div>
-      
-    </div>
-  );
+  return <div></div>;
 }

@@ -1,9 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
 import {

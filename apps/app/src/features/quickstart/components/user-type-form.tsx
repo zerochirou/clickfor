@@ -12,32 +12,18 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import {
-  Store,
-  ToggleRight,
-  User,
-} from "lucide-react";
+import { Store, ToggleRight, User } from "lucide-react";
 
-export type UserType =
-  | "owner"
-  | "employee";
+export type UserType = "owner" | "employee";
 
 interface UserTypeFormProps {
   value: UserType | "";
-  onChange: (
-    value: UserType,
-  ) => void;
+  onChange: (value: UserType) => void;
 }
 
-export function UserTypeForm({
-  value,
-  onChange,
-}: UserTypeFormProps) {
+export function UserTypeForm({ value, onChange }: UserTypeFormProps) {
   return (
     <OnBoardingStep>
       <FieldSet>
@@ -47,17 +33,13 @@ export function UserTypeForm({
         </FieldLegend>
 
         <FieldDescription>
-          Pilih jenis pengguna untuk menentukan
-          peran.
+          Pilih jenis pengguna untuk menentukan peran.
         </FieldDescription>
 
         <RadioGroup
           value={value}
           onValueChange={(value) => {
-            if (
-              value === "owner" ||
-              value === "employee"
-            ) {
+            if (value === "owner" || value === "employee") {
               onChange(value);
             }
           }}
@@ -72,16 +54,12 @@ export function UserTypeForm({
                 </FieldTitle>
 
                 <FieldDescription>
-                  Pemilik kedai kopi, restoran,
-                  atau tempat makan lokal
-                  berskala kecil.
+                  Pemilik kedai kopi, restoran, atau tempat makan lokal berskala
+                  kecil.
                 </FieldDescription>
               </FieldContent>
 
-              <RadioGroupItem
-                id="owner"
-                value="owner"
-              />
+              <RadioGroupItem id="owner" value="owner" />
             </Field>
           </FieldLabel>
 
@@ -95,15 +73,11 @@ export function UserTypeForm({
                 </FieldTitle>
 
                 <FieldDescription>
-                  Karyawan kedai kopi, restoran,
-                  atau tempat makan lokal kecil.
+                  Karyawan kedai kopi, restoran, atau tempat makan lokal kecil.
                 </FieldDescription>
               </FieldContent>
 
-              <RadioGroupItem
-                id="employee"
-                value="employee"
-              />
+              <RadioGroupItem id="employee" value="employee" />
             </Field>
           </FieldLabel>
         </RadioGroup>

@@ -5,5 +5,5 @@ export async function handleGoogleAuth() {
     provider: "google",
     callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/workspace`,
   });
-  console.log(test)
+  console.log(test);
 }

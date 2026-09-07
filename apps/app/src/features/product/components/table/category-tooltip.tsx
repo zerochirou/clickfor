@@ -23,7 +23,11 @@ export function CategoryTooltip({
           </Badge>
         }
       />
-      <TooltipContent className={"flex flex-col justify-start items-start px-4 py-2 rounded-sm"}>
+      <TooltipContent
+        className={
+          "flex flex-col justify-start items-start px-4 py-2 rounded-sm"
+        }
+      >
         <h1 className="font-semibold">
           {name} {icon}
         </h1>

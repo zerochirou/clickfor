@@ -21,8 +21,7 @@ export function JoinWorkspace() {
         </h1>
 
         <p className="mb-8 text-sm opacity-50">
-          Masukkan kode OTP untuk mengakses
-          workspace.
+          Masukkan kode OTP untuk mengakses workspace.
         </p>
 
         <InputOTP maxLength={8}>

@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { isAuthenticated } from "@/lib/auth/auth-check";
 import { ErrorResponse } from "@/lib/types/response";
@@ -13,27 +13,28 @@ interface SearchProductsParams {
   limit?: number;
 }
 
-export async function searchProducts(params: SearchProductsParams): Promise<PaginatedProducts> {
+export async function searchProducts(
+  params: SearchProductsParams,
+): Promise<PaginatedProducts> {
   try {
     await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
-    
-    const url = new URL(`${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product/search`);
+
+    const url = new URL(
+      `${process.env.NEXT_PUBLIC_SERVER_API}/workspace/${params.workspaceId}/product/search`,
+    );
     url.searchParams.append("query", params.query.trim());
     if (params.page) url.searchParams.append("page", params.page.toString());
     if (params.limit) url.searchParams.append("limit", params.limit.toString());
 
-    const response = await fetch(
-      url.toString(),
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-        },
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       },
-    );
+    });
     if (!response.ok) {
       const errorData = (await response.json()) as ErrorResponse;
       throw new Error(

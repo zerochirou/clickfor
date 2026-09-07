@@ -29,7 +29,10 @@ export async function getWorkspaces() {
     const workspaces = (await response.json()) as Workspace[];
     return workspaces;
   } catch (error) {
-    if (isRedirectError(error) || (error as { digest?: string })?.digest === "DYNAMIC_SERVER_USAGE") {
+    if (
+      isRedirectError(error) ||
+      (error as { digest?: string })?.digest === "DYNAMIC_SERVER_USAGE"
+    ) {
       throw error;
     }
     console.error(error);
@@ -67,7 +70,10 @@ export async function getWorkspaceById(workspaceId: string) {
     const cookieHeader = requestHeaders.get("cookie");
     return await fetchWorkspaceByIdInternal(workspaceId, cookieHeader);
   } catch (error) {
-    if (isRedirectError(error) || (error as { digest?: string })?.digest === "DYNAMIC_SERVER_USAGE") {
+    if (
+      isRedirectError(error) ||
+      (error as { digest?: string })?.digest === "DYNAMIC_SERVER_USAGE"
+    ) {
       throw error;
     }
     console.error(error);

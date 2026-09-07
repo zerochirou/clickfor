@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { isAuthenticated } from "@/lib/auth/auth-check";
 import { Product } from "@/lib/types/product";

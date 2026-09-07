@@ -29,7 +29,5 @@ export default async function ProductDetailPage({
     notFound();
   }
 
-  return (
-    <UpdateProductForm product={product} workspaceId={workspaceId} />
-  );
+  return <UpdateProductForm product={product} workspaceId={workspaceId} />;
 }

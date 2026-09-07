@@ -1,5 +1,5 @@
 // Made with Flicker · flicker.laurie.fyi
-import type { CSSProperties } from 'react';
+import type { CSSProperties } from "react";
 
 export default function FlickerUnboxing({ size = 28 }: { size?: number }) {
   return (
@@ -9,7 +9,13 @@ export default function FlickerUnboxing({ size = 28 }: { size?: number }) {
       viewBox="0 0 42 42"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      style={{ '--on': '#FFFFFF', '--off': '#404040', '--dur': '1.650s' } as CSSProperties}
+      style={
+        {
+          "--on": "#FFFFFF",
+          "--off": "#404040",
+          "--dur": "1.650s",
+        } as CSSProperties
+      }
     >
       <title>Loading</title>
       <style>{`
@@ -26,83 +32,314 @@ export default function FlickerUnboxing({ size = 28 }: { size?: number }) {
       <circle cx="3" cy="3" r="2" />
       <circle cx="9" cy="3" r="2" />
       <circle cx="15" cy="3" r="2" />
-      <circle className="on" cx="15" cy="3" r="2" opacity={0} style={{ animation: 'f00111111100 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="3"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00111111100 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="3" r="2" />
-      <circle className="on" cx="21" cy="3" r="2" opacity={0} style={{ animation: 'f00111111100 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="3"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00111111100 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="3" r="2" />
-      <circle className="on" cx="27" cy="3" r="2" opacity={0} style={{ animation: 'f00111111100 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="3"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00111111100 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="3" r="2" />
       <circle cx="39" cy="3" r="2" />
       <circle cx="3" cy="9" r="2" />
       <circle cx="9" cy="9" r="2" />
       <circle cx="15" cy="9" r="2" />
-      <circle className="on" cx="15" cy="9" r="2" opacity={0} style={{ animation: 'f01111111110 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="9"
+        r="2"
+        opacity={0}
+        style={{ animation: "f01111111110 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="9" r="2" />
-      <circle className="on" cx="21" cy="9" r="2" opacity={0} style={{ animation: 'f01111111110 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="9"
+        r="2"
+        opacity={0}
+        style={{ animation: "f01111111110 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="9" r="2" />
-      <circle className="on" cx="27" cy="9" r="2" opacity={0} style={{ animation: 'f01111111110 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="9"
+        r="2"
+        opacity={0}
+        style={{ animation: "f01111111110 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="9" r="2" />
       <circle cx="39" cy="9" r="2" />
       <circle cx="3" cy="15" r="2" />
-      <circle className="on" cx="3" cy="15" r="2" opacity={0} style={{ animation: 'f00000110000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="3"
+        cy="15"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00000110000 var(--dur) linear infinite" }}
+      />
       <circle cx="9" cy="15" r="2" />
-      <circle className="on" cx="9" cy="15" r="2" opacity={0} style={{ animation: 'f00001111000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="9"
+        cy="15"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00001111000 var(--dur) linear infinite" }}
+      />
       <circle cx="15" cy="15" r="2" />
-      <circle className="on" cx="15" cy="15" r="2" opacity={1} style={{ animation: 'f11111001111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="15"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11111001111 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="15" r="2" />
-      <circle className="on" cx="21" cy="15" r="2" opacity={1} style={{ animation: 'f11110000111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="15"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11110000111 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="15" r="2" />
-      <circle className="on" cx="27" cy="15" r="2" opacity={1} style={{ animation: 'f11111001111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="15"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11111001111 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="15" r="2" />
-      <circle className="on" cx="33" cy="15" r="2" opacity={0} style={{ animation: 'f00001111000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="33"
+        cy="15"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00001111000 var(--dur) linear infinite" }}
+      />
       <circle cx="39" cy="15" r="2" />
-      <circle className="on" cx="39" cy="15" r="2" opacity={0} style={{ animation: 'f00000110000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="39"
+        cy="15"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00000110000 var(--dur) linear infinite" }}
+      />
       <circle cx="3" cy="21" r="2" />
-      <circle className="on" cx="3" cy="21" r="2" opacity={0} style={{ animation: 'f00000110000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="3"
+        cy="21"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00000110000 var(--dur) linear infinite" }}
+      />
       <circle cx="9" cy="21" r="2" />
-      <circle className="on" cx="9" cy="21" r="2" opacity={0} style={{ animation: 'f00001111000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="9"
+        cy="21"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00001111000 var(--dur) linear infinite" }}
+      />
       <circle cx="15" cy="21" r="2" />
-      <circle className="on" cx="15" cy="21" r="2" opacity={1} style={{ animation: 'f11111001111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="21"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11111001111 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="21" r="2" />
-      <circle className="on" cx="21" cy="21" r="2" opacity={1} style={{ animation: 'f11110000111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="21"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11110000111 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="21" r="2" />
-      <circle className="on" cx="27" cy="21" r="2" opacity={1} style={{ animation: 'f11111001111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="21"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11111001111 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="21" r="2" />
-      <circle className="on" cx="33" cy="21" r="2" opacity={0} style={{ animation: 'f00001111000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="33"
+        cy="21"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00001111000 var(--dur) linear infinite" }}
+      />
       <circle cx="39" cy="21" r="2" />
-      <circle className="on" cx="39" cy="21" r="2" opacity={0} style={{ animation: 'f00000110000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="39"
+        cy="21"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00000110000 var(--dur) linear infinite" }}
+      />
       <circle cx="3" cy="27" r="2" />
-      <circle className="on" cx="3" cy="27" r="2" opacity={0} style={{ animation: 'f00000110000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="3"
+        cy="27"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00000110000 var(--dur) linear infinite" }}
+      />
       <circle cx="9" cy="27" r="2" />
-      <circle className="on" cx="9" cy="27" r="2" opacity={0} style={{ animation: 'f00001111000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="9"
+        cy="27"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00001111000 var(--dur) linear infinite" }}
+      />
       <circle cx="15" cy="27" r="2" />
-      <circle className="on" cx="15" cy="27" r="2" opacity={1} style={{ animation: 'f11111001111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="27"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11111001111 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="27" r="2" />
-      <circle className="on" cx="21" cy="27" r="2" opacity={1} style={{ animation: 'f11110000111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="27"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11110000111 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="27" r="2" />
-      <circle className="on" cx="27" cy="27" r="2" opacity={1} style={{ animation: 'f11111001111 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="27"
+        r="2"
+        opacity={1}
+        style={{ animation: "f11111001111 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="27" r="2" />
-      <circle className="on" cx="33" cy="27" r="2" opacity={0} style={{ animation: 'f00001111000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="33"
+        cy="27"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00001111000 var(--dur) linear infinite" }}
+      />
       <circle cx="39" cy="27" r="2" />
-      <circle className="on" cx="39" cy="27" r="2" opacity={0} style={{ animation: 'f00000110000 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="39"
+        cy="27"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00000110000 var(--dur) linear infinite" }}
+      />
       <circle cx="3" cy="33" r="2" />
       <circle cx="9" cy="33" r="2" />
       <circle cx="15" cy="33" r="2" />
-      <circle className="on" cx="15" cy="33" r="2" opacity={0} style={{ animation: 'f01111111110 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="33"
+        r="2"
+        opacity={0}
+        style={{ animation: "f01111111110 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="33" r="2" />
-      <circle className="on" cx="21" cy="33" r="2" opacity={0} style={{ animation: 'f01111111110 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="33"
+        r="2"
+        opacity={0}
+        style={{ animation: "f01111111110 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="33" r="2" />
-      <circle className="on" cx="27" cy="33" r="2" opacity={0} style={{ animation: 'f01111111110 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="33"
+        r="2"
+        opacity={0}
+        style={{ animation: "f01111111110 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="33" r="2" />
       <circle cx="39" cy="33" r="2" />
       <circle cx="3" cy="39" r="2" />
       <circle cx="9" cy="39" r="2" />
       <circle cx="15" cy="39" r="2" />
-      <circle className="on" cx="15" cy="39" r="2" opacity={0} style={{ animation: 'f00111111100 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="15"
+        cy="39"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00111111100 var(--dur) linear infinite" }}
+      />
       <circle cx="21" cy="39" r="2" />
-      <circle className="on" cx="21" cy="39" r="2" opacity={0} style={{ animation: 'f00111111100 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="21"
+        cy="39"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00111111100 var(--dur) linear infinite" }}
+      />
       <circle cx="27" cy="39" r="2" />
-      <circle className="on" cx="27" cy="39" r="2" opacity={0} style={{ animation: 'f00111111100 var(--dur) linear infinite' }} />
+      <circle
+        className="on"
+        cx="27"
+        cy="39"
+        r="2"
+        opacity={0}
+        style={{ animation: "f00111111100 var(--dur) linear infinite" }}
+      />
       <circle cx="33" cy="39" r="2" />
       <circle cx="39" cy="39" r="2" />
     </svg>

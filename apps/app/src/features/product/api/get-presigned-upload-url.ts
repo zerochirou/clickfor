@@ -11,7 +11,9 @@ interface GetPresignedUploadURLParams {
   contentType: string;
 }
 
-export async function getPresignedUploadURL(params: GetPresignedUploadURLParams) {
+export async function getPresignedUploadURL(
+  params: GetPresignedUploadURLParams,
+) {
   try {
     await isAuthenticated();
     const requestHeaders = await headers();

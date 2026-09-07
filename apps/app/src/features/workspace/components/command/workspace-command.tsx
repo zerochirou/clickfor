@@ -10,7 +10,7 @@ import {
   CommandList,
   CommandShortcut,
 } from "@/components/ui/command";
-  
+
 import { commandsData } from "../../lib/command-data";
 
 interface MenuProps {
@@ -19,8 +19,6 @@ interface MenuProps {
 }
 
 export default function WorkspaceCommand({ open, onOpenChange }: MenuProps) {
-
-
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <Command className="**:data-[slot=input-group]:border-border **:data-[slot=input-group]:bg-background">

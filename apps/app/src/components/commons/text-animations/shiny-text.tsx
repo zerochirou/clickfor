@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface ShinyTextProps {
   text: string;
@@ -12,7 +12,7 @@ interface ShinyTextProps {
   spread?: number;
   yoyo?: boolean;
   pauseOnHover?: boolean;
-  direction?: 'left' | 'right';
+  direction?: "left" | "right";
   delay?: number;
 }
 
@@ -20,24 +20,24 @@ const ShinyText: React.FC<ShinyTextProps> = ({
   text,
   disabled = false,
   speed = 2,
-  className = '',
-  color = '#b5b5b5',
-  shineColor = '#ffffff',
+  className = "",
+  color = "#b5b5b5",
+  shineColor = "#ffffff",
   spread = 120,
   yoyo = false,
   pauseOnHover = false,
-  direction = 'left',
+  direction = "left",
   delay = 0,
 }) => {
   const gradientStyle: React.CSSProperties = {
     backgroundImage: `linear-gradient(${spread}deg, ${color} 0%, ${color} 35%, ${shineColor} 50%, ${color} 65%, ${color} 100%)`,
-    backgroundSize: '200% auto',
-    WebkitBackgroundClip: 'text',
-    backgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
+    backgroundSize: "200% auto",
+    WebkitBackgroundClip: "text",
+    backgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     animation: disabled
-      ? 'none'
-      : `shiny-text-${direction} ${speed}s ease-in-out ${delay}s infinite ${yoyo ? 'alternate' : 'normal'}`,
+      ? "none"
+      : `shiny-text-${direction} ${speed}s ease-in-out ${delay}s infinite ${yoyo ? "alternate" : "normal"}`,
   };
 
   return (
@@ -54,7 +54,7 @@ const ShinyText: React.FC<ShinyTextProps> = ({
       `}</style>
       <span
         suppressHydrationWarning
-        className={`inline-block ${pauseOnHover ? 'hover:[animation-play-state:paused]' : ''} ${className}`}
+        className={`inline-block ${pauseOnHover ? "hover:[animation-play-state:paused]" : ""} ${className}`}
         style={gradientStyle}
       >
         {text}

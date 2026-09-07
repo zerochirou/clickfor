@@ -23,7 +23,9 @@ import { useWorkspace } from "../../lib/workspace-provider";
 function buildWorkspaceUrl(workspaceId: string, path: string) {
   if (!path || path === "#") return "#";
   const cleanPath = path.startsWith("/") ? path.slice(1) : path;
-  return cleanPath ? `/workspace/${workspaceId}/${cleanPath}` : `/workspace/${workspaceId}`;
+  return cleanPath
+    ? `/workspace/${workspaceId}/${cleanPath}`
+    : `/workspace/${workspaceId}`;
 }
 
 export function NavMain({
@@ -53,11 +55,7 @@ export function NavMain({
           >
             <SidebarMenuButton
               tooltip={item.title}
-              render={
-                <Link
-                  href={buildWorkspaceUrl(workspace.id, item.url)}
-                />
-              }
+              render={<Link href={buildWorkspaceUrl(workspace.id, item.url)} />}
             >
               {item.icon}
               <span>{item.title}</span>
@@ -79,7 +77,10 @@ export function NavMain({
                         <SidebarMenuSubButton
                           render={
                             <Link
-                              href={buildWorkspaceUrl(workspace.id, subItem.url)}
+                              href={buildWorkspaceUrl(
+                                workspace.id,
+                                subItem.url,
+                              )}
                             />
                           }
                         >

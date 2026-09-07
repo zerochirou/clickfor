@@ -101,7 +101,6 @@ export function ProductSearchBar({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [searchQuery]);
 
-
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
 
@@ -196,5 +195,3 @@ export function ProductSearchBar({
     </InputGroup>
   );
 }
-
-

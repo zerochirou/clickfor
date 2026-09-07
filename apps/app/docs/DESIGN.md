@@ -326,6 +326,7 @@ Type runs **Inter** as the single sans family at modest weights (display 600, bo
 The brand's strongest visual signature is the **device-mockup hero** — a centered MacBook + iPhone composite showing real Expo dev surfaces (Expo Studio, EAS Build dashboard, the Expo Go simulator) — over a sky-blue gradient atmospheric wash. The composite is the page's chrome instead of an illustration.
 
 **Key Characteristics:**
+
 - Pure white canvas with sky-blue gradient atmospheric backdrop in hero only.
 - Single primary CTA: pure black pill at `{rounded.md}` (8px) — compact developer-tool dialect.
 - Text-link blue (`{colors.text-link}`) for inline links only — never on a CTA.

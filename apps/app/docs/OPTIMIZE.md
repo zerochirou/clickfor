@@ -75,28 +75,20 @@ Gunakan `Promise.all`.
 
 ```tsx
 export default async function DashboardPage() {
-  const userPromise = getUser()
-  const summaryPromise = getSummary()
+  const userPromise = getUser();
+  const summaryPromise = getSummary();
 
-  const [user, summary] = await Promise.all([
-    userPromise,
-    summaryPromise,
-  ])
+  const [user, summary] = await Promise.all([userPromise, summaryPromise]);
 
-  return (
-    <Dashboard
-      user={user}
-      summary={summary}
-    />
-  )
+  return <Dashboard user={user} summary={summary} />;
 }
 ```
 
 Jangan menulis:
 
 ```tsx
-const user = await getUser()
-const summary = await getSummary()
+const user = await getUser();
+const summary = await getSummary();
 ```
 
 Kode tersebut membuat waterfall:
@@ -122,21 +114,18 @@ Next.js merekomendasikan memulai request independen secara bersamaan dan kemudia
 Ketika kegagalan satu sumber tidak boleh menghancurkan seluruh halaman:
 
 ```tsx
-const [profileResult, recommendationsResult] =
-  await Promise.allSettled([
-    getProfile(),
-    getRecommendations(),
-  ])
+const [profileResult, recommendationsResult] = await Promise.allSettled([
+  getProfile(),
+  getRecommendations(),
+]);
 
 const profile =
-  profileResult.status === 'fulfilled'
-    ? profileResult.value
-    : null
+  profileResult.status === "fulfilled" ? profileResult.value : null;
 
 const recommendations =
-  recommendationsResult.status === 'fulfilled'
+  recommendationsResult.status === "fulfilled"
     ? recommendationsResult.value
-    : []
+    : [];
 ```
 
 ---
@@ -146,7 +135,7 @@ const recommendations =
 Jangan menahan seluruh halaman dengan satu `Promise.all`. Pisahkan menggunakan `Suspense`.
 
 ```tsx
-import { Suspense } from 'react'
+import { Suspense } from "react";
 
 export default function DashboardPage() {
   return (
@@ -165,30 +154,30 @@ export default function DashboardPage() {
         <Recommendations />
       </Suspense>
     </main>
-  )
+  );
 }
 
 async function AccountSummary() {
-  const summary = await getAccountSummary()
-  return <Summary data={summary} />
+  const summary = await getAccountSummary();
+  return <Summary data={summary} />;
 }
 
 async function RecentTransactions() {
-  const transactions = await getRecentTransactions()
-  return <TransactionList data={transactions} />
+  const transactions = await getRecentTransactions();
+  return <TransactionList data={transactions} />;
 }
 
 async function Recommendations() {
-  const recommendations = await getRecommendations()
-  return <RecommendationList data={recommendations} />
+  const recommendations = await getRecommendations();
+  return <RecommendationList data={recommendations} />;
 }
 ```
 
 Paradigmanya:
 
-* `Promise.all` mengoptimalkan waktu penyelesaian keseluruhan.
-* `Suspense` mengoptimalkan waktu sampai pengguna melihat bagian pertama.
-* Kombinasikan keduanya ketika satu region membutuhkan beberapa request.
+- `Promise.all` mengoptimalkan waktu penyelesaian keseluruhan.
+- `Suspense` mengoptimalkan waktu sampai pengguna melihat bagian pertama.
+- Kombinasikan keduanya ketika satu region membutuhkan beberapa request.
 
 ```tsx
 async function AccountSummary() {
@@ -196,15 +185,9 @@ async function AccountSummary() {
     getBalance(),
     getLimits(),
     getRewards(),
-  ])
+  ]);
 
-  return (
-    <Summary
-      balance={balance}
-      limits={limits}
-      rewards={rewards}
-    />
-  )
+  return <Summary balance={balance} limits={limits} rewards={rewards} />;
 }
 ```
 
@@ -217,8 +200,8 @@ Next.js menggunakan streaming untuk mengirim bagian halaman secara progresif seh
 Sequential fetching memang diperlukan:
 
 ```tsx
-const user = await getUser()
-const orders = await getOrders(user.id)
+const user = await getUser();
+const orders = await getOrders(user.id);
 ```
 
 Tetapi pertanyaan berikutnya adalah:
@@ -228,16 +211,13 @@ Tetapi pertanyaan berikutnya adalah:
 Alternatifnya:
 
 ```tsx
-const [user, orders] = await Promise.all([
-  getUser(userId),
-  getOrders(userId),
-])
+const [user, orders] = await Promise.all([getUser(userId), getOrders(userId)]);
 ```
 
 Atau buat endpoint/query agregat:
 
 ```tsx
-const dashboard = await getDashboardData(userId)
+const dashboard = await getDashboardData(userId);
 ```
 
 Tetapi endpoint agregat jangan sekadar menjalankan request secara sequential di belakang layar. Idealnya backend melakukan query paralel, database join, atau batch query.
@@ -252,13 +232,13 @@ Ini sah:
 
 ```tsx
 async function HeaderUser() {
-  const user = await getUser()
-  return <span>{user.name}</span>
+  const user = await getUser();
+  return <span>{user.name}</span>;
 }
 
 async function AccountPanel() {
-  const user = await getUser()
-  return <Account userId={user.id} />
+  const user = await getUser();
+  return <Account userId={user.id} />;
 }
 ```
 
@@ -266,12 +246,12 @@ Identical `fetch` GET dalam React component tree dimemoisasi selama satu render 
 
 ```ts
 // lib/user.ts
-import 'server-only'
-import { cache } from 'react'
-import { db } from '@/lib/db'
+import "server-only";
+import { cache } from "react";
+import { db } from "@/lib/db";
 
 export const getCurrentUser = cache(async () => {
-  const session = await verifySession()
+  const session = await verifySession();
 
   return db.user.findUnique({
     where: { id: session.userId },
@@ -280,16 +260,16 @@ export const getCurrentUser = cache(async () => {
       name: true,
       role: true,
     },
-  })
-})
+  });
+});
 ```
 
 Perlu dipahami:
 
-* `React.cache` mencegah duplikasi dalam satu server request.
-* Itu bukan persistent cache lintas pengguna.
-* Cache React direset untuk setiap server request.
-* Argumen harus konsisten. `getUser('1')` dan `getUser(1)` adalah key berbeda. ([React][4])
+- `React.cache` mencegah duplikasi dalam satu server request.
+- Itu bukan persistent cache lintas pengguna.
+- Cache React direset untuk setiap server request.
+- Argumen harus konsisten. `getUser('1')` dan `getUser(1)` adalah key berbeda. ([React][4])
 
 ---
 
@@ -306,7 +286,7 @@ Tujuannya:
 Contoh:
 
 ```ts
-const user = await getCurrentUser()
+const user = await getCurrentUser();
 ```
 
 Dipanggil di layout, navbar, dan halaman, tetapi query hanya sekali dalam request tersebut.
@@ -321,52 +301,47 @@ Untuk Next.js 16 dengan Cache Components:
 
 ```ts
 // next.config.ts
-import type { NextConfig } from 'next'
+import type { NextConfig } from "next";
 
 const config: NextConfig = {
   cacheComponents: true,
-}
+};
 
-export default config
+export default config;
 ```
 
 ```ts
 // lib/catalog.ts
-import 'server-only'
-import { cacheLife, cacheTag } from 'next/cache'
+import "server-only";
+import { cacheLife, cacheTag } from "next/cache";
 
 export async function getCatalog() {
-  'use cache'
+  "use cache";
 
-  cacheLife('hours')
-  cacheTag('catalog')
+  cacheLife("hours");
+  cacheTag("catalog");
 
-  const response = await fetch(
-    `${process.env.API_URL}/catalog`,
-  )
+  const response = await fetch(`${process.env.API_URL}/catalog`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch catalog')
+    throw new Error("Failed to fetch catalog");
   }
 
-  return response.json()
+  return response.json();
 }
 ```
 
 Setelah mutasi:
 
 ```ts
-'use server'
+"use server";
 
-import { updateTag } from 'next/cache'
+import { updateTag } from "next/cache";
 
-export async function updateProduct(
-  productId: string,
-  input: ProductInput,
-) {
-  await updateExternalProduct(productId, input)
+export async function updateProduct(productId: string, input: ProductInput) {
+  await updateExternalProduct(productId, input);
 
-  updateTag('catalog')
+  updateTag("catalog");
 }
 ```
 
@@ -381,15 +356,15 @@ Artinya, tulis niat Anda dengan jelas:
 ```ts
 // Harus fresh
 fetch(url, {
-  cache: 'no-store',
-})
+  cache: "no-store",
+});
 ```
 
 ```ts
 // Boleh di-cache
 fetch(url, {
-  cache: 'force-cache',
-})
+  cache: "force-cache",
+});
 ```
 
 Atau gunakan `use cache` pada Next.js 16.
@@ -400,22 +375,22 @@ Atau gunakan `use cache` pada Next.js 16.
 
 Data berikut biasanya jangan masuk shared persistent cache:
 
-* Balance user.
-* Permission.
-* Session.
-* Data tenant tanpa tenant-aware cache key.
-* Cart.
-* Status transaksi.
-* Informasi yang berubah pada setiap request.
+- Balance user.
+- Permission.
+- Session.
+- Data tenant tanpa tenant-aware cache key.
+- Cart.
+- Status transaksi.
+- Informasi yang berubah pada setiap request.
 
 Kesalahan fatal:
 
 ```ts
 export async function getDashboard() {
-  'use cache'
+  "use cache";
 
-  const user = await getCurrentUser()
-  return getDashboardByUser(user.id)
+  const user = await getCurrentUser();
+  return getDashboardByUser(user.id);
 }
 ```
 
@@ -425,7 +400,7 @@ Pola lebih aman:
 
 ```ts
 export async function getPublicCatalog() {
-  'use cache'
+  "use cache";
   // Shared, aman untuk semua pengguna
 }
 
@@ -446,23 +421,23 @@ Server Components harus dieksekusi pada server ketika route dirender secara dina
 
 Biaya meningkat ketika Server Components:
 
-* Dirender ulang pada setiap request.
-* Menjalankan database query yang tidak di-cache.
-* Menjalankan transformasi CPU berat.
-* Melakukan N+1 query.
-* Menghasilkan markup atau payload sangat besar.
-* Mengirim object besar ke Client Components.
-* Mengakses external API dengan latency tinggi.
-* Memicu banyak request sequential.
-* Membaca data runtime terlalu tinggi di component tree.
+- Dirender ulang pada setiap request.
+- Menjalankan database query yang tidak di-cache.
+- Menjalankan transformasi CPU berat.
+- Melakukan N+1 query.
+- Menghasilkan markup atau payload sangat besar.
+- Mengirim object besar ke Client Components.
+- Mengakses external API dengan latency tinggi.
+- Memicu banyak request sequential.
+- Membaca data runtime terlalu tinggi di component tree.
 
 Tetapi banyak Server Components yang:
 
-* Murni menghasilkan markup.
-* Static.
-* Di-cache.
-* Tidak mempunyai fetching sendiri.
-* Tidak mengirim props besar.
+- Murni menghasilkan markup.
+- Static.
+- Di-cache.
+- Tidak mempunyai fetching sendiri.
+- Tidak mengirim props besar.
 
 biasanya bukan masalah besar.
 
@@ -471,12 +446,8 @@ biasanya bukan masalah besar.
 ### Murah
 
 ```tsx
-function ProductTitle({
-  title,
-}: {
-  title: string
-}) {
-  return <h1>{title}</h1>
+function ProductTitle({ title }: { title: string }) {
+  return <h1>{title}</h1>;
 }
 ```
 
@@ -492,30 +463,30 @@ async function Analytics() {
         gte: startOfYear(new Date()),
       },
     },
-  })
+  });
 
-  const report = expensiveAggregation(rows)
+  const report = expensiveAggregation(rows);
 
-  return <Chart data={report} />
+  return <Chart data={report} />;
 }
 ```
 
 Masalahnya bukan “satu Server Component”. Masalahnya:
 
-* Query tidak dibatasi.
-* Data dipindahkan ke memory.
-* Agregasi dilakukan di Node.
-* Hasilnya mungkin besar.
-* Seluruh operasi diulang setiap request.
+- Query tidak dibatasi.
+- Data dipindahkan ke memory.
+- Agregasi dilakukan di Node.
+- Hasilnya mungkin besar.
+- Seluruh operasi diulang setiap request.
 
 Solusi yang lebih tepat:
 
-* Agregasi di database.
-* Pilih hanya field yang diperlukan.
-* Cache hasil.
-* Pagination atau time window.
-* Precompute.
-* Jalankan sebagai background analytics pipeline bila bukan data request-time.
+- Agregasi di database.
+- Pilih hanya field yang diperlukan.
+- Cache hasil.
+- Pagination atau time window.
+- Precompute.
+- Jalankan sebagai background analytics pipeline bila bukan data request-time.
 
 ---
 
@@ -551,31 +522,23 @@ Paradigma yang lebih baik:
 ```tsx
 // Server Component
 export default async function ProductPage() {
-  const product = await getProduct()
+  const product = await getProduct();
 
   return (
     <>
       <ProductInformation product={product} />
       <BuyButton productId={product.id} />
     </>
-  )
+  );
 }
 ```
 
 ```tsx
 // Client Component kecil
-'use client'
+"use client";
 
-export function BuyButton({
-  productId,
-}: {
-  productId: string
-}) {
-  return (
-    <button onClick={() => addToCart(productId)}>
-      Add to cart
-    </button>
-  )
+export function BuyButton({ productId }: { productId: string }) {
+  return <button onClick={() => addToCart(productId)}>Add to cart</button>;
 }
 ```
 
@@ -587,31 +550,28 @@ Jangan jadikan seluruh halaman client hanya karena satu tombol membutuhkan `onCl
 
 Ada kondisi saat memindahkan pekerjaan ke browser masuk akal:
 
-* Chart berat yang hanya terlihat setelah scroll.
-* Map.
-* Rich text editor.
-* Visualisasi interaktif.
-* Data publik yang boleh diambil langsung browser.
-* Widget yang tidak penting untuk SEO.
-* Fitur yang baru dibuka setelah user interaction.
+- Chart berat yang hanya terlihat setelah scroll.
+- Map.
+- Rich text editor.
+- Visualisasi interaktif.
+- Data publik yang boleh diambil langsung browser.
+- Widget yang tidak penting untuk SEO.
+- Fitur yang baru dibuka setelah user interaction.
 
 Lazy-load komponen tersebut:
 
 ```tsx
-'use client'
+"use client";
 
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
-const HeavyChart = dynamic(
-  () => import('./heavy-chart'),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  },
-)
+const HeavyChart = dynamic(() => import("./heavy-chart"), {
+  loading: () => <ChartSkeleton />,
+  ssr: false,
+});
 
 export function AnalyticsPanel() {
-  return <HeavyChart />
+  return <HeavyChart />;
 }
 ```
 
@@ -634,9 +594,9 @@ const user = await db.user.findUnique({
     auditLogs: true,
     sessions: true,
   },
-})
+});
 
-return <ClientDashboard user={user} />
+return <ClientDashboard user={user} />;
 ```
 
 Gunakan DTO kecil:
@@ -657,12 +617,7 @@ return <ClientDashboard user={user} />
 Lebih baik lagi, kirim hanya yang benar-benar dibutuhkan komponen interaktif:
 
 ```tsx
-return (
-  <ClientDashboard
-    userId={user.id}
-    displayName={user.name}
-  />
-)
+return <ClientDashboard userId={user.id} displayName={user.name} />;
 ```
 
 Props dari Server Component ke Client Component harus diserialisasi sebagai bagian dari protokol React. ([Next.js][8])
@@ -690,43 +645,40 @@ Ketiganya mempunyai penyebab berbeda.
 Berbahaya:
 
 ```ts
-const cache = new Map<string, unknown>()
+const cache = new Map<string, unknown>();
 
-export function setCache(
-  key: string,
-  value: unknown,
-) {
-  cache.set(key, value)
+export function setCache(key: string, value: unknown) {
+  cache.set(key, value);
 }
 ```
 
 Map tersebut tidak memiliki:
 
-* TTL.
-* Batas jumlah item.
-* Batas ukuran.
-* Eviction.
-* Tenant isolation.
+- TTL.
+- Batas jumlah item.
+- Batas ukuran.
+- Eviction.
+- Tenant isolation.
 
 Pada long-running server, ukurannya akan terus tumbuh.
 
 Gunakan salah satu:
 
-* Cache bawaan Next.js.
-* Redis atau external KV.
-* Bounded LRU.
-* TTL cache dengan maximum size.
-* CDN cache untuk public response.
+- Cache bawaan Next.js.
+- Redis atau external KV.
+- Bounded LRU.
+- TTL cache dengan maximum size.
+- CDN cache untuk public response.
 
 Kalau menggunakan cache in-memory sendiri, selalu punya batas:
 
 ```ts
-import { LRUCache } from 'lru-cache'
+import { LRUCache } from "lru-cache";
 
 const cache = new LRUCache<string, Product>({
   max: 1_000,
   ttl: 5 * 60 * 1_000,
-})
+});
 ```
 
 Tetapi jangan tambahkan library dan cache baru sebelum mengukur bahwa itu memang diperlukan.
@@ -738,27 +690,27 @@ Tetapi jangan tambahkan library dan cache baru sebelum mengukur bahwa itu memang
 Buruk:
 
 ```ts
-const events = await db.event.findMany()
-const csv = events.map(toCsvRow).join('\n')
-return new Response(csv)
+const events = await db.event.findMany();
+const csv = events.map(toCsvRow).join("\n");
+return new Response(csv);
 ```
 
 Untuk 1 juta row, Anda menyimpan sekaligus:
 
-* Array database result.
-* Object JavaScript.
-* Array hasil `map`.
-* String CSV final.
-* Buffer response.
+- Array database result.
+- Object JavaScript.
+- Array hasil `map`.
+- String CSV final.
+- Buffer response.
 
 Gunakan:
 
-* Cursor pagination.
-* Database streaming.
-* Chunking.
-* `ReadableStream`.
-* Direct file upload stream.
-* Background export job.
+- Cursor pagination.
+- Database streaming.
+- Chunking.
+- `ReadableStream`.
+- Direct file upload stream.
+- Background export job.
 
 Node streams menerapkan buffering dan backpressure agar producer tidak membanjiri consumer dan menyebabkan memory terus meningkat. ([Node.js][10])
 
@@ -771,9 +723,7 @@ Parallel fetching mempercepat response, tetapi terlalu banyak operasi paralel da
 Berbahaya:
 
 ```ts
-await Promise.all(
-  productIds.map((id) => getProduct(id)),
-)
+await Promise.all(productIds.map((id) => getProduct(id)));
 ```
 
 Jika `productIds` berjumlah 20.000, Anda memulai 20.000 request.
@@ -781,22 +731,19 @@ Jika `productIds` berjumlah 20.000, Anda memulai 20.000 request.
 Gunakan batch:
 
 ```ts
-const products =
-  await getProductsByIds(productIds)
+const products = await getProductsByIds(productIds);
 ```
 
 Atau concurrency limit:
 
 ```ts
-import pLimit from 'p-limit'
+import pLimit from "p-limit";
 
-const limit = pLimit(10)
+const limit = pLimit(10);
 
 const products = await Promise.all(
-  productIds.map((id) =>
-    limit(() => getProduct(id)),
-  ),
-)
+  productIds.map((id) => limit(() => getProduct(id))),
+);
 ```
 
 Prinsipnya:
@@ -821,11 +768,11 @@ Kesalahan umum pada deployment horizontal:
 
 Pool harus dihitung berdasarkan:
 
-* Maximum instance.
-* Concurrency per instance.
-* Limit database.
-* Serverless atau long-running server.
-* Adanya connection proxy.
+- Maximum instance.
+- Concurrency per instance.
+- Limit database.
+- Serverless atau long-running server.
+- Adanya connection proxy.
 
 Gunakan singleton per process agar hot reload atau module import tidak membuat pool baru berulang kali.
 
@@ -836,22 +783,22 @@ Gunakan singleton per process agar hot reload atau module import tidak membuat p
 Berbahaya:
 
 ```ts
-const requestHistory: Request[] = []
+const requestHistory: Request[] = [];
 
 export async function GET(request: Request) {
-  requestHistory.push(request)
+  requestHistory.push(request);
 }
 ```
 
 Juga perhatikan:
 
-* Event listener yang tidak dilepas.
-* Timer yang tidak dibersihkan.
-* Subscription yang tidak ditutup.
-* Promise yang tidak pernah settle.
-* Closure yang menahan object besar.
-* Logger yang menyimpan seluruh request body.
-* Metrics dengan cardinality tidak terbatas.
+- Event listener yang tidak dilepas.
+- Timer yang tidak dibersihkan.
+- Subscription yang tidak ditutup.
+- Promise yang tidak pernah settle.
+- Closure yang menahan object besar.
+- Logger yang menyimpan seluruh request body.
+- Metrics dengan cardinality tidak terbatas.
 
 ---
 
@@ -862,8 +809,8 @@ Base64 membesarkan ukuran data dan sering menghasilkan beberapa salinan data di 
 Hindari:
 
 ```ts
-const buffer = await file.arrayBuffer()
-const base64 = Buffer.from(buffer).toString('base64')
+const buffer = await file.arrayBuffer();
+const base64 = Buffer.from(buffer).toString("base64");
 ```
 
 Untuk upload besar, lebih baik:
@@ -892,25 +839,25 @@ Gunakan Next.js sebagai authorization layer untuk menghasilkan signed URL, bukan
 
 Penyebab utama:
 
-* Client bundle besar.
-* Global state menyimpan dataset besar.
-* Query cache tidak dibatasi.
-* Banyak komponen tetap mounted.
-* Image atau canvas besar.
-* Event listener bocor.
-* Chart library berat.
-* Infinite scroll tanpa virtualization.
+- Client bundle besar.
+- Global state menyimpan dataset besar.
+- Query cache tidak dibatasi.
+- Banyak komponen tetap mounted.
+- Image atau canvas besar.
+- Event listener bocor.
+- Chart library berat.
+- Infinite scroll tanpa virtualization.
 
 Strateginya:
 
-* Perkecil `"use client"` boundary.
-* Gunakan lazy loading.
-* Virtualize tabel/list panjang.
-* Jangan simpan response besar dalam global state.
-* Atur `gcTime` atau cache policy TanStack Query.
-* Hapus query yang tidak diperlukan.
-* Paginate data.
-* Jangan mengirim seluruh database entity ke browser.
+- Perkecil `"use client"` boundary.
+- Gunakan lazy loading.
+- Virtualize tabel/list panjang.
+- Jangan simpan response besar dalam global state.
+- Atur `gcTime` atau cache policy TanStack Query.
+- Hapus query yang tidak diperlukan.
+- Paginate data.
+- Jangan mengirim seluruh database entity ke browser.
 
 Next.js merekomendasikan bundle analyzer untuk menemukan package besar, import chain, dan heavy client workload. Bundle yang lebih kecil juga mengurangi JavaScript execution dan cold-start cost. ([Next.js][11])
 
@@ -929,15 +876,15 @@ Next.js dapat mencetak heap usage dan statistik garbage collection serta menghas
 Contoh:
 
 ```ts
-import type { NextConfig } from 'next'
+import type { NextConfig } from "next";
 
 const config: NextConfig = {
   experimental: {
     webpackMemoryOptimizations: true,
   },
-}
+};
 
-export default config
+export default config;
 ```
 
 Jangan langsung menaikkan:
@@ -948,13 +895,13 @@ NODE_OPTIONS=--max-old-space-size=8192
 
 Itu bisa menyembunyikan masalah dependency atau build graph. Diagnosis terlebih dahulu:
 
-* Dependency besar.
-* Barrel exports.
-* Source maps.
-* Generated files.
-* Static generation terlalu banyak halaman.
-* Custom Webpack plugin.
-* Import package server yang sangat besar.
+- Dependency besar.
+- Barrel exports.
+- Source maps.
+- Generated files.
+- Static generation terlalu banyak halaman.
+- Custom Webpack plugin.
+- Import package server yang sangat besar.
 
 Next.js juga memuat page modules saat server startup untuk response lebih cepat. `experimental.preloadEntriesOnStart: false` dapat menurunkan initial memory, tetapi dokumentasi menyatakan memory akhirnya dapat mencapai tingkat yang sama setelah seluruh halaman pernah diminta. Jadi ini trade-off startup, bukan solusi memory leak. ([Next.js][12])
 
@@ -965,9 +912,7 @@ Next.js juga memuat page modules saat server startup untuk response lebih cepat.
 Pada Server Component, jangan lakukan:
 
 ```tsx
-await fetch(
-  `${process.env.APP_URL}/api/products`,
-)
+await fetch(`${process.env.APP_URL}/api/products`);
 ```
 
 kemudian Route Handler memanggil external API atau database.
@@ -983,18 +928,18 @@ Server Component
 Panggil Data Access Layer langsung:
 
 ```tsx
-import { getProducts } from '@/lib/products'
+import { getProducts } from "@/lib/products";
 
-const products = await getProducts()
+const products = await getProducts();
 ```
 
 Route Handler diperlukan saat memang ada HTTP consumer:
 
-* Browser client.
-* Mobile application.
-* Webhook.
-* Third-party integration.
-* Public API.
+- Browser client.
+- Mobile application.
+- Webhook.
+- Third-party integration.
+- Public API.
 
 Internal HTTP hop menambah serialization, network stack, memory buffering, dan error boundary yang sebenarnya tidak diperlukan.
 
@@ -1028,10 +973,10 @@ lib/
 `page.tsx`:
 
 ```tsx
-import { Suspense } from 'react'
-import { AccountSummary } from './components/account-summary'
-import { RecentTransactions } from './components/recent-transactions'
-import { InteractiveFilter } from './components/interactive-filter'
+import { Suspense } from "react";
+import { AccountSummary } from "./components/account-summary";
+import { RecentTransactions } from "./components/recent-transactions";
+import { InteractiveFilter } from "./components/interactive-filter";
 
 export default function DashboardPage() {
   return (
@@ -1048,57 +993,52 @@ export default function DashboardPage() {
         <RecentTransactions />
       </Suspense>
     </main>
-  )
+  );
 }
 ```
 
 Data function:
 
 ```ts
-import 'server-only'
-import { cache } from 'react'
-import { db } from '@/lib/db'
-import { verifySession } from '@/lib/auth/session'
+import "server-only";
+import { cache } from "react";
+import { db } from "@/lib/db";
+import { verifySession } from "@/lib/auth/session";
 
-export const getAccountSummary = cache(
-  async () => {
-    const session = await verifySession()
+export const getAccountSummary = cache(async () => {
+  const session = await verifySession();
 
-    return db.account.findUnique({
-      where: {
-        userId: session.userId,
-      },
-      select: {
-        balance: true,
-        currency: true,
-        updatedAt: true,
-      },
-    })
-  },
-)
+  return db.account.findUnique({
+    where: {
+      userId: session.userId,
+    },
+    select: {
+      balance: true,
+      currency: true,
+      updatedAt: true,
+    },
+  });
+});
 ```
 
 Cached public data:
 
 ```ts
-import 'server-only'
-import {
-  cacheLife,
-  cacheTag,
-} from 'next/cache'
+import "server-only";
+import { cacheLife, cacheTag } from "next/cache";
 
 export async function getExchangeConfig() {
-  'use cache'
+  "use cache";
 
-  cacheLife('hours')
-  cacheTag('exchange-config')
+  cacheLife("hours");
+  cacheTag("exchange-config");
 
   return db.exchangeConfig.findMany({
     select: {
       currency: true,
       rate: true,
     },
-  })
+  });
 }
 ```
 
@@ -1113,9 +1053,9 @@ Jangan mulai dari micro-optimization komponen. Prioritaskan berdasarkan dampak:
 Cari:
 
 ```ts
-await a()
-await b()
-await c()
+await a();
+await b();
+await c();
 ```
 
 Tentukan mana yang bisa dijalankan paralel.
@@ -1134,11 +1074,11 @@ Cache hit rate
 
 Cache:
 
-* Public catalog.
-* Configuration.
-* CMS content.
-* Expensive shared aggregation.
-* Product metadata.
+- Public catalog.
+- Configuration.
+- CMS content.
+- Expensive shared aggregation.
+- Product metadata.
 
 Jangan cache sembarang data user.
 
@@ -1174,12 +1114,12 @@ DB connection count
 
 Baru setelah itu periksa:
 
-* Expensive transformations.
-* Markdown processing.
-* Syntax highlighting.
-* Image manipulation.
-* Encryption.
-* Large JSON serialization.
+- Expensive transformations.
+- Markdown processing.
+- Syntax highlighting.
+- Image manipulation.
+- Encryption.
+- Large JSON serialization.
 
 ---
 

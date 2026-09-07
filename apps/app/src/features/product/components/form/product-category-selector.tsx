@@ -27,9 +27,9 @@ export function ProductCategorySelector({
   return (
     <Combobox
       items={productCategory}
-      // Pass value sebagai string (id) atau objek jika library mendukungnya, 
+      // Pass value sebagai string (id) atau objek jika library mendukungnya,
       // tapi jika error JSON, biasanya dia butuh string/id atau properti khusus.
-      value={value} 
+      value={value}
       onValueChange={(item: ProductCategory | string | null) => {
         if (!item) {
           onSelect("");
@@ -46,8 +46,8 @@ export function ProductCategorySelector({
       }}
     >
       {/* Jika ComboboxInput mendukung display value kustom */}
-      <ComboboxInput 
-        placeholder="Pilih Kategori Produk" 
+      <ComboboxInput
+        placeholder="Pilih Kategori Produk"
         // Jika komponen input Anda menerima display value secara manual:
         value={selectedItem ? `${selectedItem.name} ${selectedItem.icon}` : ""}
         readOnly

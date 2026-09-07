@@ -137,7 +137,9 @@ export function CreateProductForm() {
           router.refresh();
         } catch (error) {
           console.error("Error saat submit produk:", error);
-          toast.error(error instanceof Error ? error.message : "Gagal membuat produk.");
+          toast.error(
+            error instanceof Error ? error.message : "Gagal membuat produk.",
+          );
         }
       });
     } catch (error) {
