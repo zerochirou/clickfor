@@ -30,6 +30,8 @@
     <li><a href="#dibuat-dengan">Dibuat Dengan</a></li>
     <li><a href="#memulai">Memulai</a></li>
     <li><a href="#cara-penggunaan">Cara Penggunaan</a></li>
+    <li><a href="#worker-golang">Worker Golang</a></li>
+    <li><a href="#docker--kontainerisasi">Docker & Kontainerisasi</a></li>
     <li><a href="#aturan-git--github">Aturan Git & GitHub</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#berkontribusi">Berkontribusi</a></li>
@@ -68,7 +70,8 @@ clickfor/
 ├── apps/
 │   ├── app/                    # Aplikasi utama Next.js
 │   ├── marketing/              # Website marketing Next.js
-│   └── server/                 # Backend API NestJS
+│   ├── server/                 # Backend API NestJS
+│   └── worker/                 # Background worker service Golang
 │
 ├── packages/
 │   ├── ui/                     # Shared UI components
@@ -98,6 +101,7 @@ clickfor/
 | `apps/app`               | Next.js    | Dashboard, autentikasi pengguna, dan fitur utama produk                |
 | `apps/marketing`         | Next.js    | Landing page, halaman publik, SEO, dan konten marketing                |
 | `apps/server`            | NestJS     | REST API, business logic, database, autentikasi, dan integrasi service |
+| `apps/worker`            | Golang     | Asynchronous background tasks, job scheduler, dan event processing     |
 | `packages/ui`            | React      | Komponen UI yang digunakan bersama                                     |
 | `packages/types`         | TypeScript | Tipe, interface, dan kontrak data lintas aplikasi                      |
 | `packages/eslint-config` | ESLint     | Konfigurasi linting bersama                                            |
@@ -116,6 +120,7 @@ clickfor/
 - [![NestJS][NestJS]][NestJS-url]
 - [![Turborepo][Turborepo]][Turborepo-url]
 - [![Node.js][Node.js]][Node.js-url]
+- [![Go][Go]][Go-url]
 
 <p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
@@ -132,6 +137,8 @@ Pastikan perangkat sudah memiliki:
 - [Node.js](https://nodejs.org/) versi LTS
 - npm
 - Git
+- [Go](https://go.dev/) (versi 1.26+) untuk menjalankan `apps/worker`
+- [Air](https://github.com/air-verse/air) (opsional, untuk live-reload worker Go)
 - Docker dan Docker Compose jika backend menggunakan database atau service eksternal
 
 Periksa versi Node.js dan npm:
@@ -319,6 +326,180 @@ Aturan environment:
 <p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 ---
+
+
+---
+
+
+---
+
+<!-- GOLANG WORKER -->
+
+## Worker Golang
+
+Workspace **`apps/worker`** adalah background worker service mandiri yang dibangun dengan **Golang** (Go 1.26+) untuk menangani komputasi berat, pemrosesan tugas asynchronous, scheduled cron jobs, dan event processing.
+
+### Fitur Utama Worker
+- **Concurrency & Rate Bounding**: Mengatur jumlah task paralel menggunakan model semaphore channel.
+- **Graceful Shutdown**: Menangani `SIGINT` dan `SIGTERM` secara elegan dengan context timeout sehingga task yang sedang berjalan dapat selesai tanpa terputus tiba-tiba.
+- **Structured Logging**: Menggunakan standard library Go `log/slog` bawaan (mode teks untuk development dan format JSON untuk production).
+- **Panic Guard**: Setiap task dilengkapi mekanisme `recover()` sehingga error fatal pada satu task tidak menghentikan keseluruhan worker daemon.
+- **Hot-Reload Support**: Terintegrasi dengan [Air](https://github.com/air-verse/air) (`.air.toml`) untuk live-reload saat kode diubah selama proses development.
+
+### Struktur Modul
+```text
+apps/worker/
+├── cmd/
+│   └── worker/
+│       └── main.go          # Entrypoint worker & graceful shutdown
+├── internal/
+│   ├── config/              # Environment config loader (.env & fallback)
+│   ├── logger/              # Slog logger setup
+│   └── worker/              # Worker engine, task interface & scheduler
+│       ├── task.go          # Interface Task & contoh HeartbeatTask
+│       ├── task_test.go     # Unit tests
+│       └── worker.go        # Concurrency batch runner
+├── .air.toml                # Konfigurasi Air live-reload
+├── Makefile                 # Target dev, build, run, test, lint
+├── package.json             # Turborepo & pnpm workspace bridge
+└── go.mod                   # Module definition (github.com/zerochirou/worker)
+```
+
+### Menjalankan Worker
+
+#### Melalui Root Monorepo (pnpm / Turborepo)
+```sh
+# Mode development (live-reload via Air / fallback go run)
+pnpm --filter worker dev
+
+# Build binary ke dist/worker
+pnpm --filter worker build
+
+# Menjalankan unit tests
+pnpm --filter worker test
+
+# Static analysis / linting
+pnpm --filter worker lint
+```
+
+#### Melalui Folder `apps/worker` (Makefile)
+```sh
+cd apps/worker
+
+# Development live-reload
+make dev
+
+# Build binary
+make build
+
+# Jalankan binary hasil build
+make run
+
+# Jalankan test dengan data race detector
+make test
+```
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
+
+<!-- DOCKER AND CONTAINERIZATION -->
+
+## Docker & Kontainerisasi
+
+Repository ini telah dilengkapi dengan konfigurasi **Docker Compose** terpusat dan **Multi-stage Dockerfile** untuk setiap aplikasi dan service.
+
+### Service Infrastruktur (`docker-compose.yaml`)
+
+Infrastruktur pendukung lokal (database dan object storage) dikelola secara terpusat melalui berkas `docker-compose.yaml` di root repository:
+
+- **PostgreSQL 17** (`clickfor-postgres`): Database utama aplikasi (port `5432`).
+- **RustFS S3** (`clickfor-rustfs`): S3-compatible object storage lokal untuk aset/gambar produk (API port `9000`, console port `9001`).
+
+#### Menjalankan Service:
+```sh
+# Pastikan file .env di root sudah terkonfigurasi (disalin dari .env.example)
+docker compose up -d
+
+# Memeriksa log service
+docker compose logs -f
+
+# Menghentikan service
+docker compose down
+```
+
+---
+
+### Dockerfile Aplikasi
+
+Setiap aplikasi memiliki Dockerfile mandiri berbasis **Multi-Stage Build** yang dioptimalkan untuk performa caching monorepo dan keamanan (menggunakan user non-root `node:22-alpine` atau `alpine`):
+
+| Service | Path Dockerfile | Deskripsi & Port Default |
+| --- | --- | --- |
+| **Backend API** | `apps/server/Dockerfile` | NestJS production image dengan Prisma Client (Port `4000`) |
+| **Main App** | `apps/app/Dockerfile` | Next.js Standalone build untuk dashboard & aplikasi utama (Port `3000`) |
+| **Marketing** | `apps/marketing/Dockerfile` | Next.js Standalone build untuk landing page publik (Port `3000`) |
+| **Worker** | `apps/worker/Dockerfile` | Golang binary worker minimalis statically linked (< 25MB) |
+
+> **Catatan Konteks Build:** Seluruh build image dijalankan dari **root direktori repository** agar Turborepo (`turbo prune`) dan pnpm workspace dapat memetakan dependensi monorepo secara akurat.
+
+---
+
+### Perintah Build & Run Docker Image
+
+#### 1. Backend API (NestJS)
+```sh
+# Build image
+docker build -f apps/server/Dockerfile -t clickfor-server:latest .
+
+# Jalankan container
+docker run -d \
+  --name clickfor-server \
+  -p 4000:4000 \
+  --env-file apps/server/.env \
+  clickfor-server:latest
+```
+
+#### 2. Main App (Next.js)
+```sh
+# Build image (bisa mengoper build args untuk variabel publik Next.js)
+docker build -f apps/app/Dockerfile \
+  --build-arg NEXT_PUBLIC_APP_URL="http://localhost:3001" \
+  --build-arg NEXT_PUBLIC_SERVER_API="http://localhost:4000/api" \
+  --build-arg NEXT_PUBLIC_AUTH_URL="http://localhost:4000" \
+  --build-arg NEXT_PUBLIC_S3_PRODUCT_BUCKET="http://localhost:9001/products" \
+  -t clickfor-app:latest .
+
+# Jalankan container
+docker run -d \
+  --name clickfor-app \
+  -p 3001:3000 \
+  clickfor-app:latest
+```
+
+#### 3. Marketing Website (Next.js)
+```sh
+# Build image
+docker build -f apps/marketing/Dockerfile -t clickfor-marketing:latest .
+
+# Jalankan container
+docker run -d \
+  --name clickfor-marketing \
+  -p 3000:3000 \
+  clickfor-marketing:latest
+```
+
+#### 4. Background Worker (Go)
+```sh
+# Build image
+docker build -f apps/worker/Dockerfile -t clickfor-worker:latest .
+
+# Jalankan container
+docker run -d \
+  --name clickfor-worker \
+  --env-file apps/worker/.env \
+  clickfor-worker:latest
+```
+
+<p align="right">(<a href="#readme-top">kembali ke atas</a>)</p>
 
 <!-- GIT AND GITHUB RULES -->
 
@@ -1039,3 +1220,5 @@ Lihat file `LICENSE` untuk informasi lebih lanjut.
 [Turborepo-url]: https://turbo.build/repo
 [Node.js]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white
 [Node.js-url]: https://nodejs.org/
+[Go]: https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white
+[Go-url]: https://go.dev/
