@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Ellipsis,
-  ExternalLink,
   Pencil,
   Trash2,
   Zap,
@@ -97,7 +96,7 @@ export function TableAction({
       <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
         <Ellipsis className="size-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="start" className={'w-50'}>
         <DropdownMenuGroup>
           <DropdownMenuLabel>Aksi Cepat</DropdownMenuLabel>
           <DropdownMenuItem

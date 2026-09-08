@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useTransition } from "react";
+import { useCallback, useEffect, useRef, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import {
@@ -46,21 +46,24 @@ export function ProductSearchBar({
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Update URL search params cleanly without full page refresh
-  const syncUrl = (term: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (term) {
-      params.set("query", term);
-    } else {
-      params.delete("query");
-    }
-    params.delete("page"); // Reset page to 1 when search changes
-    const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-    startTransition(() => {
-      router.replace(newUrl, { scroll: false });
-    });
-  };
+  const syncUrl = useCallback(
+    (term: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (term) {
+        params.set("query", term);
+      } else {
+        params.delete("query");
+      }
+      params.delete("page"); // Reset page to 1 when search changes
+      const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+      startTransition(() => {
+        router.replace(newUrl, { scroll: false });
+      });
+    },
+    [searchParams, pathname, router],
+  );
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
@@ -68,7 +71,7 @@ export function ProductSearchBar({
     resetSearch();
     syncUrl("");
     inputRef.current?.focus();
-  };
+  }, [resetSearch, syncUrl]);
 
   // Sync with initial URL search params on mount if available
   useEffect(() => {
@@ -76,7 +79,7 @@ export function ProductSearchBar({
     if (urlQuery && urlQuery !== searchQuery) {
       setSearchQuery(urlQuery);
     }
-  }, []);
+  }, [searchParams, searchQuery, setSearchQuery]);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K to focus search, Esc to clear/blur
   useEffect(() => {
@@ -99,7 +102,7 @@ export function ProductSearchBar({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [searchQuery]);
+  }, [searchQuery, handleClear]);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -119,78 +122,62 @@ export function ProductSearchBar({
       return;
     }
 
-    // Set loading indicator
     setIsSearching(true);
+    const currentRequestId = ++activeRequestIdRef.current;
 
-    const requestId = ++activeRequestIdRef.current;
-
-    // Debounce ("bouncer") timer
     debounceTimerRef.current = setTimeout(async () => {
       try {
-        const results = await searchProducts({
+        const res = await searchProducts({
           workspaceId,
           query: trimmed,
+          page: 1,
+          limit: 10,
         });
 
-        // Ensure we only update if this is still the freshest request (anti-race condition)
-        if (requestId === activeRequestIdRef.current) {
-          setProducts(results.data);
-          setMeta(results.meta);
-          setIsSearching(false);
+        // Ensure we only apply results from the latest request to prevent race conditions
+        if (currentRequestId === activeRequestIdRef.current) {
+          setProducts(res.data);
+          setMeta(res.meta);
           syncUrl(trimmed);
         }
       } catch (err) {
-        if (requestId === activeRequestIdRef.current) {
-          console.error("Failed to search products:", err);
+        console.error("Search failed:", err);
+      } finally {
+        if (currentRequestId === activeRequestIdRef.current) {
           setIsSearching(false);
         }
       }
     }, debounceMs);
   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, []);
-
   return (
-    <InputGroup className={`w-full max-w-sm sm:max-w-md ${className ?? ""}`}>
-      <InputGroupAddon align="inline-start">
-        {isSearching ? (
-          <Spinner className="size-4 text-primary" />
-        ) : (
-          <Search className="size-4 text-muted-foreground" />
-        )}
-      </InputGroupAddon>
+    <InputGroup className={className}>
       <InputGroupInput
         ref={inputRef}
         placeholder={placeholder}
         value={searchQuery}
         onChange={(e) => handleSearchChange(e.target.value)}
-        aria-label="Cari produk"
       />
       <InputGroupAddon align="inline-end">
-        {searchQuery ? (
+        {isSearching ? (
+          <Spinner className="text-muted-foreground" />
+        ) : searchQuery ? (
           <InputGroupButton
             size="icon-xs"
             variant="ghost"
             onClick={handleClear}
-            aria-label="Hapus pencarian"
+            title="Hapus pencarian (Esc)"
           >
-            <X className="size-3.5" />
+            <X className="h-3.5 w-3.5 text-muted-foreground" />
           </InputGroupButton>
         ) : (
-          <kbd
-            className="hidden sm:inline-flex select-none items-center gap-0.5 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground"
-            title="Tekan ⌘K untuk mencari"
-          >
-            <span className="text-[11px]">⌘</span>K
+          <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            <span className="text-xs">⌘</span>K
           </kbd>
         )}
+      </InputGroupAddon>
+      <InputGroupAddon align="inline-start">
+        <Search className="h-4 w-4 text-muted-foreground" />
       </InputGroupAddon>
     </InputGroup>
   );

@@ -11,7 +11,7 @@ export default function WorkspaceSearchCommand() {
   return (
     <div className="flex flex-col gap-4 w-full">
       {/* 2. Tambahkan wrapper div dengan posisi relative dan sesuaikan lebarnya */}
-      <div className="relative w-80">
+      <div className="relative">
         {/* 3. Posisikan ikon di sebelah kiri tengah secara absolute */}
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 

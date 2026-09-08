@@ -40,7 +40,7 @@ const ProductContext = createContext<ProductsContextType | undefined>(
 interface ProductsProviderProps {
   children: ReactNode;
   initialProducts: Product[];
-  meta?: PaginationMeta;
+  meta?: PaginationMeta | null;
 }
 
 export function ProductsProvider({

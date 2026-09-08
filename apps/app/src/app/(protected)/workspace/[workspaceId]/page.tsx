@@ -1,23 +1,11 @@
-import { getWorkspaceById } from "@/features/workspace/api/get-workspaces";
 import { OverviewChart } from "@/features/workspace/components/overview/overview-chart";
 import { ParameterCard } from "@/features/workspace/components/overview/parameter-card";
 import { TopProductBar } from "@/features/workspace/components/overview/top-product-bar";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
 
-export default async function WorkspacePage({
-  params,
-}: {
-  params: Promise<{ workspaceId: string }>;
-}) {
-  const { workspaceId } = await params;
-  const workspace = await getWorkspaceById(workspaceId);
-  if (!workspace) {
-    redirect("/workspace");
-  }
 
+export default function WorkspacePage() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-center gap-4 flex-row">
