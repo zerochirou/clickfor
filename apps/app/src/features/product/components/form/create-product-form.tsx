@@ -187,7 +187,14 @@ export function CreateProductForm() {
                 <ArrowLeft />
               </Button>
 
-              <h1 className="text-2xl font-semibold">Tambah Produk</h1>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  Tambah Produk
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Tambahkan produk Anda.
+                </p>
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -219,7 +226,7 @@ export function CreateProductForm() {
             </div>
           </header>
 
-          <div className="grid grid-cols-5 gap-4 mt-4">
+          <div className="grid grid-cols-5 gap-4 mt-14">
             {/* LEFT */}
             <div className="col-span-3 flex flex-col gap-4">
               <Card className="rounded-3xl">

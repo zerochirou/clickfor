@@ -16,3 +16,8 @@ export interface CreateProductCategory {
   description: string;
   icon: string;
 }
+
+export interface CreateProductCategoryBulk {
+  categories: CreateProductCategory[];
+  skipDuplicates?: boolean;
+}

@@ -5,7 +5,7 @@ import { ProductSearchBar } from "@/features/product/components/search/product-s
 import { ProductTable } from "@/features/product/components/table/product-table";
 import { ProductsProvider } from "@/features/product/lib/products-provider";
 import FlickerSpinner from "@/components/commons/flicker-loading/flicker-spinner";
-import { Package } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -33,11 +33,18 @@ async function ProductContent({
   return (
     <ProductsProvider initialProducts={result.data} meta={result.meta}>
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
-        <Link href={`/workspace/${workspaceId}/product/add`}>
-          <Button variant={'secondary'}>
-            <Package className="text-primary"/> Tambah Produk 
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href={`/workspace/${workspaceId}/product/add`}>
+            <Button variant={"secondary"}>
+              <Package className="text-primary" /> Tambah Produk
+            </Button>
+          </Link>
+          <Link href={`/workspace/${workspaceId}/product/add-many`}>
+            <Button variant={"outline"}>
+              <Plus className="text-primary" /> Tambah Banyak Kategori
+            </Button>
+          </Link>
+        </div>
         <ProductSearchBar workspaceId={workspaceId} className="w-100" />
       </header>
       <ProductTable />
