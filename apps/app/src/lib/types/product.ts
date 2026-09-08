@@ -27,4 +27,8 @@ export interface ProductCategory {
   icon: string;
   createdAt: string;
   updatedAt: string;
+  _count?: {
+    products: number;
+  };
+  productCount?: number;
 }

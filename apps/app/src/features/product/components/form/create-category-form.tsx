@@ -1,8 +1,9 @@
 "use client";
 
+import { useTransition } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -26,29 +27,46 @@ import {
 } from "@/features/product/lib/product-category-schema";
 import { EmojiSelector } from "@/components/commons/emoji-selector";
 import { postProductCategory } from "../../api/post-product-category";
-import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { ProductCategory } from "@/lib/types/product";
+
+const fallbackSchema = z.object({
+  name: z
+    .string()
+    .min(4, "Nama kategori minimal 4 karakter")
+    .max(20, "Nama kategori maksimal 20 karakter"),
+  description: z
+    .string()
+    .min(4, "Deskripsi minimal 4 karakter")
+    .max(200, "Deskripsi maksimal 200 karakter"),
+  icon: z.string().min(1, "Ikon wajib dipilih"),
+});
+
+const schema = createProductCategorySchema || fallbackSchema;
 
 interface CreateCategoryFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   workspaceId: string;
+  onSuccess?: (created: ProductCategory) => void;
 }
 
 export function CreateCategoryForm({
   open,
   onOpenChange,
   workspaceId,
+  onSuccess,
 }: CreateCategoryFormProps) {
   const [isPending, startTransition] = useTransition();
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<CreateProductCategoryInput>({
-    resolver: zodResolver(createProductCategorySchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       description: "",
@@ -56,17 +74,22 @@ export function CreateCategoryForm({
     },
   });
 
-  // 2. Fungsi Submit Form
   const onSubmit = (data: CreateProductCategoryInput) => {
     startTransition(async () => {
-      await postProductCategory({
-        data: data,
-        workspaceId: workspaceId,
-      });
-      toast.success("Kategori berhasil dibuat");
-      setTimeout(() => {
+      try {
+        const created = await postProductCategory({
+          data: data,
+          workspaceId: workspaceId,
+        });
+        toast.success("Kategori berhasil dibuat");
+        reset();
+        onSuccess?.(created);
         onOpenChange(false);
-      }, 1000);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Gagal membuat kategori",
+        );
+      }
     });
   };
 
@@ -81,7 +104,7 @@ export function CreateCategoryForm({
         </SheetHeader>
 
         <Separator className="" />
-        <form className="px-4 mt-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="px-4 mt-4 space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <FieldSet>
             <Field>
               <FieldLabel>Nama Kategori</FieldLabel>
@@ -103,22 +126,6 @@ export function CreateCategoryForm({
             </Field>
 
             <Field>
-              <FieldLabel>Deskripsi Kategori</FieldLabel>
-              <Textarea
-                placeholder="Deskripsi Kategori"
-                {...register("description")}
-              />
-
-              {errors.description ? (
-                <p className="text-[0.8rem] font-medium text-destructive">
-                  {errors.description.message}
-                </p>
-              ) : (
-                <FieldDescription>Maksimal 200 karakter.</FieldDescription>
-              )}
-            </Field>
-
-            <Field>
               <FieldLabel>Pilih Ikon</FieldLabel>
               <Controller
                 name="icon"
@@ -130,28 +137,45 @@ export function CreateCategoryForm({
                   />
                 )}
               />
-
-              {errors.icon && (
+              {errors.icon ? (
                 <p className="text-[0.8rem] font-medium text-destructive">
                   {errors.icon.message}
                 </p>
+              ) : (
+                <FieldDescription>
+                  Pilih ikon yang mendeskripsikan kategori produk ini.
+                </FieldDescription>
               )}
             </Field>
 
-            <Field className="pt-4">
-              <Button type="submit">
-                {isPending ? (
-                  <>
-                    Loading <Spinner />
-                  </>
-                ) : (
-                  <>
-                    Buat Kategori <Plus className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
+            <Field>
+              <FieldLabel>Deskripsi</FieldLabel>
+              <Textarea
+                placeholder="Deskripsi singkat kategori..."
+                rows={3}
+                {...register("description")}
+              />
+              {errors.description ? (
+                <p className="text-[0.8rem] font-medium text-destructive">
+                  {errors.description.message}
+                </p>
+              ) : (
+                <FieldDescription>
+                  Beri deskripsi ringkas agar kategori mudah dipahami.
+                </FieldDescription>
+              )}
             </Field>
           </FieldSet>
+
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? (
+              <>
+                Menyimpan <Spinner className="ml-2" />
+              </>
+            ) : (
+              "Buat Kategori"
+            )}
+          </Button>
         </form>
       </SheetContent>
     </Sheet>

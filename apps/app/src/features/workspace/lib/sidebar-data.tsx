@@ -21,12 +21,12 @@ export const navMainData = [
     icon: <Package />,
     items: [
       {
-        title: "Kategori",
-        url: "#",
+        title: "Item",
+        url: "/product/card",
       },
       {
-        title: "Favorit",
-        url: "#",
+        title: "Kategori",
+        url: "/product/category",
       },
     ],
   },

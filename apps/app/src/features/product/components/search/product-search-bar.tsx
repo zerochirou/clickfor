@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import {
   InputGroup,
@@ -26,60 +26,53 @@ export function ProductSearchBar({
   placeholder = "Cari produk berdasarkan nama, SKU, atau kategori...",
   className,
 }: ProductSearchBarProps) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     setProducts,
     setMeta,
-    searchQuery,
     setSearchQuery,
     isSearching,
     setIsSearching,
     resetSearch,
   } = useProducts();
 
-  const [, startTransition] = useTransition();
+  // Local state for the input so user typing is 100% responsive and never overwritten
+  const [inputValue, setInputValue] = useState<string>(() => {
+    return searchParams.get("query") || "";
+  });
+
   const activeRequestIdRef = useRef<number>(0);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update URL search params cleanly without full page refresh
-  const syncUrl = useCallback(
-    (term: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (term) {
-        params.set("query", term);
-      } else {
-        params.delete("query");
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
-      params.delete("page"); // Reset page to 1 when search changes
-      const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-      startTransition(() => {
-        router.replace(newUrl, { scroll: false });
-      });
-    },
-    [searchParams, pathname, router],
-  );
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
+    // 1. Cancel any active debounce
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
     }
-    activeRequestIdRef.current += 1;
-    resetSearch();
-    syncUrl("");
-    inputRef.current?.focus();
-  }, [resetSearch, syncUrl]);
 
-  // Sync with initial URL search params on mount if available
-  useEffect(() => {
-    const urlQuery = searchParams.get("query");
-    if (urlQuery && urlQuery !== searchQuery) {
-      setSearchQuery(urlQuery);
-    }
-  }, [searchParams, searchQuery, setSearchQuery]);
+    // 2. Invalidate any in-flight requests
+    activeRequestIdRef.current += 1;
+
+    // 3. Immediately update UI state
+    setInputValue("");
+    setSearchQuery("");
+    setIsSearching(false);
+    resetSearch();
+
+    inputRef.current?.focus();
+  }, [resetSearch, setIsSearching, setSearchQuery]);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K to focus search, Esc to clear/blur
   useEffect(() => {
@@ -92,7 +85,7 @@ export function ProductSearchBar({
         e.key === "Escape" &&
         document.activeElement === inputRef.current
       ) {
-        if (searchQuery) {
+        if (inputValue) {
           handleClear();
         } else {
           inputRef.current?.blur();
@@ -102,30 +95,37 @@ export function ProductSearchBar({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [searchQuery, handleClear]);
+  }, [inputValue, handleClear]);
 
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
+    // 1. Immediately update local input value so keystrokes/deletions are never blocked
+    setInputValue(value);
 
-    // Cancel previous pending debounce timer
+    // 2. Cancel previous pending debounce timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
     }
 
     const trimmed = value.trim();
 
-    // If query is emptied, restore initial products immediately without network request
+    // 3. When query is empty, reset immediately with 0 network calls
     if (!trimmed) {
       activeRequestIdRef.current += 1;
+      setIsSearching(false);
+      setSearchQuery("");
       resetSearch();
-      syncUrl("");
       return;
     }
 
-    setIsSearching(true);
+    // 4. Update provider query for empty-state matching
+    setSearchQuery(trimmed);
+
+    // 5. Schedule safe debounce
     const currentRequestId = ++activeRequestIdRef.current;
 
     debounceTimerRef.current = setTimeout(async () => {
+      setIsSearching(true);
       try {
         const res = await searchProducts({
           workspaceId,
@@ -138,10 +138,11 @@ export function ProductSearchBar({
         if (currentRequestId === activeRequestIdRef.current) {
           setProducts(res.data);
           setMeta(res.meta);
-          syncUrl(trimmed);
         }
       } catch (err) {
-        console.error("Search failed:", err);
+        if (currentRequestId === activeRequestIdRef.current) {
+          console.error("Pencarian produk gagal:", err);
+        }
       } finally {
         if (currentRequestId === activeRequestIdRef.current) {
           setIsSearching(false);
@@ -155,13 +156,13 @@ export function ProductSearchBar({
       <InputGroupInput
         ref={inputRef}
         placeholder={placeholder}
-        value={searchQuery}
+        value={inputValue}
         onChange={(e) => handleSearchChange(e.target.value)}
       />
       <InputGroupAddon align="inline-end">
         {isSearching ? (
           <Spinner className="text-muted-foreground" />
-        ) : searchQuery ? (
+        ) : inputValue ? (
           <InputGroupButton
             size="icon-xs"
             variant="ghost"
