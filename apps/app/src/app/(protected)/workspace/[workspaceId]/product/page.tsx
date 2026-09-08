@@ -5,7 +5,7 @@ import { ProductSearchBar } from "@/features/product/components/search/product-s
 import { ProductTable } from "@/features/product/components/table/product-table";
 import { ProductsProvider } from "@/features/product/lib/products-provider";
 import FlickerSpinner from "@/components/commons/flicker-loading/flicker-spinner";
-import { Package, Plus } from "lucide-react";
+import { FolderTree, Package } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -35,13 +35,13 @@ async function ProductContent({
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <Link href={`/workspace/${workspaceId}/product/add`}>
-            <Button variant={"secondary"}>
+            <Button variant={"outline"}>
               <Package className="text-primary" /> Tambah Produk
             </Button>
           </Link>
-          <Link href={`/workspace/${workspaceId}/product/add-many`}>
+          <Link href={`/workspace/${workspaceId}/product/category`}>
             <Button variant={"outline"}>
-              <Plus className="text-primary" /> Tambah Banyak Kategori
+              <FolderTree className="text-primary" /> Kategori
             </Button>
           </Link>
         </div>

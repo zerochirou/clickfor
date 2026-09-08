@@ -139,6 +139,12 @@ export class ProductCategoryService {
     try {
       return await this.db.productCategory.findMany({
         where: { workspaceId },
+        include: {
+          _count: {
+            select: { products: true },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
       handlePrismaError(error);
