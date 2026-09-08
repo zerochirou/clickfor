@@ -1,6 +1,7 @@
 "use client";
 
 import { Workspace } from "@/lib/types/workspace";
+import { useParams } from "next/navigation";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface WorkspaceContextType {
@@ -14,14 +15,34 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
 
 interface WorkspaceProviderProps {
   children: ReactNode;
-  initialWorkspace: Workspace;
+  initialWorkspace?: Workspace | null;
 }
 
 export function WorkspaceProvider({
   children,
   initialWorkspace,
 }: WorkspaceProviderProps) {
-  const [workspace, setWorkspaces] = useState<Workspace>(initialWorkspace);
+  const params = useParams<{ workspaceId?: string }>();
+  const [prevInitialWorkspace, setPrevInitialWorkspace] =
+    useState(initialWorkspace);
+  const [workspace, setWorkspaces] = useState<Workspace>(() => {
+    if (initialWorkspace) return initialWorkspace;
+    return {
+      id: params?.workspaceId ?? "",
+      workspaceName: "",
+      description: null,
+      isActive: true,
+      image: null,
+      createdAt: new Date(0),
+      updatedAt: new Date(0),
+      ownerId: "",
+    };
+  });
+
+  if (initialWorkspace && initialWorkspace !== prevInitialWorkspace) {
+    setPrevInitialWorkspace(initialWorkspace);
+    setWorkspaces(initialWorkspace);
+  }
 
   return (
     <WorkspaceContext.Provider

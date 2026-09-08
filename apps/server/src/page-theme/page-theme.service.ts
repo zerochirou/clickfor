@@ -21,21 +21,35 @@ export class PageThemeService {
     }
   }
 
-  public async updatePageTheme(dto: UpdateThemeDTO, themeId: string) {
+  public async updatePageTheme(
+    dto: UpdateThemeDTO,
+    themeId: string,
+    workspaceId: string,
+  ) {
     try {
-      return await this.db.pageTheme.update({
-        where: { id: themeId },
-        data: dto,
+      return await this.db.$transaction(async (tx) => {
+        await tx.pageTheme.findFirstOrThrow({
+          where: { id: themeId, workspaceId },
+        });
+        return await tx.pageTheme.update({
+          where: { id: themeId },
+          data: dto,
+        });
       });
     } catch (error) {
       handlePrismaError(error);
     }
   }
 
-  public async deletePageTheme(themeId: string) {
+  public async deletePageTheme(themeId: string, workspaceId: string) {
     try {
-      return await this.db.pageTheme.delete({
-        where: { id: themeId },
+      return await this.db.$transaction(async (tx) => {
+        await tx.pageTheme.findFirstOrThrow({
+          where: { id: themeId, workspaceId },
+        });
+        return await tx.pageTheme.delete({
+          where: { id: themeId },
+        });
       });
     } catch (error) {
       handlePrismaError(error);
@@ -52,10 +66,10 @@ export class PageThemeService {
     }
   }
 
-  public async getPageThemeById(themeId: string) {
+  public async getPageThemeById(themeId: string, workspaceId: string) {
     try {
-      return await this.db.pageTheme.findUnique({
-        where: { id: themeId },
+      return await this.db.pageTheme.findFirstOrThrow({
+        where: { id: themeId, workspaceId },
       });
     } catch (error) {
       handlePrismaError(error);

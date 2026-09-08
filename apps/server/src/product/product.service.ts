@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { handlePrismaError } from 'src/common/utils/handle-prisma-error';
 import { generateSKU } from 'src/common/utils/gen-sku-code';
+import { ConfigService } from '@nestjs/config';
+import { StorageService } from 'src/storage/storage.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private db: DbService) {}
+  constructor(
+    private db: DbService,
+    private configService: ConfigService,
+    private storageService: StorageService,
+  ) {}
   // WARN: the barcode is generated from the SKU, not from the EAN13 standard, if the EAN13 field is provided, it will be ignored
   public async createProduct(
     dto: CreateProductDTO,
@@ -19,6 +25,7 @@ export class ProductService {
         const category = await tx.productCategory.findFirstOrThrow({
           where: {
             id: categoryId,
+            workspaceId,
           },
         });
         const sku = generateSKU({ category: category.name });
@@ -46,9 +53,19 @@ export class ProductService {
     }
   }
 
-  public async updateProduct(dto: UpdateProductDTO, productId: string) {
+  public async updateProduct(
+    dto: UpdateProductDTO,
+    productId: string,
+    workspaceId: string,
+  ) {
     try {
       return this.db.$transaction(async (tx) => {
+        await tx.product.findFirstOrThrow({
+          where: {
+            id: productId,
+            workspaceId,
+          },
+        });
         const updatedProduct = await tx.product.update({
           where: {
             id: productId,
@@ -62,23 +79,41 @@ export class ProductService {
     }
   }
 
-  public async deleteProduct(productId: string) {
+  public async deleteProduct(productId: string, workspaceId: string) {
     try {
-      return await this.db.product.delete({
-        where: {
-          id: productId,
-        },
+      return this.db.$transaction(async (tx) => {
+        await tx.product.findFirstOrThrow({
+          where: {
+            id: productId,
+            workspaceId,
+          },
+        });
+        return await tx.product.delete({
+          where: {
+            id: productId,
+          },
+        });
       });
     } catch (error) {
       handlePrismaError(error);
     }
   }
 
-  public async getProductById(productId: string) {
+  public async getProductById(productId: string, workspaceId: string) {
     try {
       const product = await this.db.product.findFirstOrThrow({
         where: {
           id: productId,
+          workspaceId,
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+              icon: true,
+              description: true,
+            },
+          },
         },
       });
       return product;
@@ -87,12 +122,120 @@ export class ProductService {
     }
   }
 
-  public async searchProducts(query: string) {
+  public async searchProducts(
+    query: string,
+    workspaceId: string,
+    page = 1,
+    limit = 10,
+  ) {
+    try {
+      const trimmedQuery = query?.trim();
+      if (!trimmedQuery) {
+        return await this.getProducts(workspaceId, page, limit);
+      }
+
+      const sanitizedTerms = trimmedQuery
+        .replace(/[&|!():*]/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean);
+      const tsqueryFormatted =
+        sanitizedTerms.length > 0
+          ? sanitizedTerms.map((t) => `${t}:*`).join(' & ')
+          : undefined;
+
+      const where = {
+        workspaceId,
+        OR: [
+          ...(tsqueryFormatted ? [{ name: { search: tsqueryFormatted } }] : []),
+          { name: { contains: trimmedQuery, mode: 'insensitive' as const } },
+          { sku: { contains: trimmedQuery, mode: 'insensitive' as const } },
+          {
+            barcode: { contains: trimmedQuery, mode: 'insensitive' as const },
+          },
+          {
+            category: {
+              name: { contains: trimmedQuery, mode: 'insensitive' as const },
+            },
+          },
+        ],
+      };
+
+      const skip = (page - 1) * limit;
+
+      const [data, total] = await Promise.all([
+        this.db.product.findMany({
+          where,
+          include: {
+            category: {
+              select: {
+                name: true,
+                icon: true,
+                description: true,
+              },
+            },
+          },
+          orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
+          skip,
+          take: limit,
+        }),
+        this.db.product.count({ where }),
+      ]);
+
+      return {
+        data,
+        meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      };
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  public async getProducts(workspaceId: string, page = 1, limit = 10) {
+    try {
+      const skip = (page - 1) * limit;
+      const [data, total] = await Promise.all([
+        this.db.product.findMany({
+          where: {
+            workspaceId,
+          },
+          include: {
+            category: {
+              select: {
+                name: true,
+                icon: true,
+                description: true,
+              },
+            },
+          },
+          orderBy: [{ isUp: 'desc' }, { isActive: 'desc' }],
+          skip,
+          take: limit,
+        }),
+        this.db.product.count({ where: { workspaceId } }),
+      ]);
+      return {
+        data,
+        meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      };
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  public async getProductsByCategory(categoryId: string, workspaceId: string) {
     try {
       return await this.db.product.findMany({
         where: {
-          name: {
-            search: query,
+          categoryId,
+          workspaceId,
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+              icon: true,
+              description: true,
+            },
           },
         },
       });
@@ -101,27 +244,25 @@ export class ProductService {
     }
   }
 
-  public async getProducts(workspaceId: string) {
-    try {
-      return await this.db.product.findMany({
-        where: {
-          workspaceId,
-        },
-      });
-    } catch (error) {
-      handlePrismaError(error);
+  public async uploadProductImage(fileName: string, contentType?: string) {
+    if (!fileName) {
+      throw new BadRequestException('Parameter fileName wajib diisi!');
     }
-  }
 
-  public async getProductsByCategory(categoryId: string) {
-    try {
-      return await this.db.product.findMany({
-        where: {
-          categoryId,
-        },
-      });
-    } catch (error) {
-      handlePrismaError(error);
-    }
+    const uniqueFileName = `images/${Date.now()}-${fileName}`;
+    const bucketName = this.configService.getOrThrow<string>('BUCKET_PRODUCT');
+
+    const uploadURL = await this.storageService.generatePresignedUploadURL({
+      bucketName: bucketName,
+      fileName: uniqueFileName,
+      contentType: contentType || 'application/octet-stream',
+      expiresIn: 600,
+    });
+
+    return {
+      success: true,
+      uploadURL: uploadURL,
+      fileKey: uniqueFileName,
+    };
   }
 }

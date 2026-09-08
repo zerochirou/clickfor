@@ -5,6 +5,7 @@ import { WorkspacesProvider } from "@/features/workspace/lib/workspaces-provider
 import { checkIsQuickStart } from "@/features/quickstart/lib/quickstart-check";
 import { WorkspaceLobbyCard } from "@/features/workspace/components/lobby/card";
 
+
 export default async function WorkspacesPage() {
   const workspaces = await getWorkspaces();
   await checkIsQuickStart(workspaces);

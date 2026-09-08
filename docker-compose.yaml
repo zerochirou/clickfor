@@ -1,0 +1,38 @@
+name: clickfor
+
+services:
+  clickfor-postgres:
+    image: postgres:17-alpine
+    container_name: clickfor-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${PG_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5432:5432" # Remove this block if you don't need host access
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  clickfor-rustfs:
+    image: rustfs/rustfs:latest
+    container_name: clickfor-rustfs
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - RUSTFS_ACCESS_KEY=${S3_ROOT_USER}
+      - RUSTFS_SECRET_KEY=${S3_ROOT_PASSWORD}
+    volumes:
+      - rustfs_data:/var/lib/rustfs_data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  rustfs_data:
+    driver: local

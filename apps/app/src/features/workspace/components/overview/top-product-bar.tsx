@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -10,15 +10,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
-export const description = "A horizontal bar chart"
+export const description = "A horizontal bar chart";
 
 const chartData = [
   { month: "January", desktop: 186 },
@@ -26,14 +26,14 @@ const chartData = [
   { month: "March", desktop: 237 },
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
-]
+];
 
 const chartConfig = {
   desktop: {
     label: "Desktop",
     color: "var(--chart-1)",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function TopProductBar() {
   return (
@@ -78,5 +78,5 @@ export function TopProductBar() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

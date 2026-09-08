@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/command";
 import { useWorkspaces } from "../../lib/workspaces-provider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { handleLogout } from "@/features/auth/lib/handle-logout";
 
 interface MenuProps {
@@ -30,6 +31,7 @@ interface MenuProps {
 }
 
 export function Menu({ open, onOpenChange }: MenuProps) {
+  const router = useRouter();
   const { workspaces } = useWorkspaces();
 
   return (
@@ -74,13 +76,16 @@ export function Menu({ open, onOpenChange }: MenuProps) {
               <span>Pengaturan</span>
               <CommandShortcut>⌘S</CommandShortcut>
             </CommandItem>
-            <div onClick={handleLogout}>
-              <CommandItem>
-                <LogOut />
-                <span>Keluar</span>
-                <CommandShortcut>⌘O</CommandShortcut>
-              </CommandItem>
-            </div>
+            <CommandItem
+              onSelect={() => {
+                onOpenChange(false);
+                handleLogout(router);
+              }}
+            >
+              <LogOut />
+              <span>Keluar</span>
+              <CommandShortcut>⌘O</CommandShortcut>
+            </CommandItem>
           </CommandGroup>
         </CommandList>
       </Command>

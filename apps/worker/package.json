@@ -1,0 +1,13 @@
+{
+  "name": "worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "air || go run cmd/worker/main.go",
+    "build": "mkdir -p dist && go build -ldflags=\"-s -w\" -o dist/worker cmd/worker/main.go",
+    "start": "./dist/worker",
+    "lint": "go vet ./...",
+    "check-types": "go vet ./...",
+    "test": "go test -v ./..."
+  }
+}

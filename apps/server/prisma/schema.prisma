@@ -150,7 +150,7 @@ enum Role {
 
 model ProductCategory {
   id          String  @id @default(uuid())
-  name        String  @unique @db.VarChar(150)
+  name        String  @db.VarChar(150)
   description String? @db.Text
   icon        String? @db.VarChar(100)
 
@@ -162,12 +162,14 @@ model ProductCategory {
 
   products Product[]
 
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
   @@map("product_categories")
 }
 
 model Product {
   id          String  @id @default(uuid())
-  name        String  @unique
+  name        String
   description String?
   sku         String
   barcode     String
@@ -190,12 +192,15 @@ model Product {
   category  ProductCategory @relation(fields: [categoryId], references: [id])
   workspace Workspace       @relation(fields: [workspaceId], references: [id])
 
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@index([categoryId])
   @@map("products")
 }
 
 model Page {
   id          String  @id @default(uuid())
-  title       String  @unique
+  title       String
   description String?
   icon        String?
   coverImage  String?
@@ -206,11 +211,14 @@ model Page {
 
   theme     PageTheme? @relation(fields: [themeId], references: [id], onDelete: SetNull)
   workspace Workspace  @relation(fields: [workspaceId], references: [id])
+
+  @@unique([workspaceId, title])
+  @@index([workspaceId])
 }
 
 model PageTheme {
   id              String    @id @default(uuid())
-  name            String    @unique
+  name            String
   mode            ThemeMode @default(light)
   primaryColor    String
   secondaryColor  String?
@@ -224,6 +232,9 @@ model PageTheme {
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   pages Page[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
 }
 
 enum ThemeMode {

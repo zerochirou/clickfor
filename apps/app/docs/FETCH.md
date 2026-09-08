@@ -33,11 +33,11 @@ src/lib/api/              ← satu-satunya layer yang tahu URL, token, timeout
 
 Dengan struktur ini:
 
-* API key tidak tersebar.
-* Error handling konsisten.
-* Timeout, headers, dan logging terpusat.
-* Business logic tidak tergantung pada transport.
-* Tidak ada duplikasi antara Server Action dan Route Handler.
+- API key tidak tersebar.
+- Error handling konsisten.
+- Timeout, headers, dan logging terpusat.
+- Business logic tidak tergantung pada transport.
+- Tidak ada duplikasi antara Server Action dan Route Handler.
 
 Next.js sendiri merekomendasikan Data Access Layer untuk memusatkan akses data, authorization, dan DTO yang aman. Modul tersebut dapat ditandai dengan `server-only` agar gagal saat tidak sengaja diimpor ke Client Component. ([Next.js][1])
 
@@ -47,22 +47,22 @@ Next.js sendiri merekomendasikan Data Access Layer untuk memusatkan akses data, 
 
 ```tsx
 // app/products/[id]/page.tsx
-import { getProduct } from '@/lib/api/products'
+import { getProduct } from "@/lib/api/products";
 
 export default async function ProductPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
-  const product = await getProduct(id)
+  const { id } = await params;
+  const product = await getProduct(id);
 
   return (
     <main>
       <h1>{product.name}</h1>
       <p>{product.price}</p>
     </main>
-  )
+  );
 }
 ```
 
@@ -70,7 +70,7 @@ Jangan lakukan ini dari Server Component:
 
 ```tsx
 // Hindari
-await fetch('https://my-next-app.com/api/products/123')
+await fetch("https://my-next-app.com/api/products/123");
 ```
 
 Lalu Route Handler tersebut memanggil external API lagi.
@@ -98,12 +98,12 @@ Dokumentasi Next.js secara eksplisit menyarankan Server Component mengambil data
 
 Server Action cocok ketika mutasi berasal dari UI aplikasi Next.js sendiri:
 
-* Submit form
-* Update profile
-* Create order
-* Delete item
-* Toggle status
-* Upload metadata
+- Submit form
+- Update profile
+- Create order
+- Delete item
+- Toggle status
+- Upload metadata
 
 Server Action dapat menjalankan mutasi, menginvalidasi cache, dan mengirim hasil serta UI terbaru dalam satu round trip. Namun Server Action hanya dipanggil melalui POST dan client menjalankan action secara berurutan, sehingga bukan pilihan yang tepat untuk GET paralel atau polling. ([Next.js][3])
 
@@ -111,51 +111,51 @@ Contoh:
 
 ```ts
 // app/products/actions.ts
-'use server'
+"use server";
 
-import { updateTag } from 'next/cache'
-import { patchProduct } from '@/lib/api/products'
-import { requireAdmin } from '@/lib/auth'
+import { updateTag } from "next/cache";
+import { patchProduct } from "@/lib/api/products";
+import { requireAdmin } from "@/lib/auth";
 
 type UpdateProductInput = {
-  id: string
-  name: string
-  price: number
-}
+  id: string;
+  name: string;
+  price: number;
+};
 
 export async function updateProductAction(input: UpdateProductInput) {
-  await requireAdmin()
+  await requireAdmin();
 
   if (
-    typeof input.id !== 'string' ||
-    typeof input.name !== 'string' ||
-    typeof input.price !== 'number' ||
+    typeof input.id !== "string" ||
+    typeof input.name !== "string" ||
+    typeof input.price !== "number" ||
     input.price < 0
   ) {
     return {
       success: false as const,
-      message: 'Data produk tidak valid.',
-    }
+      message: "Data produk tidak valid.",
+    };
   }
 
   try {
     const product = await patchProduct(input.id, {
       name: input.name.trim(),
       price: input.price,
-    })
+    });
 
-    updateTag(`product:${input.id}`)
-    updateTag('products')
+    updateTag(`product:${input.id}`);
+    updateTag("products");
 
     return {
       success: true as const,
       data: product,
-    }
+    };
   } catch {
     return {
       success: false as const,
-      message: 'Gagal memperbarui produk.',
-    }
+      message: "Gagal memperbarui produk.",
+    };
   }
 }
 ```
@@ -168,11 +168,11 @@ Jangan menganggap Server Action sebagai fungsi internal biasa. Server Action tet
 
 Setiap Server Action harus:
 
-* Memeriksa authentication.
-* Memeriksa authorization.
-* Memvalidasi input.
-* Tidak mengembalikan error internal atau response mentah upstream.
-* Tidak mempercayai ID, role, price, atau owner yang dikirim client.
+- Memeriksa authentication.
+- Memeriksa authorization.
+- Memvalidasi input.
+- Tidak mengembalikan error internal atau response mentah upstream.
+- Tidak mempercayai ID, role, price, atau owner yang dikirim client.
 
 Dokumentasi Next.js menyatakan Server Actions harus diperlakukan sebagai untrusted entry point, walaupun implementasinya tidak masuk ke client bundle. ([Next.js][5])
 
@@ -182,67 +182,64 @@ Dokumentasi Next.js menyatakan Server Actions harus diperlakukan sebagai untrust
 
 Route Handler adalah pilihan tepat untuk:
 
-* API yang digunakan mobile app.
-* Endpoint yang dipanggil Client Component.
-* Webhook payment gateway.
-* OAuth callback.
-* Endpoint publik.
-* Proxy/BFF untuk menyembunyikan API key.
-* Download file atau streaming.
-* Endpoint yang harus mendukung GET, POST, PUT, PATCH, DELETE.
-* Endpoint yang harus bisa dites dengan Postman atau dipakai service lain.
+- API yang digunakan mobile app.
+- Endpoint yang dipanggil Client Component.
+- Webhook payment gateway.
+- OAuth callback.
+- Endpoint publik.
+- Proxy/BFF untuk menyembunyikan API key.
+- Download file atau streaming.
+- Endpoint yang harus mendukung GET, POST, PUT, PATCH, DELETE.
+- Endpoint yang harus bisa dites dengan Postman atau dipakai service lain.
 
 ```ts
 // app/api/products/[id]/route.ts
-import { getProduct, patchProduct } from '@/lib/api/products'
-import { requireApiSession } from '@/lib/auth'
+import { getProduct, patchProduct } from "@/lib/api/products";
+import { requireApiSession } from "@/lib/auth";
 
 export async function GET(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const session = await requireApiSession()
-  const { id } = await context.params
+  const session = await requireApiSession();
+  const { id } = await context.params;
 
-  const product = await getProduct(id, session)
+  const product = await getProduct(id, session);
 
-  return Response.json(product)
+  return Response.json(product);
 }
 
 export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const session = await requireApiSession()
-  const { id } = await context.params
-  const body: unknown = await request.json()
+  const session = await requireApiSession();
+  const { id } = await context.params;
+  const body: unknown = await request.json();
 
   if (!isValidProductPatch(body)) {
-    return Response.json(
-      { message: 'Invalid request body' },
-      { status: 400 },
-    )
+    return Response.json({ message: "Invalid request body" }, { status: 400 });
   }
 
-  const product = await patchProduct(id, body, session)
+  const product = await patchProduct(id, body, session);
 
-  return Response.json(product)
+  return Response.json(product);
 }
 
 function isValidProductPatch(
   value: unknown,
 ): value is { name?: string; price?: number } {
-  if (!value || typeof value !== 'object') {
-    return false
+  if (!value || typeof value !== "object") {
+    return false;
   }
 
-  const input = value as Record<string, unknown>
+  const input = value as Record<string, unknown>;
 
   return (
-    (input.name === undefined || typeof input.name === 'string') &&
+    (input.name === undefined || typeof input.name === "string") &&
     (input.price === undefined ||
-      (typeof input.price === 'number' && input.price >= 0))
-  )
+      (typeof input.price === "number" && input.price >= 0))
+  );
 }
 ```
 
@@ -254,20 +251,20 @@ Route Handlers mendukung GET, POST, PUT, PATCH, DELETE, HEAD, dan OPTIONS. Route
 
 Next.js memperluas native `fetch` dengan dukungan untuk:
 
-* `cache: 'force-cache'`
-* `cache: 'no-store'`
-* `next.revalidate`
-* `next.tags`
-* Integrasi dengan Data Cache Next.js
+- `cache: 'force-cache'`
+- `cache: 'no-store'`
+- `next.revalidate`
+- `next.tags`
+- Integrasi dengan Data Cache Next.js
 
 Karena itu, `fetch` adalah pilihan paling natural dan paling ringan untuk App Router. ([Next.js][7])
 
 Axios masih masuk akal apabila:
 
-* Codebase lama sudah sangat bergantung pada interceptor Axios.
-* Ada package internal yang mewajibkan Axios.
-* Anda membutuhkan kompatibilitas khusus di luar runtime Next.js.
-* Tim sudah mempunyai abstraction Axios yang matang dan teruji.
+- Codebase lama sudah sangat bergantung pada interceptor Axios.
+- Ada package internal yang mewajibkan Axios.
+- Anda membutuhkan kompatibilitas khusus di luar runtime Next.js.
+- Tim sudah mempunyai abstraction Axios yang matang dan teruji.
 
 Tetapi jangan memasang Axios hanya agar sintaks POST terlihat lebih nyaman. Buat wrapper `fetch` kecil saja.
 
@@ -277,26 +274,26 @@ Tetapi jangan memasang Axios hanya agar sintaks POST terlihat lebih nyaman. Buat
 
 ```ts
 // src/lib/api/client.ts
-import 'server-only'
+import "server-only";
 
 type NextFetchOptions = {
-  revalidate?: number | false
-  tags?: string[]
-}
+  revalidate?: number | false;
+  tags?: string[];
+};
 
-type ApiRequestOptions = Omit<RequestInit, 'body'> & {
-  body?: unknown
-  timeoutMs?: number
-  next?: NextFetchOptions
-}
+type ApiRequestOptions = Omit<RequestInit, "body"> & {
+  body?: unknown;
+  timeoutMs?: number;
+  next?: NextFetchOptions;
+};
 
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
     public readonly payload: unknown,
   ) {
-    super(`External API returned status ${status}`)
-    this.name = 'ApiError'
+    super(`External API returned status ${status}`);
+    this.name = "ApiError";
   }
 }
 
@@ -304,56 +301,47 @@ export async function apiRequest<T>(
   path: string,
   options: ApiRequestOptions = {},
 ): Promise<T> {
-  const baseUrl = process.env.EXTERNAL_API_URL
+  const baseUrl = process.env.EXTERNAL_API_URL;
 
   if (!baseUrl) {
-    throw new Error('EXTERNAL_API_URL is not configured')
+    throw new Error("EXTERNAL_API_URL is not configured");
   }
 
-  const token = process.env.EXTERNAL_API_TOKEN
-  const {
-    body,
-    timeoutMs = 8_000,
-    headers,
-    ...requestOptions
-  } = options
+  const token = process.env.EXTERNAL_API_TOKEN;
+  const { body, timeoutMs = 8_000, headers, ...requestOptions } = options;
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(new URL(path, baseUrl), {
       ...requestOptions,
       headers: {
-        accept: 'application/json',
-        ...(body !== undefined
-          ? { 'content-type': 'application/json' }
-          : {}),
-        ...(token
-          ? { authorization: `Bearer ${token}` }
-          : {}),
+        accept: "application/json",
+        ...(body !== undefined ? { "content-type": "application/json" } : {}),
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: controller.signal,
-    })
+    });
 
-    const contentType = response.headers.get('content-type') ?? ''
+    const contentType = response.headers.get("content-type") ?? "";
 
     const payload =
       response.status === 204
         ? null
-        : contentType.includes('application/json')
+        : contentType.includes("application/json")
           ? await response.json()
-          : await response.text()
+          : await response.text();
 
     if (!response.ok) {
-      throw new ApiError(response.status, payload)
+      throw new ApiError(response.status, payload);
     }
 
-    return payload as T
+    return payload as T;
   } finally {
-    clearTimeout(timeout)
+    clearTimeout(timeout);
   }
 }
 ```
@@ -362,63 +350,54 @@ Resource-specific client:
 
 ```ts
 // src/lib/api/products.ts
-import 'server-only'
-import { apiRequest } from './client'
+import "server-only";
+import { apiRequest } from "./client";
 
 export type Product = {
-  id: string
-  name: string
-  price: number
-}
+  id: string;
+  name: string;
+  price: number;
+};
 
 type ProductPatch = {
-  name?: string
-  price?: number
-}
+  name?: string;
+  price?: number;
+};
 
 export function getProduct(id: string): Promise<Product> {
-  return apiRequest<Product>(
-    `/products/${encodeURIComponent(id)}`,
-    {
-      next: {
-        revalidate: 300,
-        tags: ['products', `product:${id}`],
-      },
+  return apiRequest<Product>(`/products/${encodeURIComponent(id)}`, {
+    next: {
+      revalidate: 300,
+      tags: ["products", `product:${id}`],
     },
-  )
+  });
 }
 
 export function patchProduct(
   id: string,
   input: ProductPatch,
 ): Promise<Product> {
-  return apiRequest<Product>(
-    `/products/${encodeURIComponent(id)}`,
-    {
-      method: 'PATCH',
-      body: input,
-      cache: 'no-store',
-    },
-  )
+  return apiRequest<Product>(`/products/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: input,
+    cache: "no-store",
+  });
 }
 
 export function deleteProduct(id: string): Promise<void> {
-  return apiRequest<void>(
-    `/products/${encodeURIComponent(id)}`,
-    {
-      method: 'DELETE',
-      cache: 'no-store',
-    },
-  )
+  return apiRequest<void>(`/products/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    cache: "no-store",
+  });
 }
 ```
 
 Ini memberi DX mirip library HTTP:
 
 ```ts
-await getProduct(id)
-await patchProduct(id, input)
-await deleteProduct(id)
+await getProduct(id);
+await patchProduct(id, input);
+await deleteProduct(id);
 ```
 
 Tanpa menambah abstraction besar.
@@ -431,21 +410,21 @@ Gunakan client-side data library hanya ketika data benar-benar dikelola di brows
 
 ### Gunakan SWR ketika
 
-* Kebutuhannya sederhana.
-* GET dan polling.
-* Auto-refetch saat window focus.
-* Optimistic update sederhana.
-* Ingin API kecil dan mudah.
+- Kebutuhannya sederhana.
+- GET dan polling.
+- Auto-refetch saat window focus.
+- Optimistic update sederhana.
+- Ingin API kecil dan mudah.
 
 ### Gunakan TanStack Query ketika
 
-* Banyak query saling terkait.
-* Mutation lifecycle kompleks.
-* Optimistic update kompleks.
-* Infinite query.
-* Prefetch dan invalidation granular.
-* Dashboard dengan banyak state asynchronous.
-* Aplikasi lebih mirip SPA.
+- Banyak query saling terkait.
+- Mutation lifecycle kompleks.
+- Optimistic update kompleks.
+- Infinite query.
+- Prefetch dan invalidation granular.
+- Dashboard dengan banyak state asynchronous.
+- Aplikasi lebih mirip SPA.
 
 Next.js menyebut SWR dan React Query sebagai pilihan untuk data yang harus diambil di client, khususnya data yang sering dipolling atau bergantung pada browser API. ([Next.js][2])
 
@@ -461,34 +440,34 @@ Jangan menggunakan React Query untuk setiap halaman hanya karena aplikasinya mem
 fetch(url, {
   next: {
     revalidate: 300,
-    tags: ['products'],
+    tags: ["products"],
   },
-})
+});
 ```
 
 Contoh:
 
-* Product catalog
-* Artikel
-* Public configuration
-* Daftar kategori
+- Product catalog
+- Artikel
+- Public configuration
+- Daftar kategori
 
 ### Data user-specific atau sensitif
 
 ```ts
 fetch(url, {
-  cache: 'no-store',
-})
+  cache: "no-store",
+});
 ```
 
 Contoh:
 
-* Saldo
-* Cart
-* User profile
-* Permission
-* Dashboard pribadi
-* Status transaksi
+- Saldo
+- Cart
+- User profile
+- Permission
+- Dashboard pribadi
+- Status transaksi
 
 Kesalahan umum adalah meng-cache response berdasarkan URL saja padahal hasilnya bergantung pada cookie, token, tenant, atau user. Secara teknis cache mungkin membuat request lebih cepat, tetapi secara keamanan dapat menghasilkan kebocoran data lintas user.
 
@@ -514,15 +493,15 @@ Biasanya tidak.
 
 Faktor yang lebih signifikan adalah:
 
-* Jumlah network round trip.
-* Lokasi server Next.js dan external API.
-* Connection reuse.
-* Caching.
-* Parallel request.
-* Ukuran response.
-* Timeout dan retry.
-* Data yang dikirim ke Client Component.
-* Waterfall saat rendering.
+- Jumlah network round trip.
+- Lokasi server Next.js dan external API.
+- Connection reuse.
+- Caching.
+- Parallel request.
+- Ukuran response.
+- Timeout dan retry.
+- Data yang dikirim ke Client Component.
+- Waterfall saat rendering.
 
 Mengganti `fetch` dengan Axios tidak menyelesaikan faktor-faktor tersebut.
 

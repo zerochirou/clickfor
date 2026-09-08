@@ -1,9 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
 import {
@@ -58,7 +54,12 @@ export default function EmailPage() {
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input id="password" autoComplete="off" placeholder="" />
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                  />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="confirmPassword">
@@ -66,8 +67,9 @@ export default function EmailPage() {
                   </FieldLabel>
                   <Input
                     id="confirmPassword"
-                    autoComplete="off"
-                    placeholder=""
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
                   />
                 </Field>
               </FieldGroup>

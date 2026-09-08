@@ -16,9 +16,19 @@ import { NavMain } from "./nav-main";
 import { useWorkspace } from "../../lib/workspace-provider";
 import { navMainData, navSecondaryData } from "../../lib/sidebar-data";
 import { User } from "better-auth";
+import { Workspace } from "@/lib/types/workspace";
+import WorkspaceSearchCommand from "../command/workspace-search-command";
 
-export function AppSidebar({ user }: { user: User }) {
-  const { workspace } = useWorkspace();
+export function AppSidebar({
+  user,
+  workspace: workspaceProp,
+}: {
+  user: User;
+  workspace?: Workspace;
+}) {
+  const { workspace: contextWorkspace } = useWorkspace();
+  const workspace = workspaceProp ?? contextWorkspace;
+
   return (
     <Sidebar variant="inset">
       <SidebarHeader>
@@ -36,6 +46,9 @@ export function AppSidebar({ user }: { user: User }) {
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
+        </SidebarMenu>
+        <SidebarMenu>
+          <WorkspaceSearchCommand />
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>

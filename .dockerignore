@@ -1,0 +1,21 @@
+# Dependency & build outputs
+**/node_modules
+**/.turbo
+**/dist
+**/.next
+apps/worker/dist
+apps/worker/tmp
+
+# Environment & local secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Git, OS & IDE files
+.git
+.gitignore
+**/.DS_Store
+**/*.log
+.idea
+.vscode
+.husky

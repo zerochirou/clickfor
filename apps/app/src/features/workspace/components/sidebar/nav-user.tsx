@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation";
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
-  const router = useRouter(); 
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -117,7 +117,10 @@ export function NavUser({ user }: { user: User }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} variant="destructive">
+            <DropdownMenuItem
+              onClick={() => handleLogout(router)}
+              variant="destructive"
+            >
               <LogOutIcon />
               Log out
             </DropdownMenuItem>

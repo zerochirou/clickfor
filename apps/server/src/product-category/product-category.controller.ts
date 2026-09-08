@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
 import { CreateProductCategoryDTO } from './dtos/create-product-category.dto';
+import { CreateProductCategoryBulkDTO } from './dtos/create-product-category-bulk.dto';
 import { UpdateProductCategoryDTO } from './dtos/update-product-category.dto';
 import { WorkspaceGuard } from 'src/workspace/guards/workspace.guard';
 import { OptionalAuth } from '@thallesp/nestjs-better-auth';
@@ -18,6 +19,22 @@ import { ProductCategoryTransformer } from './transformers/product-category.tran
 @Controller('/workspace/:workspaceId/product/category')
 export class ProductCategoryController {
   constructor(private productCategoryService: ProductCategoryService) {}
+
+  @Post('/bulk')
+  @UseGuards(WorkspaceGuard)
+  async createProductCategoryBulk(
+    @Body() dto: CreateProductCategoryBulkDTO,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<ProductCategoryTransformer[]> {
+    const categories =
+      await this.productCategoryService.createProductCategoryBulk(
+        dto,
+        workspaceId,
+      );
+    return categories.map(
+      (category) => new ProductCategoryTransformer(category),
+    );
+  }
 
   @Post()
   @UseGuards(WorkspaceGuard)
@@ -34,12 +51,14 @@ export class ProductCategoryController {
   @UseGuards(WorkspaceGuard)
   async updateProductCategory(
     @Body() dto: UpdateProductCategoryDTO,
+    @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
   ): Promise<ProductCategoryTransformer> {
     return new ProductCategoryTransformer(
       await this.productCategoryService.updateProductCategory(
         dto,
         productCategoryId,
+        workspaceId,
       ),
     );
   }
@@ -47,19 +66,25 @@ export class ProductCategoryController {
   @Delete('/:productCategoryId')
   @UseGuards(WorkspaceGuard)
   async deleteProductCategory(
+    @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
   ): Promise<void> {
-    await this.productCategoryService.deleteProductCategory(productCategoryId);
+    await this.productCategoryService.deleteProductCategory(
+      productCategoryId,
+      workspaceId,
+    );
   }
 
   @Get('/:productCategoryId')
   @OptionalAuth()
   async getProductCategoryById(
+    @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
   ): Promise<ProductCategoryTransformer> {
     return new ProductCategoryTransformer(
       await this.productCategoryService.getProductCategoryById(
         productCategoryId,
+        workspaceId,
       ),
     );
   }

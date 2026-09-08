@@ -6,7 +6,11 @@ import { ErrorResponse } from "@/lib/types/response";
 import { Workspace } from "@/lib/types/workspace";
 import { headers } from "next/headers";
 
-export async function createWorkspace(data: CreateWorkspace) {
+interface PostWorkspaceParams {
+  data: CreateWorkspace;
+}
+
+export async function createWorkspace(params: PostWorkspaceParams) {
   try {
     await isAuthenticated();
     const requestHeaders = await headers();
@@ -20,7 +24,7 @@ export async function createWorkspace(data: CreateWorkspace) {
           ...(cookieHeader ? { Cookie: cookieHeader } : {}),
         },
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify(params.data),
       },
     );
     if (!response.ok) {

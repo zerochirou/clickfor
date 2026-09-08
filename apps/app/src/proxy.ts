@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authClient } from "./lib/auth/auth-client";
 
-const LAST_WORKSPACE_COOKIE_NAME = "last_workspace"
+const LAST_WORKSPACE_COOKIE_NAME = "last_workspace";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -28,14 +28,14 @@ export async function proxy(request: NextRequest) {
   }
 
   if (session && (pathname === "/workspace" || pathname === "/workspace/")) {
-      const lastWorkspace = request.cookies.get(LAST_WORKSPACE_COOKIE_NAME);
-      
-      if (lastWorkspace?.value) {
-        return NextResponse.redirect(
-          new URL(`/workspace/${lastWorkspace.value}`, request.url)
-        );
-      }
+    const lastWorkspace = request.cookies.get(LAST_WORKSPACE_COOKIE_NAME);
+
+    if (lastWorkspace?.value) {
+      return NextResponse.redirect(
+        new URL(`/workspace/${lastWorkspace.value}`, request.url),
+      );
     }
+  }
 
   return NextResponse.next();
 }

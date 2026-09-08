@@ -1,5 +1,5 @@
 export function OrangeGradientBackground({
-  children, 
+  children,
 }: {
   children: React.ReactNode;
 }) {

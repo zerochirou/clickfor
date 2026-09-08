@@ -132,12 +132,19 @@ export class WorkspaceService {
       if (dto.role === 'OWNER') {
         throw new ForbiddenException('Cannot update owner role');
       }
-      return await this.db.workspaceMember.update({
-        where: {
-          id: memberId,
-          workspaceId: workspaceId,
-        },
-        data: dto,
+      return await this.db.$transaction(async (tx) => {
+        await tx.workspaceMember.findFirstOrThrow({
+          where: {
+            id: memberId,
+            workspaceId: workspaceId,
+          },
+        });
+        return await tx.workspaceMember.update({
+          where: {
+            id: memberId,
+          },
+          data: dto,
+        });
       });
     } catch (error) {
       handlePrismaError(error);
@@ -165,7 +172,7 @@ export class WorkspaceService {
 
   public async getMemberById(memberId: string, workspaceId: string) {
     try {
-      const member = await this.db.workspaceMember.findUnique({
+      const member = await this.db.workspaceMember.findFirst({
         where: {
           id: memberId,
           workspaceId: workspaceId,

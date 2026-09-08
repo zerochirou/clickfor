@@ -8,6 +8,7 @@ import { ProductCategoryModule } from './product-category/product-category.modul
 import { ProductModule } from './product/product.module';
 import { PageModule } from './page/page.module';
 import { PageThemeModule } from './page-theme/page-theme.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PageThemeModule } from './page-theme/page-theme.module';
     ProductModule,
     PageModule,
     PageThemeModule,
+    StorageModule,
   ],
   controllers: [],
   providers: [],

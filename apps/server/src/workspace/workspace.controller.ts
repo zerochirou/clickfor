@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Session,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
@@ -29,8 +30,12 @@ export class WorkspaceController {
     @Body() dto: CreateWorkspaceDTO,
     @Session() session: UserSession,
   ): Promise<WorkspaceTransformer> {
+    const userId = session?.user?.id ?? session?.session?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('You must login first.');
+    }
     return new WorkspaceTransformer(
-      await this.workspaceService.createWorkspace(dto, session.session.userId),
+      await this.workspaceService.createWorkspace(dto, userId),
     );
   }
 
@@ -72,9 +77,13 @@ export class WorkspaceController {
   async getAllWorkspaces(
     @Session() session: UserSession,
   ): Promise<WorkspaceTransformer[]> {
-    return (
-      await this.workspaceService.getAllWorkspaces(session.session.userId)
-    ).map((workspace) => new WorkspaceTransformer(workspace));
+    const userId = session?.user?.id ?? session?.session?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('You must login first.');
+    }
+    return (await this.workspaceService.getAllWorkspaces(userId)).map(
+      (workspace) => new WorkspaceTransformer(workspace),
+    );
   }
 
   @Get('/:workspaceId/members')

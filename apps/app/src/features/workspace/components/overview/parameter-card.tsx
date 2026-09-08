@@ -26,7 +26,6 @@ export function ParameterCard({
   isPositive,
   description,
 }: ParameterCardProps) {
-
   return (
     <Card className="max-w-sm w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
