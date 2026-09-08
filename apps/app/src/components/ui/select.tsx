@@ -101,7 +101,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-3 py-2.5 text-xs text-muted-foreground", className)}
+      className={cn("px-3.5 py-2.5 text-xs text-muted-foreground", className)}
       {...props}
     />
   )
@@ -126,7 +126,7 @@ function SelectItem({
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
         render={
-          <span className="pointer-events-none absolute end-2 flex size-4 items-center justify-center" />
+          <span className="pointer-events-none absolute inset-e-2 flex size-4 items-center justify-center" />
         }
       >
         <CheckIcon className="pointer-events-none" />

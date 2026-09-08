@@ -1,5 +1,4 @@
 import { SidebarInset } from "@/components/ui/sidebar";
-import WorkspaceSearchCommand from "../command/workspace-search-command";
 import { Button } from "@/components/ui/button";
 import { BellRing } from "lucide-react";
 import { ModeToggle } from "@/components/commons/theme-toggle/mode";

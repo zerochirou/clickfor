@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef } from "react";
+import { useState, useTransition, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
@@ -64,19 +64,21 @@ export function UpdateProductForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isChangingImage, setIsChangingImage] = useState(false);
   const uploadSectionRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (selectedFile) {
-      const url = URL.createObjectURL(selectedFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-    }
+  const previewUrl = useMemo(() => {
+    if (!selectedFile) return null;
+    return URL.createObjectURL(selectedFile);
   }, [selectedFile]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const form = useForm<UpdateProductInput>({
     resolver: zodResolver(updateProductSchema),
@@ -94,10 +96,18 @@ export function UpdateProductForm({
     },
   });
 
-  const watchedPurchasePrice = Number(form.watch("purchasePrice")) || 0;
-  const watchedSalePrice = Number(form.watch("salePrice")) || 0;
-  const watchedStock = Number(form.watch("stock")) || 0;
-  const watchedMinStock = Number(form.watch("minStock")) || 0;
+  const watchedPurchasePrice =
+    Number(useWatch({ control: form.control, name: "purchasePrice" })) || 0;
+  const watchedSalePrice =
+    Number(useWatch({ control: form.control, name: "salePrice" })) || 0;
+  const watchedStock =
+    Number(useWatch({ control: form.control, name: "stock" })) || 0;
+  const watchedMinStock =
+    Number(useWatch({ control: form.control, name: "minStock" })) || 0;
+  const watchedName = useWatch({ control: form.control, name: "name" });
+  const watchedIsUp = useWatch({ control: form.control, name: "isUp" });
+  const watchedIsActive = useWatch({ control: form.control, name: "isActive" });
+  const watchedUnit = useWatch({ control: form.control, name: "unit" });
 
   // Calculate live profit & margin
   const profit = watchedSalePrice - watchedPurchasePrice;
@@ -207,10 +217,12 @@ export function UpdateProductForm({
           {/* Notion Header Cover Banner */}
           <div className="relative w-full h-56 sm:h-64 md:h-72 lg:h-80 rounded-3xl overflow-hidden border bg-muted/60 shadow-xs group">
             {previewUrl ? (
-              <img
+              <Image
                 src={previewUrl}
                 alt="Preview Cover"
-                className="size-full object-cover"
+                fill
+                unoptimized
+                className="object-cover"
               />
             ) : product.image ? (
               <Image
@@ -292,7 +304,7 @@ export function UpdateProductForm({
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                    {form.watch("name") || product.name}
+                    {watchedName || product.name}
                   </h1>
                   <Badge variant="outline" className="font-mono text-xs">
                     {product.sku}
@@ -302,7 +314,7 @@ export function UpdateProductForm({
                       {product.category.name}
                     </Badge>
                   )}
-                  {form.watch("isUp") && (
+                  {watchedIsUp && (
                     <Badge variant="default" className="text-xs gap-1">
                       Dioptimalkan <Zap className="size-3 fill-current" />
                     </Badge>
@@ -504,7 +516,7 @@ export function UpdateProductForm({
                     <Field orientation="horizontal">
                       <Switch
                         id="isActive"
-                        checked={form.watch("isActive")}
+                        checked={Boolean(watchedIsActive)}
                         onCheckedChange={(value) =>
                           form.setValue("isActive", value, {
                             shouldValidate: true,
@@ -529,7 +541,7 @@ export function UpdateProductForm({
                     <Field orientation="horizontal">
                       <Switch
                         id="isUp"
-                        checked={form.watch("isUp")}
+                        checked={Boolean(watchedIsUp)}
                         onCheckedChange={(value) =>
                           form.setValue("isUp", value, {
                             shouldValidate: true,
@@ -667,7 +679,7 @@ export function UpdateProductForm({
                   <div className="text-lg font-bold">
                     Rp {Math.max(0, profit).toLocaleString("id-ID")}
                     <span className="text-xs font-normal text-muted-foreground ml-1">
-                      / {form.watch("unit") || "unit"}
+                      / {watchedUnit || "unit"}
                     </span>
                   </div>
                 </div>

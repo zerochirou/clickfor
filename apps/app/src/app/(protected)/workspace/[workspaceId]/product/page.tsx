@@ -5,7 +5,7 @@ import { ProductSearchBar } from "@/features/product/components/search/product-s
 import { ProductTable } from "@/features/product/components/table/product-table";
 import { ProductsProvider } from "@/features/product/lib/products-provider";
 import FlickerSpinner from "@/components/commons/flicker-loading/flicker-spinner";
-import { Package, PackagePlus, Plus } from "lucide-react";
+import { Package } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
