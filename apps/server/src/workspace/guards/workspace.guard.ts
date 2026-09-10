@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { fromNodeHeaders } from 'better-auth/node';
 import { Request } from 'express';
@@ -20,21 +21,21 @@ export class WorkspaceGuard implements CanActivate {
     });
 
     if (!session || !session.user) {
-      throw new ForbiddenException('You must login first.');
+      throw new UnauthorizedException('You must login first.');
     }
 
     const userId = session.user.id;
     const workspaceId = request.params.workspaceId as string;
 
     if (!workspaceId) {
-      throw new NotFoundException('workspace not found.');
+      throw new NotFoundException('Workspace not found.');
     }
 
     const workspace = await this.db.workspace.findUnique({
       where: { id: workspaceId },
     });
     if (!workspace) {
-      throw new NotFoundException('Item not found.');
+      throw new NotFoundException('Workspace not found.');
     }
     const isUserExist = await this.db.workspaceMember.findFirst({
       where: { workspaceId: workspace.id, userId: userId },

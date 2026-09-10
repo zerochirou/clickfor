@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest) {
   const isAuthPage =
     pathname.startsWith("/signin") || pathname.startsWith("/signup");
   const isProtectedRoute =
-    pathname.startsWith("/workspace") || pathname.startsWith("/workspace");
+    pathname.startsWith("/workspace") || pathname.startsWith("/quickstart");
 
   if (session && isAuthPage) {
     return NextResponse.redirect(new URL("/workspace", request.url));
@@ -41,5 +41,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/workspace/:path*", "/signin", "/signup"],
+  matcher: ["/workspace/:path*", "/quickstart/:path*", "/signin", "/signup"],
 };

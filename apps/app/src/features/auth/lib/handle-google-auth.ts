@@ -1,9 +1,15 @@
 import { authClient } from "@/lib/auth/auth-client";
 
 export async function handleGoogleAuth() {
-  const test = await authClient.signIn.social({
+  const origin =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (typeof window !== "undefined"
+      ? window.location.origin
+      : "http://localhost:3001");
+
+  await authClient.signIn.social({
     provider: "google",
-    callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/workspace`,
+    callbackURL: `${origin}/workspace`,
   });
-  console.log(test);
 }
+

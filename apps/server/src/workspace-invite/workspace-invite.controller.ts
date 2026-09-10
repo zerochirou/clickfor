@@ -8,6 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { WorkspaceGuard } from 'src/workspace/guards/workspace.guard';
+import { WorkspaceRoleGuard } from 'src/workspace/guards/workspace-role-guard.guard';
+import { Roles } from 'src/workspace/decorators/role.decorator';
+import { Role } from '@prisma/client';
 import { WorkspaceInviteService } from './workspace-invite.service';
 import { CreateInviteCodeDTO } from './dtos/create-invite-code.dto';
 import { JoinCodeDTO } from './dtos/join-code.dto';
@@ -20,7 +23,8 @@ export class WorkspaceInviteController {
   constructor(private workspaceInviteService: WorkspaceInviteService) {}
 
   @Post(':workspaceId/invite')
-  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async createInviteCode(
     @Body() dto: CreateInviteCodeDTO,
     @Param('workspaceId') workspaceId: string,
