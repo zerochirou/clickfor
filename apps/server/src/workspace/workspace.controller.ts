@@ -6,14 +6,11 @@ import {
   Param,
   Patch,
   Post,
-  Session,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
 import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
-import type { UserSession } from '@thallesp/nestjs-better-auth';
 import { WorkspaceTransformer } from './transformers/workspace.transformer';
 import { WorkspaceGuard } from './guards/workspace.guard';
 import { MembersTransformer } from './transformers/members.transformer';
@@ -21,32 +18,30 @@ import { UpdateMemberDTO } from './dtos/update-member.dto';
 import { WorkspaceRoleGuard } from './guards/workspace-role-guard.guard';
 import { Roles } from './decorators/role.decorator';
 import { Role } from '@prisma/client';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import type { AuthUser } from 'src/auth/types/auth.types';
 
 @Controller('workspace')
 export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   async createWorkspace(
     @Body() dto: CreateWorkspaceDTO,
-    @Session() session: UserSession,
+    @CurrentUser() user: AuthUser,
   ): Promise<WorkspaceTransformer> {
-    const userId = session?.user?.id ?? session?.session?.userId;
-    if (!userId) {
-      throw new UnauthorizedException('You must login first.');
-    }
     return new WorkspaceTransformer(
-      await this.workspaceService.createWorkspace(dto, userId),
+      await this.workspaceService.createWorkspace(dto, user.id),
     );
   }
 
   @Patch('/:workspaceId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async updateWorkspace(
     @Body() dto: UpdateWorkspaceDTO,
-    @Session() session: UserSession,
     @Param('workspaceId') workspaceId: string,
   ): Promise<WorkspaceTransformer> {
     return new WorkspaceTransformer(
@@ -55,7 +50,6 @@ export class WorkspaceController {
   }
 
   @Delete('/:workspaceId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.OWNER)
   async deleteWorkspace(@Param('workspaceId') workspaceId: string) {
@@ -63,7 +57,6 @@ export class WorkspaceController {
   }
 
   @Get('/:workspaceId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.STAFF)
   async getWorkspaceById(
@@ -75,14 +68,11 @@ export class WorkspaceController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async getAllWorkspaces(
-    @Session() session: UserSession,
+    @CurrentUser() user: AuthUser,
   ): Promise<WorkspaceTransformer[]> {
-    const userId = session?.user?.id ?? session?.session?.userId;
-    if (!userId) {
-      throw new UnauthorizedException('You must login first.');
-    }
-    return (await this.workspaceService.getAllWorkspaces(userId)).map(
+    return (await this.workspaceService.getAllWorkspaces(user.id)).map(
       (workspace) => new WorkspaceTransformer(workspace),
     );
   }
@@ -98,16 +88,21 @@ export class WorkspaceController {
   }
 
   @Patch('/:workspaceId/member/:memberId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async updateMember(
     @Body() dto: UpdateMemberDTO,
     @Param('workspaceId') workspaceId: string,
     @Param('memberId') memberId: string,
+    @CurrentUser() user: AuthUser,
   ): Promise<MembersTransformer> {
     return new MembersTransformer(
-      await this.workspaceService.updateMember(workspaceId, memberId, dto),
+      await this.workspaceService.updateMember(
+        workspaceId,
+        memberId,
+        dto,
+        user.id,
+      ),
     );
   }
 
@@ -115,13 +110,10 @@ export class WorkspaceController {
   @UseGuards(WorkspaceGuard)
   async getMemberBySession(
     @Param('workspaceId') workspaceId: string,
-    @Session() session: UserSession,
+    @CurrentUser() user: AuthUser,
   ): Promise<MembersTransformer> {
     return new MembersTransformer(
-      await this.workspaceService.getMemberByUserId(
-        session.session.userId,
-        workspaceId,
-      ),
+      await this.workspaceService.getMemberByUserId(user.id, workspaceId),
     );
   }
 

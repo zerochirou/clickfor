@@ -27,14 +27,12 @@ export class PageThemeService {
     workspaceId: string,
   ) {
     try {
-      return await this.db.$transaction(async (tx) => {
-        await tx.pageTheme.findFirstOrThrow({
-          where: { id: themeId, workspaceId },
-        });
-        return await tx.pageTheme.update({
-          where: { id: themeId },
-          data: dto,
-        });
+      await this.db.pageTheme.findFirstOrThrow({
+        where: { id: themeId, workspaceId },
+      });
+      return await this.db.pageTheme.update({
+        where: { id: themeId },
+        data: dto,
       });
     } catch (error) {
       handlePrismaError(error);
@@ -43,13 +41,11 @@ export class PageThemeService {
 
   public async deletePageTheme(themeId: string, workspaceId: string) {
     try {
-      return await this.db.$transaction(async (tx) => {
-        await tx.pageTheme.findFirstOrThrow({
-          where: { id: themeId, workspaceId },
-        });
-        return await tx.pageTheme.delete({
-          where: { id: themeId },
-        });
+      await this.db.pageTheme.findFirstOrThrow({
+        where: { id: themeId, workspaceId },
+      });
+      return await this.db.pageTheme.delete({
+        where: { id: themeId },
       });
     } catch (error) {
       handlePrismaError(error);

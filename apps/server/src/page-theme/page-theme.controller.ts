@@ -21,7 +21,7 @@ export class PageThemeController {
   constructor(private pageThemeService: PageThemeService) {}
 
   @Post()
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async createPageTheme(
     @Body() dto: CreateThemeDTO,
@@ -31,7 +31,7 @@ export class PageThemeController {
   }
 
   @Patch(':themeId')
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async updatePageTheme(
     @Body() dto: UpdateThemeDTO,
@@ -61,7 +61,7 @@ export class PageThemeController {
   }
 
   @Delete(':themeId')
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async deletePageTheme(
     @Param('workspaceId') workspaceId: string,

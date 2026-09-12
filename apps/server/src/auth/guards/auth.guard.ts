@@ -13,6 +13,12 @@ import type { AuthenticatedRequest } from '../types/auth.types';
 export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
+    const authReq = request as AuthenticatedRequest;
+
+    if (authReq.user && authReq.session) {
+      return true;
+    }
+
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(request.headers),
     });
@@ -21,7 +27,6 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('You must login first.');
     }
 
-    const authReq = request as AuthenticatedRequest;
     authReq.user = session.user;
     authReq.session = session.session;
 

@@ -108,6 +108,8 @@ model Workspace {
   products           Product[]
   pages              Page[]
   pageThemes         PageTheme[]
+
+  @@index([ownerId])
 }
 
 model WorkspaceMember {
@@ -125,6 +127,8 @@ model WorkspaceMember {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId])
   @@map("workspace_members")
 }
 
@@ -142,6 +146,7 @@ model WorkspaceJoinCode {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([workspaceId])
   @@map("workspace_join_codes")
 }
 
@@ -199,6 +204,8 @@ model Product {
   @@unique([workspaceId, name])
   @@index([workspaceId])
   @@index([categoryId])
+  @@index([workspaceId, isUp, isActive])
+  @@index([workspaceId, categoryId])
   @@map("products")
 }
 
@@ -218,6 +225,7 @@ model Page {
 
   @@unique([workspaceId, title])
   @@index([workspaceId])
+  @@index([themeId])
 }
 
 model PageTheme {

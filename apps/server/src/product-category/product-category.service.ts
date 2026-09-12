@@ -89,14 +89,12 @@ export class ProductCategoryService {
     workspaceId: string,
   ) {
     try {
-      return await this.db.$transaction(async (tx) => {
-        await tx.productCategory.findFirstOrThrow({
-          where: { id: productCategoryId, workspaceId },
-        });
-        return await tx.productCategory.update({
-          where: { id: productCategoryId },
-          data: dto,
-        });
+      await this.db.productCategory.findFirstOrThrow({
+        where: { id: productCategoryId, workspaceId },
+      });
+      return await this.db.productCategory.update({
+        where: { id: productCategoryId },
+        data: dto,
       });
     } catch (error) {
       handlePrismaError(error);
@@ -108,13 +106,11 @@ export class ProductCategoryService {
     workspaceId: string,
   ) {
     try {
-      return await this.db.$transaction(async (tx) => {
-        await tx.productCategory.findFirstOrThrow({
-          where: { id: productCategoryId, workspaceId },
-        });
-        return await tx.productCategory.delete({
-          where: { id: productCategoryId },
-        });
+      await this.db.productCategory.findFirstOrThrow({
+        where: { id: productCategoryId, workspaceId },
+      });
+      return await this.db.productCategory.delete({
+        where: { id: productCategoryId },
       });
     } catch (error) {
       handlePrismaError(error);

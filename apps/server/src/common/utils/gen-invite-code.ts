@@ -1,8 +1,10 @@
+import { randomInt } from 'node:crypto';
+
 function generateRandomBlock(length: number = 3): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
+    const randomIndex = randomInt(0, characters.length);
     result += characters.charAt(randomIndex);
   }
   return result;
