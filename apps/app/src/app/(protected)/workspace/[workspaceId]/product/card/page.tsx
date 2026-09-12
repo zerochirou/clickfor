@@ -45,7 +45,11 @@ async function ProductCardContent({
             </Button>
           </Link>
         </div>
-        <ProductSearchBar workspaceId={workspaceId} debounceMs={1000} className="w-100" />
+        <ProductSearchBar
+          workspaceId={workspaceId}
+          debounceMs={1000}
+          className="w-100"
+        />
       </header>
       <ProductCardList />
     </ProductsProvider>

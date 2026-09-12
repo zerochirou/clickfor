@@ -3,8 +3,6 @@ import { ParameterCard } from "@/features/workspace/components/overview/paramete
 import { TopProductBar } from "@/features/workspace/components/overview/top-product-bar";
 import { Suspense } from "react";
 
-
-
 export default function WorkspacePage() {
   return (
     <div className="p-4">

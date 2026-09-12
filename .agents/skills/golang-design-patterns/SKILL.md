@@ -255,12 +255,12 @@ Core principles regardless of architecture:
 
 ## Detailed Guides
 
-| Guide | Scope |
-| --- | --- |
-| [Architecture Patterns](references/architecture.md) | High-level principles, when each architecture fits |
-| [Clean Architecture](references/clean-architecture.md) | Use cases, dependency rule, layered adapters |
-| [Hexagonal Architecture](references/hexagonal-architecture.md) | Ports and adapters, domain core isolation |
-| [Domain-Driven Design](references/ddd.md) | Aggregates, value objects, bounded contexts |
+| Guide                                                          | Scope                                              |
+| -------------------------------------------------------------- | -------------------------------------------------- |
+| [Architecture Patterns](references/architecture.md)            | High-level principles, when each architecture fits |
+| [Clean Architecture](references/clean-architecture.md)         | Use cases, dependency rule, layered adapters       |
+| [Hexagonal Architecture](references/hexagonal-architecture.md) | Ports and adapters, domain core isolation          |
+| [Domain-Driven Design](references/ddd.md)                      | Aggregates, value objects, bounded contexts        |
 
 ## Code Philosophy
 

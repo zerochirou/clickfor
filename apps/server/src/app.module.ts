@@ -9,6 +9,7 @@ import { ProductModule } from './product/product.module';
 import { PageModule } from './page/page.module';
 import { PageThemeModule } from './page-theme/page-theme.module';
 import { StorageModule } from './storage/storage.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { StorageModule } from './storage/storage.module';
     PageModule,
     PageThemeModule,
     StorageModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],

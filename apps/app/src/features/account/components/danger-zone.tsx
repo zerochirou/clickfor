@@ -1,0 +1,208 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { AlertTriangle, Trash2, LogOut } from "lucide-react";
+import { handleLogout } from "@/features/auth/lib/handle-logout";
+
+interface DangerZoneProps {
+  userEmail: string;
+}
+
+export function DangerZone({ userEmail }: DangerZoneProps) {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [confirmationInput, setConfirmationInput] = useState("");
+  const [password, setPassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (confirmationInput !== userEmail) {
+      toast.error("Email konfirmasi tidak sesuai");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      // Delete user via Better Auth deleteUser endpoint
+      const res = await authClient.deleteUser({
+        password: password || undefined,
+      });
+
+      if (res?.error) {
+        throw new Error(res.error.message || "Gagal menghapus akun");
+      }
+
+      toast.success("Akun berhasil dihapus.");
+      setIsOpen(false);
+      router.push("/signin");
+    } catch (error) {
+      console.error("Delete account error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Gagal menghapus akun. Silakan coba lagi.",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <Card className="border-destructive/30 bg-destructive/5">
+        <CardHeader>
+          <div className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="size-5" />
+            <CardTitle>Zona Berbahaya</CardTitle>
+          </div>
+          <CardDescription>
+            Tindakan di bawah ini bersifat permanen dan tidak dapat dibatalkan.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          {/* Logout Section */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border bg-card">
+            <div className="flex flex-col gap-1">
+              <span className="font-medium text-sm">Keluar dari Akun</span>
+              <p className="text-xs text-muted-foreground">
+                Akhiri sesi login Anda saat ini di browser ini.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleLogout(router)}
+              className="gap-2 shrink-0"
+            >
+              <LogOut className="size-4" />
+              Keluar
+            </Button>
+          </div>
+
+          {/* Delete Account Section */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-destructive/20 bg-card">
+            <div className="flex flex-col gap-1">
+              <span className="font-medium text-sm text-destructive">
+                Hapus Akun Permanen
+              </span>
+              <p className="text-xs text-muted-foreground">
+                Menghapus profil Anda, riwayat sesi, dan seluruh data yang
+                terkait secara permanen.
+              </p>
+            </div>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="gap-2 shrink-0"
+                  />
+                }
+              >
+                <Trash2 className="size-4" />
+                Hapus Akun
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-destructive flex items-center gap-2">
+                    <AlertTriangle className="size-5" />
+                    Konfirmasi Hapus Akun
+                  </DialogTitle>
+                  <DialogDescription>
+                    Tindakan ini <strong>tidak dapat dibatalkan</strong>. Semua
+                    data Anda akan dihapus secara permanen dari server.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="flex flex-col gap-4 py-2">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="confirmEmail" className="text-xs">
+                      Ketik email Anda{" "}
+                      <code className="font-mono font-bold text-foreground">
+                        {userEmail}
+                      </code>{" "}
+                      untuk konfirmasi:
+                    </Label>
+                    <Input
+                      id="confirmEmail"
+                      value={confirmationInput}
+                      onChange={(e) => setConfirmationInput(e.target.value)}
+                      placeholder={userEmail}
+                      disabled={isDeleting}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="deletePassword" className="text-xs">
+                      Kata sandi Anda (jika login dengan email/password):
+                    </Label>
+                    <Input
+                      id="deletePassword"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      disabled={isDeleting}
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsOpen(false)}
+                    disabled={isDeleting}
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={confirmationInput !== userEmail || isDeleting}
+                    onClick={handleDeleteAccount}
+                    className="gap-2"
+                  >
+                    {isDeleting ? (
+                      <Spinner className="size-4" />
+                    ) : (
+                      <Trash2 className="size-4" />
+                    )}
+                    Hapus Akun Selamanya
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

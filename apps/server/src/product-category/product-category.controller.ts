@@ -13,7 +13,9 @@ import { CreateProductCategoryDTO } from './dtos/create-product-category.dto';
 import { CreateProductCategoryBulkDTO } from './dtos/create-product-category-bulk.dto';
 import { UpdateProductCategoryDTO } from './dtos/update-product-category.dto';
 import { WorkspaceGuard } from 'src/workspace/guards/workspace.guard';
-import { OptionalAuth } from '@thallesp/nestjs-better-auth';
+import { WorkspaceRoleGuard } from 'src/workspace/guards/workspace-role-guard.guard';
+import { Roles } from 'src/workspace/decorators/role.decorator';
+import { Role } from '@prisma/client';
 import { ProductCategoryTransformer } from './transformers/product-category.transformer';
 
 @Controller('/workspace/:workspaceId/product/category')
@@ -21,7 +23,8 @@ export class ProductCategoryController {
   constructor(private productCategoryService: ProductCategoryService) {}
 
   @Post('/bulk')
-  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async createProductCategoryBulk(
     @Body() dto: CreateProductCategoryBulkDTO,
     @Param('workspaceId') workspaceId: string,
@@ -37,7 +40,8 @@ export class ProductCategoryController {
   }
 
   @Post()
-  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async createProductCategory(
     @Body() dto: CreateProductCategoryDTO,
     @Param('workspaceId') workspaceId: string,
@@ -48,7 +52,8 @@ export class ProductCategoryController {
   }
 
   @Patch('/:productCategoryId')
-  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async updateProductCategory(
     @Body() dto: UpdateProductCategoryDTO,
     @Param('workspaceId') workspaceId: string,
@@ -64,7 +69,8 @@ export class ProductCategoryController {
   }
 
   @Delete('/:productCategoryId')
-  @UseGuards(WorkspaceGuard)
+  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
   async deleteProductCategory(
     @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
@@ -76,7 +82,7 @@ export class ProductCategoryController {
   }
 
   @Get('/:productCategoryId')
-  @OptionalAuth()
+  @UseGuards(WorkspaceGuard)
   async getProductCategoryById(
     @Param('workspaceId') workspaceId: string,
     @Param('productCategoryId') productCategoryId: string,
@@ -90,7 +96,7 @@ export class ProductCategoryController {
   }
 
   @Get()
-  @OptionalAuth()
+  @UseGuards(WorkspaceGuard)
   async getProductCategoriesByWorkspace(
     @Param('workspaceId') workspaceId: string,
   ): Promise<ProductCategoryTransformer[]> {

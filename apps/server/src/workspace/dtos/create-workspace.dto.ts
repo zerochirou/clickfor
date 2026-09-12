@@ -14,5 +14,21 @@ export class CreateWorkspaceDTO {
 
   @IsString()
   @IsOptional()
-  image: string;
+  image?: string;
+
+  @IsString()
+  @IsOptional()
+  brandColor?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  transparentSidebar?: boolean;
+
+  @IsString()
+  @IsOptional()
+  sidebarFeature?: string;
+
+  @IsString()
+  @IsOptional()
+  tablesView?: string;
 }

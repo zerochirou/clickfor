@@ -17,7 +17,10 @@ export const updateProductCategorySchema = z.object({
     .string()
     .min(4, "Nama kategori minimal 4 karakter")
     .max(20, "Nama kategori maksimal 20 karakter"),
-  description: z.string().max(200, "Deskripsi maksimal 200 karakter").optional(),
+  description: z
+    .string()
+    .max(200, "Deskripsi maksimal 200 karakter")
+    .optional(),
   icon: z.string().min(1, "Ikon wajib dipilih"),
 });
 

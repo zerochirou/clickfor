@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
+import { fromNodeHeaders } from 'better-auth/node';
 import { Request } from 'express';
 import { auth } from 'src/auth';
 import { DbService } from 'src/db/db.service';
@@ -36,17 +37,8 @@ export class WorkspaceRoleGuard implements CanActivate {
 
     const request: Request = context.switchToHttp().getRequest();
     try {
-      const webHeaders = new Headers();
-      Object.entries(request.headers).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          webHeaders.set(key, value);
-        } else if (Array.isArray(value)) {
-          value.forEach((v) => webHeaders.append(key, v));
-        }
-      });
-
       const session = await auth.api.getSession({
-        headers: webHeaders,
+        headers: fromNodeHeaders(request.headers),
       });
 
       if (!session || !session.user) {

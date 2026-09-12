@@ -4,11 +4,7 @@ import { BellRing } from "lucide-react";
 import { ModeToggle } from "@/components/commons/theme-toggle/mode";
 import { SidebarTriggerButton } from "./sidebar-trigger-button";
 
-export function SidebarLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarInset className="">
       <header className="flex h-16 shrink-0 items-center gap-2 px-2">
@@ -20,9 +16,7 @@ export function SidebarLayout({
           <ModeToggle />
         </div>
       </header>
-      <div className="">
-        {children}
-      </div>
+      <div className="">{children}</div>
     </SidebarInset>
   );
 }

@@ -14,11 +14,11 @@
 
 Architecture complexity MUST match project scope — don't over-architect small projects. When starting a new project, ask the developer what architecture they prefer:
 
-| Project Size | Recommended Approach |
-| --- | --- |
-| Script / small CLI (<500 lines) | Flat `main.go` + a few files, no layers |
-| Medium service (500-5K lines) | Simple layered: `handler/`, `service/`, `repository/` |
-| Large service / monolith (5K+ lines) | Clean architecture, hexagonal, or DDD — ask the team |
+| Project Size                         | Recommended Approach                                  |
+| ------------------------------------ | ----------------------------------------------------- |
+| Script / small CLI (<500 lines)      | Flat `main.go` + a few files, no layers               |
+| Medium service (500-5K lines)        | Simple layered: `handler/`, `service/`, `repository/` |
+| Large service / monolith (5K+ lines) | Clean architecture, hexagonal, or DDD — ask the team  |
 
 A 100-line CLI does not need a domain layer, ports and adapters, or dependency injection frameworks. Start simple and refactor when complexity demands it.
 

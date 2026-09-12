@@ -19,14 +19,14 @@ Apply DDD when the business domain is complex enough that the code structure sho
 
 ## Building Blocks
 
-| Concept | Go Mapping | Purpose |
-| --- | --- | --- |
-| **Entity** | Struct with identity field | Has unique ID, mutable state, lifecycle |
-| **Value Object** | Immutable struct, compared by value | No identity — represents a measurement, quantity, or descriptor |
-| **Aggregate** | Entity + child entities/value objects | Consistency boundary — all mutations go through the root |
-| **Repository** | Interface in domain, impl in infrastructure | Persistence abstraction for aggregates |
-| **Domain Service** | Function or struct in domain package | Logic that spans multiple aggregates |
-| **Domain Event** | Struct describing a fact that happened | Decouples bounded contexts |
+| Concept            | Go Mapping                                  | Purpose                                                         |
+| ------------------ | ------------------------------------------- | --------------------------------------------------------------- |
+| **Entity**         | Struct with identity field                  | Has unique ID, mutable state, lifecycle                         |
+| **Value Object**   | Immutable struct, compared by value         | No identity — represents a measurement, quantity, or descriptor |
+| **Aggregate**      | Entity + child entities/value objects       | Consistency boundary — all mutations go through the root        |
+| **Repository**     | Interface in domain, impl in infrastructure | Persistence abstraction for aggregates                          |
+| **Domain Service** | Function or struct in domain package        | Logic that spans multiple aggregates                            |
+| **Domain Event**   | Struct describing a fact that happened      | Decouples bounded contexts                                      |
 
 ## Project Structure
 

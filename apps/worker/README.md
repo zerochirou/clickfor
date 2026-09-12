@@ -3,6 +3,7 @@
 Background worker service written in Go for asynchronous job processing, scheduled tasks, and event consumers.
 
 ## Tech Stack
+
 - **Go**: 1.26+
 - **Logging**: `log/slog` (Go standard library structured logger)
 - **Live Reload**: `air` (falls back to `go run` if not installed)
@@ -10,6 +11,7 @@ Background worker service written in Go for asynchronous job processing, schedul
 - **Graceful Shutdown**: Context-driven signal listening for `SIGINT` and `SIGTERM`
 
 ## Project Structure
+
 ```text
 apps/worker/
 ├── cmd/
@@ -32,6 +34,7 @@ apps/worker/
 ## Running the Service
 
 ### Via Turborepo / pnpm (From repository root)
+
 ```bash
 # Start development mode (watches changes with Air)
 pnpm --filter worker dev
@@ -47,6 +50,7 @@ pnpm --filter worker lint
 ```
 
 ### Via Makefile (Inside `apps/worker`)
+
 ```bash
 # Development with hot reload
 make dev

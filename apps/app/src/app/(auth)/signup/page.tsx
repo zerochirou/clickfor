@@ -1,16 +1,12 @@
-import {
-  SignUpBackground,
-  SignUpContent,
-  SignUpFooter,
-  SignUpHeader,
-} from "@/features/auth/components/singup";
+import { SignUpPageContent } from "@/features/auth/components/signup";
+import type { Metadata } from "next";
 
-export default function SignupPage() {
-  return (
-    <SignUpBackground>
-      <SignUpHeader />
-      <SignUpContent />
-      <SignUpFooter />
-    </SignUpBackground>
-  );
+export const metadata: Metadata = {
+  title: "Create an Account - Clickfor",
+  description:
+    "Create your Clickfor account to elevate every design and digital store you make.",
+};
+
+export default function SignUpPage() {
+  return <SignUpPageContent />;
 }
