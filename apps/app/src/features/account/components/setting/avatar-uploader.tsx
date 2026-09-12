@@ -8,11 +8,12 @@ import { getAvatarPresignedUploadURL } from "../../api/get-avatar-presigned-url"
 import { ImagePicker, CropResult } from "@/components/commons/image-picker";
 import { Camera, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 interface AvatarUploaderProps {
   currentAvatar?: string | null;
   name: string;
-  onAvatarChange: (newUrl: string | null) => void;
+  onAvatarChange: (newKey: string | null) => void;
   disabled?: boolean;
 }
 
@@ -30,11 +31,11 @@ export function AvatarUploader({
   const handleCroppedImageSelected = async (result: CropResult) => {
     try {
       setIsUploading(true);
-      setAvatarPreview(result.url);
+      setAvatarPreview(result.url); // Show local preview
 
       const presignedData = await getAvatarPresignedUploadURL({
-        fileName: encodeURIComponent(result.file.name),
-        contentType: encodeURIComponent(result.file.type || "image/webp"),
+        fileName: result.file.name,
+        contentType: result.file.type || "image/webp",
       });
 
       if (!presignedData?.uploadURL) {
@@ -53,9 +54,9 @@ export function AvatarUploader({
         throw new Error("Gagal mengunggah gambar ke storage");
       }
 
-      const finalImageUrl = presignedData.publicUrl || presignedData.fileKey;
-      setAvatarPreview(finalImageUrl);
-      onAvatarChange(finalImageUrl);
+      const fileKey = presignedData.fileKey;
+      setAvatarPreview(fileKey);
+      onAvatarChange(fileKey);
       toast.success("Foto profil berhasil diunggah!");
     } catch (error) {
       console.error("Avatar upload error:", error);
@@ -83,6 +84,8 @@ export function AvatarUploader({
         .toUpperCase()
     : "U";
 
+  const displayAvatar = getStorageImageUrl(avatarPreview, "avatar");
+
   return (
     <div className="flex items-center justify-between w-full max-w-md">
       <div className="flex items-center gap-4">
@@ -100,9 +103,9 @@ export function AvatarUploader({
               className="size-16 rounded-full border border-border bg-muted/30 flex items-center justify-center overflow-hidden relative shrink-0 shadow-xs cursor-pointer group hover:border-primary/50 transition-colors"
             >
               <Avatar className="size-full">
-                {avatarPreview && (
+                {displayAvatar && (
                   <AvatarImage
-                    src={avatarPreview}
+                    src={displayAvatar}
                     alt={name}
                     className="object-cover size-full"
                   />

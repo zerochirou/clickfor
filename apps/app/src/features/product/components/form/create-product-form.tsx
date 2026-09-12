@@ -82,29 +82,29 @@ export function CreateProductForm() {
 
       // TAHAP 1 & 2: Jika user memilih file, minta URL lalu upload langsung ke storage
       if (selectedFile) {
-        const fileName = encodeURIComponent(selectedFile.name);
-        const contentType = encodeURIComponent(selectedFile.type);
         const presignedData = await getPresignedUploadURL({
           workspaceId: workspace.id,
-          fileName: fileName,
-          contentType: contentType,
+          fileName: selectedFile.name,
+          contentType: selectedFile.type || "image/webp",
         });
 
-        if (presignedData?.uploadURL) {
-          const uploadRes = await fetch(presignedData.uploadURL, {
-            method: "PUT",
-            body: selectedFile,
-            headers: {
-              "Content-Type": selectedFile.type,
-            },
-          });
-
-          if (!uploadRes.ok) {
-            throw new Error("Gagal mengunggah file gambar ke storage.");
-          }
-
-          fileKey = presignedData.fileKey;
+        if (!presignedData?.uploadURL) {
+          throw new Error("Gagal membuat presigned upload URL.");
         }
+
+        const uploadRes = await fetch(presignedData.uploadURL, {
+          method: "PUT",
+          body: selectedFile,
+          headers: {
+            "Content-Type": selectedFile.type || "image/webp",
+          },
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Gagal mengunggah file gambar ke storage.");
+        }
+
+        fileKey = presignedData.fileKey;
       }
 
       // TAHAP 3: Kirim data produk lengkap beserta `fileKey` ke Backend

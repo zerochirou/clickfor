@@ -19,6 +19,7 @@ import { User } from "better-auth";
 import { Workspace } from "@/lib/types/workspace";
 import WorkspaceSearchCommand from "../command/workspace-search-command";
 import Image from "next/image";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 export function AppSidebar({
   user,
@@ -29,6 +30,7 @@ export function AppSidebar({
 }) {
   const { workspace: contextWorkspace } = useWorkspace();
   const workspace = workspaceProp ?? contextWorkspace;
+  const workspaceImage = getStorageImageUrl(workspace.image, "workspace");
 
   return (
     <Sidebar variant="inset">
@@ -36,14 +38,14 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<a href="#" />}>
-              {workspace.image ? (
+              {workspaceImage ? (
                 <Image
-                  src={workspace.image}
+                  src={workspaceImage}
                   alt={workspace.workspaceName}
                   width={20}
                   height={20}
                   unoptimized
-                  className="size-10 rounded-lg"
+                  className="size-10 rounded-lg object-cover"
                 />
               ) : (
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">

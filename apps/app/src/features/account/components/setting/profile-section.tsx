@@ -11,12 +11,13 @@ import { ImagePicker, CropResult } from "@/components/commons/image-picker";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth/auth-client";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 interface ProfileSectionProps {
   avatar: string | null;
   firstName: string;
   lastName: string;
-  onAvatarChange: (newUrl: string | null) => void;
+  onAvatarChange: (newKey: string | null) => void;
   onFirstNameChange: (val: string) => void;
   onLastNameChange: (val: string) => void;
   disabled?: boolean;
@@ -38,8 +39,8 @@ export function ProfileSection({
       setIsUploading(true);
 
       const presignedData = await getAvatarPresignedUploadURL({
-        fileName: encodeURIComponent(result.file.name),
-        contentType: encodeURIComponent(result.file.type || "image/webp"),
+        fileName: result.file.name,
+        contentType: result.file.type || "image/webp",
       });
 
       if (!presignedData?.uploadURL) {
@@ -58,14 +59,14 @@ export function ProfileSection({
         throw new Error("Gagal mengunggah gambar ke storage");
       }
 
-      const finalImageUrl = presignedData.publicUrl || presignedData.fileKey;
+      const fileKey = presignedData.fileKey;
 
-      // Update in Better Auth
+      // Update in Better Auth with storage file key
       await authClient.updateUser({
-        image: finalImageUrl,
+        image: fileKey,
       });
 
-      onAvatarChange(finalImageUrl);
+      onAvatarChange(fileKey);
       toast.success("Foto profil berhasil diperbarui!");
     } catch (error) {
       console.error("Avatar upload error:", error);
@@ -102,6 +103,8 @@ export function ProfileSection({
       .join("")
       .toUpperCase() || "U";
 
+  const displayAvatar = getStorageImageUrl(avatar, "avatar");
+
   return (
     <div className="flex flex-col">
       {/* Section Header */}
@@ -114,9 +117,9 @@ export function ProfileSection({
       <div className="flex items-center gap-5">
         <div className="relative size-18 shrink-0">
           <Avatar className="size-18 border border-border shadow-xs">
-            {avatar && (
+            {displayAvatar && (
               <AvatarImage
-                src={avatar}
+                src={displayAvatar}
                 alt="Profile photo"
                 className="object-cover size-full"
               />

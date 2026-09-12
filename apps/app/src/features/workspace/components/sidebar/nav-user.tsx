@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { handleLogout } from "@/features/auth/lib/handle-logout";
 import { User } from "better-auth";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 import {
   ChevronsUpDownIcon,
@@ -33,6 +34,7 @@ import { useRouter } from "next/navigation";
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const userAvatar = getStorageImageUrl(user.image, "avatar") || "/images/background/green-hills.jpg";
 
   return (
     <SidebarMenu>
@@ -45,11 +47,11 @@ export function NavUser({ user }: { user: User }) {
           >
             <Avatar suppressHydrationWarning>
               <AvatarImage
-                src={user.image || "/images/background/green-hills.jpg"}
+                src={userAvatar}
                 alt={user.name}
               />
               <AvatarFallback suppressHydrationWarning>
-                {user.name.slice(0, 2)}
+                {user.name.slice(0, 2)} 
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-start text-sm leading-tight">
@@ -71,7 +73,7 @@ export function NavUser({ user }: { user: User }) {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                   <Avatar suppressHydrationWarning>
                     <AvatarImage
-                      src={user.image || "/images/background/green-hills.jpg"}
+                      src={userAvatar}
                       alt={user.name}
                     />
                     <AvatarFallback suppressHydrationWarning>

@@ -3,17 +3,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { getAvatarPresignedUploadURL } from "@/features/account/api/get-avatar-presigned-url";
+import { getWorkspacePresignedUploadURL } from "../../api/get-workspace-presigned-url";
 import { ImagePicker, CropResult } from "@/components/commons/image-picker";
 import { toast } from "sonner";
 import Image from "next/image";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 interface LogoUploaderProps {
+  workspaceId: string;
   currentLogo?: string | null;
   onLogoChange: (url: string | null) => void;
 }
 
-export function LogoUploader({ currentLogo, onLogoChange }: LogoUploaderProps) {
+export function LogoUploader({
+  workspaceId,
+  currentLogo,
+  onLogoChange,
+}: LogoUploaderProps) {
   const [logoPreview, setLogoPreview] = useState<string | null>(
     currentLogo || null,
   );
@@ -24,9 +30,10 @@ export function LogoUploader({ currentLogo, onLogoChange }: LogoUploaderProps) {
       setIsUploading(true);
       setLogoPreview(result.url);
 
-      const presignedData = await getAvatarPresignedUploadURL({
-        fileName: encodeURIComponent(result.file.name),
-        contentType: encodeURIComponent(result.file.type || "image/webp"),
+      const presignedData = await getWorkspacePresignedUploadURL({
+        workspaceId,
+        fileName: result.file.name,
+        contentType: result.file.type || "image/webp",
       });
 
       if (!presignedData?.uploadURL) {
@@ -45,9 +52,9 @@ export function LogoUploader({ currentLogo, onLogoChange }: LogoUploaderProps) {
         throw new Error("Gagal mengunggah logo ke storage");
       }
 
-      const finalLogoUrl = presignedData.publicUrl || presignedData.fileKey;
-      setLogoPreview(finalLogoUrl);
-      onLogoChange(finalLogoUrl);
+      const fileKey = presignedData.fileKey;
+      setLogoPreview(fileKey);
+      onLogoChange(fileKey);
       toast.success("Logo workspace berhasil diperbarui!");
     } catch (error) {
       console.error("Logo upload error:", error);
@@ -66,6 +73,8 @@ export function LogoUploader({ currentLogo, onLogoChange }: LogoUploaderProps) {
     toast.success("Logo dihapus");
   };
 
+  const displayLogo = getStorageImageUrl(logoPreview, "workspace");
+
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-4">
@@ -83,13 +92,13 @@ export function LogoUploader({ currentLogo, onLogoChange }: LogoUploaderProps) {
               onClick={openPicker}
               className="size-16 rounded-2xl border border-border bg-muted/30 flex items-center justify-center overflow-hidden relative shrink-0 shadow-xs cursor-pointer group hover:border-primary/50 transition-colors"
             >
-              {logoPreview ? (
+              {displayLogo ? (
                 <Image
-                  src={logoPreview}
+                  src={displayLogo}
                   alt="Company Logo"
                   width={64}
                   height={64}
-                  className="size-full"
+                  className="size-full object-cover"
                   unoptimized
                 />
               ) : (

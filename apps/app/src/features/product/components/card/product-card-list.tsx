@@ -18,6 +18,7 @@ import { Product } from "@/lib/types/product";
 import {
   ChevronLeft,
   ChevronRight,
+  Package,
   PackageSearch,
   SquareArrowOutUpRight,
   TrendingUp,
@@ -25,6 +26,7 @@ import {
 } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import Image from "next/image";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 import { useWorkspace } from "@/features/workspace/lib/workspace-provider";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -96,15 +98,19 @@ export function ProductCardList({
                           : "hover:border-primary/50",
                       )}
                     >
-                      <div className="relative w-full aspect-video bg-muted overflow-hidden">
-                        <Image
-                          src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${item.image}`}
-                          alt={item.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          unoptimized
-                        />
+                      <div className="relative w-full aspect-video bg-muted overflow-hidden flex items-center justify-center">
+                        {item.image ? (
+                          <Image
+                            src={getStorageImageUrl(item.image, "product") || ""}
+                            alt={item.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            unoptimized
+                          />
+                        ) : (
+                          <Package className="size-10 opacity-30 text-muted-foreground" />
+                        )}
                         <div className="absolute top-2 right-2">
                           <AnimatePresence mode="wait">
                             {item.isUp ? (

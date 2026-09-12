@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import {
@@ -120,12 +121,10 @@ export function UpdateProductForm({
 
       // Handle new image upload if selected
       if (selectedFile) {
-        const fileName = encodeURIComponent(selectedFile.name);
-        const contentType = encodeURIComponent(selectedFile.type);
         const presignedData = await getPresignedUploadURL({
           workspaceId,
-          fileName,
-          contentType,
+          fileName: selectedFile.name,
+          contentType: selectedFile.type || "image/webp",
         });
 
         if (presignedData?.uploadURL) {
@@ -133,7 +132,7 @@ export function UpdateProductForm({
             method: "PUT",
             body: selectedFile,
             headers: {
-              "Content-Type": selectedFile.type,
+              "Content-Type": selectedFile.type || "image/webp",
             },
           });
 
@@ -226,7 +225,7 @@ export function UpdateProductForm({
               />
             ) : product.image ? (
               <Image
-                src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${product.image}`}
+                src={getStorageImageUrl(product.image, "product") || ""}
                 alt={product.name}
                 fill
                 priority

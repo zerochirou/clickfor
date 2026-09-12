@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -103,6 +104,19 @@ export class StorageService {
         expiresIn,
       });
       return presignedUrl;
+    } catch (error) {
+      this.errorFormat(error, bucketName);
+    }
+  }
+
+  public async deleteObject(fileName: string, bucketName: string) {
+    try {
+      const command = new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: fileName,
+      });
+      const response = this.s3Client.send(command);
+      return response;
     } catch (error) {
       this.errorFormat(error, bucketName);
     }

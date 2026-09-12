@@ -34,6 +34,7 @@ import {
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { CategoryTooltip } from "./category-tooltip";
 import Image from "next/image";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 import { TableAction } from "./table-action";
 import { useWorkspace } from "@/features/workspace/lib/workspace-provider";
 import { motion, AnimatePresence } from "motion/react";
@@ -344,14 +345,20 @@ export function ProductTable({ products: propProducts }: ProductTableProps) {
                         >
                           {/* 3. Gunakan wrapper kaku (48px) dengan Next.js Image fill */}
                           <div className="relative w-12 h-12 min-w-12 min-h-12 shrink-0 overflow-hidden rounded-md border bg-muted">
-                            <Image
-                              src={`${process.env.NEXT_PUBLIC_S3_PRODUCT_BUCKET}/${item.image}`}
-                              alt={item.name}
-                              fill
-                              sizes="48px"
-                              className="object-cover group-hover/item:scale-105 transition-all"
-                              unoptimized
-                            />
+                            {item.image ? (
+                              <Image
+                                src={getStorageImageUrl(item.image, "product") || ""}
+                                alt={item.name}
+                                fill
+                                sizes="48px"
+                                className="object-cover group-hover/item:scale-105 transition-all"
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="size-full flex items-center justify-center text-muted-foreground">
+                                <Package className="size-5 opacity-40" />
+                              </div>
+                            )}
                           </div>
 
                           {/* 4. Beri min-w-0 dan truncate agar teks tidak mendorong kolom */}

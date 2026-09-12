@@ -107,6 +107,7 @@ export function WorkspaceSettingView({ workspace }: WorkspaceSettingViewProps) {
     <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-8 flex flex-col gap-10">
       {/* 1. Workspace Profile Section */}
       <WorkspaceProfileSection
+        workspaceId={workspace.id}
         logo={logo}
         workspaceName={workspaceName}
         brandColor={brandColor}

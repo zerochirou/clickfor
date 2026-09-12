@@ -10,11 +10,12 @@ import { ImagePicker, CropResult } from "@/components/commons/image-picker";
 import { Camera, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 interface AvatarUploadProps {
   currentImage?: string | null;
   name: string;
-  onImageUpdated?: (newImageUrl: string | null) => void;
+  onImageUpdated?: (newImageKey: string | null) => void;
 }
 
 export function AvatarUpload({
@@ -32,12 +33,12 @@ export function AvatarUpload({
   const handleCroppedImageSelected = async (result: CropResult) => {
     try {
       setIsUploading(true);
-      setImagePreview(result.url);
+      setImagePreview(result.url); // Show local preview during upload
 
       // 1. Get presigned upload URL from server
       const presignedData = await getAvatarPresignedUploadURL({
-        fileName: encodeURIComponent(result.file.name),
-        contentType: encodeURIComponent(result.file.type || "image/webp"),
+        fileName: result.file.name,
+        contentType: result.file.type || "image/webp",
       });
 
       if (!presignedData?.uploadURL) {
@@ -57,18 +58,18 @@ export function AvatarUpload({
         throw new Error("Gagal mengunggah file gambar ke storage");
       }
 
-      // 3. Update profile image in Better Auth
-      const finalImageUrl = presignedData.publicUrl || presignedData.fileKey;
+      // 3. Update profile image in Better Auth using fileKey
+      const fileKey = presignedData.fileKey;
       const res = await authClient.updateUser({
-        image: finalImageUrl,
+        image: fileKey,
       });
 
       if (res?.error) {
         throw new Error(res.error.message || "Gagal memperbarui profil");
       }
 
-      setImagePreview(finalImageUrl);
-      onImageUpdated?.(finalImageUrl);
+      setImagePreview(fileKey);
+      onImageUpdated?.(fileKey);
       toast.success("Foto profil berhasil diperbarui!");
 
       startTransition(() => {
@@ -126,6 +127,8 @@ export function AvatarUpload({
         .toUpperCase()
     : "U";
 
+  const displayAvatar = getStorageImageUrl(imagePreview, "avatar");
+
   return (
     <div className="flex flex-col sm:flex-row items-center gap-6">
       {/* Avatar with Crop Trigger */}
@@ -140,9 +143,9 @@ export function AvatarUpload({
         {(openPicker) => (
           <div className="relative group cursor-pointer" onClick={openPicker}>
             <Avatar className="size-24 border-2 border-border shadow-sm">
-              {imagePreview && (
+              {displayAvatar && (
                 <AvatarImage
-                  src={imagePreview}
+                  src={displayAvatar}
                   alt={name}
                   className="object-cover"
                 />

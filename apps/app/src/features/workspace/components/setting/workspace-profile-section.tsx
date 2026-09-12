@@ -6,19 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
-import { getAvatarPresignedUploadURL } from "@/features/account/api/get-avatar-presigned-url";
+import { getWorkspacePresignedUploadURL } from "../../api/get-workspace-presigned-url";
 import { ImagePicker, CropResult } from "@/components/commons/image-picker";
 import { BrandColorPicker } from "./brand-color-picker";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { getStorageImageUrl } from "@/lib/storage-utils";
 
 interface WorkspaceProfileSectionProps {
+  workspaceId: string;
   logo: string | null;
   workspaceName: string;
   brandColor: string;
   description: string;
-  onLogoChange: (newLogo: string | null) => void;
+  onLogoChange: (newLogoKey: string | null) => void;
   onWorkspaceNameChange: (val: string) => void;
   onBrandColorChange: (val: string) => void;
   onDescriptionChange: (val: string) => void;
@@ -26,6 +28,7 @@ interface WorkspaceProfileSectionProps {
 }
 
 export function WorkspaceProfileSection({
+  workspaceId,
   logo,
   workspaceName,
   brandColor,
@@ -42,9 +45,10 @@ export function WorkspaceProfileSection({
     try {
       setIsUploading(true);
 
-      const presignedData = await getAvatarPresignedUploadURL({
-        fileName: encodeURIComponent(result.file.name),
-        contentType: encodeURIComponent(result.file.type || "image/webp"),
+      const presignedData = await getWorkspacePresignedUploadURL({
+        workspaceId,
+        fileName: result.file.name,
+        contentType: result.file.type || "image/webp",
       });
 
       if (!presignedData?.uploadURL) {
@@ -63,8 +67,8 @@ export function WorkspaceProfileSection({
         throw new Error("Gagal mengunggah logo ke storage");
       }
 
-      const finalLogoUrl = presignedData.publicUrl || presignedData.fileKey;
-      onLogoChange(finalLogoUrl);
+      const fileKey = presignedData.fileKey;
+      onLogoChange(fileKey);
       toast.success("Logo workspace berhasil diunggah!");
     } catch (error) {
       console.error("Logo upload error:", error);
@@ -81,6 +85,8 @@ export function WorkspaceProfileSection({
     toast.success("Logo dihapus");
   };
 
+  const displayLogo = getStorageImageUrl(logo, "workspace");
+
   return (
     <div className="flex flex-col">
       {/* Section Header */}
@@ -92,9 +98,9 @@ export function WorkspaceProfileSection({
       {/* Logo & Action Row */}
       <div className="flex items-center gap-5">
         <div className="relative size-18 rounded-2xl border border-border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-          {logo ? (
+          {displayLogo ? (
             <Image
-              src={logo}
+              src={displayLogo}
               alt="Workspace logo"
               width={72}
               height={72}
@@ -160,7 +166,7 @@ export function WorkspaceProfileSection({
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            We support PNGs, JPEGs and SVG under 2MB
+            We support PNGs, JPEGs, WebP and SVG under 2MB
           </p>
         </div>
       </div>

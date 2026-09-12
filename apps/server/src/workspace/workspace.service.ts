@@ -1,9 +1,12 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DbService } from 'src/db/db.service';
+import { StorageService } from 'src/storage/storage.service';
 import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
 import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
 import { handlePrismaError } from 'src/common/utils/handle-prisma-error';
@@ -12,7 +15,41 @@ import { ROLE_HIERARCHY } from './guards/workspace-role-guard.guard';
 
 @Injectable()
 export class WorkspaceService {
-  constructor(private db: DbService) {}
+  constructor(
+    private db: DbService,
+    private configService: ConfigService,
+    private storageService: StorageService,
+  ) {}
+
+  public async getWorkspaceLogoPresignedUploadUrl(
+    workspaceId: string,
+    fileName: string,
+    contentType?: string,
+  ) {
+    if (!fileName) {
+      throw new BadRequestException('Parameter fileName wajib diisi!');
+    }
+
+    const cleanFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const uniqueFileName = `avatars/${workspaceId}-${Date.now()}-${cleanFileName}`;
+
+    const bucketName =
+      this.configService.get<string>('BUCKET_WORKSPACE') || 'workspaces';
+
+    const uploadURL = await this.storageService.generatePresignedUploadURL({
+      bucketName: bucketName,
+      fileName: uniqueFileName,
+      contentType: contentType || 'image/webp',
+      expiresIn: 600,
+    });
+
+    return {
+      success: true,
+      uploadURL: uploadURL,
+      fileKey: uniqueFileName,
+      bucket: bucketName,
+    };
+  }
 
   public async createWorkspace(dto: CreateWorkspaceDTO, userId: string) {
     try {
@@ -52,7 +89,28 @@ export class WorkspaceService {
   }
 
   public async updateWorkspace(dto: UpdateWorkspaceDTO, workspaceId: string) {
+    const bucketName =
+      this.configService.get<string>('BUCKET_WORKSPACE') || 'workspaces';
     try {
+      const existingWorkspace = await this.db.workspace.findUnique({
+        where: { id: workspaceId },
+        select: { id: true, image: true },
+      });
+      if (!existingWorkspace) {
+        throw new NotFoundException(
+          `Workspace with ID ${workspaceId} not found.`,
+        );
+      }
+      if (
+        dto.image &&
+        existingWorkspace.image &&
+        dto.image !== existingWorkspace.image
+      ) {
+        await this.storageService.deleteObject(
+          existingWorkspace.image,
+          bucketName,
+        );
+      }
       return await this.db.workspace.update({
         where: {
           id: workspaceId,

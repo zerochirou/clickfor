@@ -25,26 +25,19 @@ export class UserService {
     const uniqueFileName = `avatars/${userId}-${Date.now()}-${cleanFileName}`;
 
     const bucketName =
-      this.configService.get<string>('BUCKET_AVATAR') ||
-      this.configService.get<string>('BUCKET_PRODUCT') ||
-      'products';
+      this.configService.get<string>('BUCKET_AVATAR') || 'avatars';
 
     const uploadURL = await this.storageService.generatePresignedUploadURL({
       bucketName: bucketName,
       fileName: uniqueFileName,
-      contentType: contentType || 'image/jpeg',
+      contentType: contentType || 'image/webp',
       expiresIn: 600,
     });
-
-    const s3Endpoint =
-      this.configService.get<string>('S3_ENDPOINT') || 'http://localhost:9000';
-    const publicUrl = `${s3Endpoint}/${bucketName}/${uniqueFileName}`;
 
     return {
       success: true,
       uploadURL: uploadURL,
       fileKey: uniqueFileName,
-      publicUrl: publicUrl,
       bucket: bucketName,
     };
   }

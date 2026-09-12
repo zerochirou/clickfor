@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
@@ -56,12 +60,29 @@ export class ProductService {
     workspaceId: string,
   ) {
     try {
-      await this.db.product.findFirstOrThrow({
+      const bucketName =
+        this.configService.get<string>('BUCKET_PRODUCT') || 'products';
+      const existingProduct = await this.db.product.findFirstOrThrow({
         where: {
           id: productId,
           workspaceId,
         },
       });
+      if (!existingProduct) {
+        throw new NotFoundException(
+          `Product with ID ${workspaceId} not found.`,
+        );
+      }
+      if (
+        dto.image &&
+        existingProduct.image &&
+        dto.image !== existingProduct.image
+      ) {
+        await this.storageService.deleteObject(
+          existingProduct.image,
+          bucketName,
+        );
+      }
 
       return await this.db.product.update({
         where: {
@@ -244,12 +265,13 @@ export class ProductService {
 
     const cleanFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     const uniqueFileName = `images/${Date.now()}-${cleanFileName}`;
-    const bucketName = this.configService.getOrThrow<string>('BUCKET_PRODUCT');
+    const bucketName =
+      this.configService.get<string>('BUCKET_PRODUCT') || 'products';
 
     const uploadURL = await this.storageService.generatePresignedUploadURL({
       bucketName: bucketName,
       fileName: uniqueFileName,
-      contentType: contentType || 'application/octet-stream',
+      contentType: contentType || 'image/webp',
       expiresIn: 600,
     });
 
@@ -257,6 +279,7 @@ export class ProductService {
       success: true,
       uploadURL: uploadURL,
       fileKey: uniqueFileName,
+      bucket: bucketName,
     };
   }
 }

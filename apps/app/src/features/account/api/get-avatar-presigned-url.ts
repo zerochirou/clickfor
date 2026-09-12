@@ -8,7 +8,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 interface GetAvatarPresignedUploadURLParams {
   fileName: string;
-  contentType: string;
+  contentType?: string;
 }
 
 export async function getAvatarPresignedUploadURL(
@@ -18,19 +18,24 @@ export async function getAvatarPresignedUploadURL(
     await isAuthenticated();
     const requestHeaders = await headers();
     const cookieHeader = requestHeaders.get("cookie");
-    const searchParams = new URLSearchParams({
-      fileName: params.fileName,
-      contentType: params.contentType,
-    });
+    const authHeader = requestHeaders.get("authorization");
+
+    const searchParams = new URLSearchParams();
+    searchParams.set("fileName", params.fileName);
+    if (params.contentType) {
+      searchParams.set("contentType", params.contentType);
+    }
+
     const serverApi =
       process.env.NEXT_PUBLIC_SERVER_API || "http://localhost:4000/api";
     const response = await fetch(
-      `${serverApi}/user/avatar/presigned-url?${searchParams.toString()}`,
+      `${serverApi.replace(/\/$/, "")}/user/avatar/presigned-url?${searchParams.toString()}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+          ...(authHeader ? { Authorization: authHeader } : {}),
         },
       },
     );
@@ -57,6 +62,10 @@ export async function getAvatarPresignedUploadURL(
       throw error;
     }
     console.error(error);
-    throw new Error("Failed to get avatar presigned upload URL");
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to get avatar presigned upload URL",
+    );
   }
 }

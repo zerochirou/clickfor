@@ -6,11 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
 import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
+import { GetWorkspacePresignedUrlDTO } from './dtos/get-workspace-presigned-url.dto';
 import { WorkspaceTransformer } from './transformers/workspace.transformer';
 import { WorkspaceGuard } from './guards/workspace.guard';
 import { MembersTransformer } from './transformers/members.transformer';
@@ -25,6 +27,20 @@ import type { AuthUser } from 'src/auth/types/auth.types';
 @Controller('workspace')
 export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}
+
+  @Get('/:workspaceId/logo/presigned-url')
+  @UseGuards(WorkspaceRoleGuard)
+  @Roles(Role.ADMIN)
+  async getWorkspaceLogoPresignedUploadUrl(
+    @Param('workspaceId') workspaceId: string,
+    @Query() query: GetWorkspacePresignedUrlDTO,
+  ) {
+    return this.workspaceService.getWorkspaceLogoPresignedUploadUrl(
+      workspaceId,
+      query.fileName,
+      query.contentType,
+    );
+  }
 
   @Post()
   @UseGuards(AuthGuard)
