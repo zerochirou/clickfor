@@ -12,4 +12,3 @@ export async function handleGoogleAuth() {
     callbackURL: `${origin}/workspace`,
   });
 }
-

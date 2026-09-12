@@ -15,5 +15,21 @@ export class UpdateWorkspaceDTO {
 
   @IsString()
   @IsOptional()
-  image: string;
+  image?: string | null;
+
+  @IsString()
+  @IsOptional()
+  brandColor?: string | null;
+
+  @IsBoolean()
+  @IsOptional()
+  transparentSidebar?: boolean;
+
+  @IsString()
+  @IsOptional()
+  sidebarFeature?: string;
+
+  @IsString()
+  @IsOptional()
+  tablesView?: string;
 }

@@ -327,9 +327,7 @@ Aturan environment:
 
 ---
 
-
 ---
-
 
 ---
 
@@ -340,6 +338,7 @@ Aturan environment:
 Workspace **`apps/worker`** adalah background worker service mandiri yang dibangun dengan **Golang** (Go 1.26+) untuk menangani komputasi berat, pemrosesan tugas asynchronous, scheduled cron jobs, dan event processing.
 
 ### Fitur Utama Worker
+
 - **Concurrency & Rate Bounding**: Mengatur jumlah task paralel menggunakan model semaphore channel.
 - **Graceful Shutdown**: Menangani `SIGINT` dan `SIGTERM` secara elegan dengan context timeout sehingga task yang sedang berjalan dapat selesai tanpa terputus tiba-tiba.
 - **Structured Logging**: Menggunakan standard library Go `log/slog` bawaan (mode teks untuk development dan format JSON untuk production).
@@ -347,6 +346,7 @@ Workspace **`apps/worker`** adalah background worker service mandiri yang dibang
 - **Hot-Reload Support**: Terintegrasi dengan [Air](https://github.com/air-verse/air) (`.air.toml`) untuk live-reload saat kode diubah selama proses development.
 
 ### Struktur Modul
+
 ```text
 apps/worker/
 ├── cmd/
@@ -368,6 +368,7 @@ apps/worker/
 ### Menjalankan Worker
 
 #### Melalui Root Monorepo (pnpm / Turborepo)
+
 ```sh
 # Mode development (live-reload via Air / fallback go run)
 pnpm --filter worker dev
@@ -383,6 +384,7 @@ pnpm --filter worker lint
 ```
 
 #### Melalui Folder `apps/worker` (Makefile)
+
 ```sh
 cd apps/worker
 
@@ -413,8 +415,10 @@ Infrastruktur pendukung lokal (database dan object storage) dikelola secara terp
 
 - **PostgreSQL 17** (`clickfor-postgres`): Database utama aplikasi (port `5432`).
 - **RustFS S3** (`clickfor-rustfs`): S3-compatible object storage lokal untuk aset/gambar produk (API port `9000`, console port `9001`).
+- **RabbitMQ 3 (Management)** (`clickfor-rabbitmq`): Message broker untuk antrean tugas asinkron (AMQP port `5672`, Management UI port `15672`).
 
 #### Menjalankan Service:
+
 ```sh
 # Pastikan file .env di root sudah terkonfigurasi (disalin dari .env.example)
 docker compose up -d
@@ -432,12 +436,12 @@ docker compose down
 
 Setiap aplikasi memiliki Dockerfile mandiri berbasis **Multi-Stage Build** yang dioptimalkan untuk performa caching monorepo dan keamanan (menggunakan user non-root `node:22-alpine` atau `alpine`):
 
-| Service | Path Dockerfile | Deskripsi & Port Default |
-| --- | --- | --- |
-| **Backend API** | `apps/server/Dockerfile` | NestJS production image dengan Prisma Client (Port `4000`) |
-| **Main App** | `apps/app/Dockerfile` | Next.js Standalone build untuk dashboard & aplikasi utama (Port `3000`) |
-| **Marketing** | `apps/marketing/Dockerfile` | Next.js Standalone build untuk landing page publik (Port `3000`) |
-| **Worker** | `apps/worker/Dockerfile` | Golang binary worker minimalis statically linked (< 25MB) |
+| Service         | Path Dockerfile             | Deskripsi & Port Default                                                |
+| --------------- | --------------------------- | ----------------------------------------------------------------------- |
+| **Backend API** | `apps/server/Dockerfile`    | NestJS production image dengan Prisma Client (Port `4000`)              |
+| **Main App**    | `apps/app/Dockerfile`       | Next.js Standalone build untuk dashboard & aplikasi utama (Port `3000`) |
+| **Marketing**   | `apps/marketing/Dockerfile` | Next.js Standalone build untuk landing page publik (Port `3000`)        |
+| **Worker**      | `apps/worker/Dockerfile`    | Golang binary worker minimalis statically linked (< 25MB)               |
 
 > **Catatan Konteks Build:** Seluruh build image dijalankan dari **root direktori repository** agar Turborepo (`turbo prune`) dan pnpm workspace dapat memetakan dependensi monorepo secara akurat.
 
@@ -446,6 +450,7 @@ Setiap aplikasi memiliki Dockerfile mandiri berbasis **Multi-Stage Build** yang 
 ### Perintah Build & Run Docker Image
 
 #### 1. Backend API (NestJS)
+
 ```sh
 # Build image
 docker build -f apps/server/Dockerfile -t clickfor-server:latest .
@@ -459,6 +464,7 @@ docker run -d \
 ```
 
 #### 2. Main App (Next.js)
+
 ```sh
 # Build image (bisa mengoper build args untuk variabel publik Next.js)
 docker build -f apps/app/Dockerfile \
@@ -476,6 +482,7 @@ docker run -d \
 ```
 
 #### 3. Marketing Website (Next.js)
+
 ```sh
 # Build image
 docker build -f apps/marketing/Dockerfile -t clickfor-marketing:latest .
@@ -488,6 +495,7 @@ docker run -d \
 ```
 
 #### 4. Background Worker (Go)
+
 ```sh
 # Build image
 docker build -f apps/worker/Dockerfile -t clickfor-worker:latest .

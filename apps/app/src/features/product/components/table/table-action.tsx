@@ -10,13 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Ellipsis,
-  Pencil,
-  Trash2,
-  Zap,
-  ZapOff,
-} from "lucide-react";
+import { Ellipsis, Pencil, Trash2, Zap, ZapOff } from "lucide-react";
 import { deleteProduct } from "../../api/delete-product";
 import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
@@ -96,7 +90,7 @@ export function TableAction({
       <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
         <Ellipsis className="size-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className={'w-50'}>
+      <DropdownMenuContent align="start" className={"w-50"}>
         <DropdownMenuGroup>
           <DropdownMenuLabel>Aksi Cepat</DropdownMenuLabel>
           <DropdownMenuItem

@@ -84,12 +84,12 @@ See [Low-Cardinality Error Messages](#low-cardinality-error-messages) for why th
 
 ### Decision table: which error strategy to use
 
-| Situation | Strategy | Example |
-| --- | --- | --- |
-| Caller needs to match a specific condition | Sentinel error (`errors.New` as package var) | `var ErrNotFound = errors.New("not found")` |
-| Caller needs to extract structured data | Custom error type | `type ValidationError struct { Field, Msg string }` |
-| Error is purely informational, not matched on | `fmt.Errorf` or `errors.New` | `fmt.Errorf("connecting to %s: %w", addr, err)` |
-| Need stack traces, user context, structured attrs | `samber/oops` | See [Why Use samber/oops](./error-handling.md#why-use-samberoops) |
+| Situation                                         | Strategy                                     | Example                                                           |
+| ------------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------------- |
+| Caller needs to match a specific condition        | Sentinel error (`errors.New` as package var) | `var ErrNotFound = errors.New("not found")`                       |
+| Caller needs to extract structured data           | Custom error type                            | `type ValidationError struct { Field, Msg string }`               |
+| Error is purely informational, not matched on     | `fmt.Errorf` or `errors.New`                 | `fmt.Errorf("connecting to %s: %w", addr, err)`                   |
+| Need stack traces, user context, structured attrs | `samber/oops`                                | See [Why Use samber/oops](./error-handling.md#why-use-samberoops) |
 
 ## Low-Cardinality Error Messages
 

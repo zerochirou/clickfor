@@ -18,6 +18,7 @@ import { navMainData, navSecondaryData } from "../../lib/sidebar-data";
 import { User } from "better-auth";
 import { Workspace } from "@/lib/types/workspace";
 import WorkspaceSearchCommand from "../command/workspace-search-command";
+import Image from "next/image";
 
 export function AppSidebar({
   user,
@@ -35,9 +36,20 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<a href="#" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <TerminalIcon className="size-4" />
-              </div>
+              {workspace.image ? (
+                <Image
+                  src={workspace.image}
+                  alt={workspace.workspaceName}
+                  width={20}
+                  height={20}
+                  unoptimized
+                  className="size-10 rounded-lg"
+                />
+              ) : (
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <TerminalIcon className="size-4" />
+                </div>
+              )}
               <div className="grid flex-1 text-start text-sm leading-tight">
                 <span className="truncate font-medium">
                   {workspace.workspaceName}

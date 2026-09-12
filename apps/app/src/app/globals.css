@@ -9,6 +9,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-space-grostek: var(--font-space-grostek);
+  --font-space-grostek-mono: var(--font-space-grostek-mono);
   --font-garet: var(--font-garet);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

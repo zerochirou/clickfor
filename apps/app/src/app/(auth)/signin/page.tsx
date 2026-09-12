@@ -1,14 +1,11 @@
-import {
-  SignInBackground,
-  SignInContent,
-  SignInHeader,
-} from "@/features/auth/components/signin";
+import { SignInPageContent } from "@/features/auth/components/signin";
+import type { Metadata } from "next";
 
-export default function SignupPage() {
-  return (
-    <SignInBackground>
-      <SignInHeader />
-      <SignInContent />
-    </SignInBackground>
-  );
+export const metadata: Metadata = {
+  title: "Sign In - Clickfor",
+  description: "Sign in to access your workspace and digital store.",
+};
+
+export default function SignInPage() {
+  return <SignInPageContent />;
 }

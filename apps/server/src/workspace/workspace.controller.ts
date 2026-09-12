@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
+import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
 import { WorkspaceTransformer } from './transformers/workspace.transformer';
 import { WorkspaceGuard } from './guards/workspace.guard';
@@ -44,7 +45,7 @@ export class WorkspaceController {
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async updateWorkspace(
-    @Body() dto: CreateWorkspaceDTO,
+    @Body() dto: UpdateWorkspaceDTO,
     @Session() session: UserSession,
     @Param('workspaceId') workspaceId: string,
   ): Promise<WorkspaceTransformer> {

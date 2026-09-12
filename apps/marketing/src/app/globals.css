@@ -1,26 +1,195 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Brand Colors from CORE-UI */
+  --color-brand-black: #000000;
+  --color-brand-nearblack: #17171c;
+  --color-brand-green: #003c33;
+  --color-brand-green-dark: #002923;
+  --color-brand-green-light: #004d41;
+  --color-brand-navy: #071829;
+  --color-brand-navy-dark: #040f1a;
+  --color-brand-blue: #1863dc;
+  --color-brand-blue-hover: #124eb0;
+  --color-brand-coral: #ff7759;
+  --color-brand-softcoral: #ffad9b;
+
+  /* Surfaces & Washes */
+  --color-surface-stone: #eeece7;
+  --color-surface-stone-light: #f7f6f4;
+  --color-surface-greenwash: #edfce9;
+  --color-surface-bluewash: #f1f5ff;
+  --color-surface-cardborder: #f2f2f2;
+
+  /* Text & Rule Grays */
+  --color-ink: #212121;
+  --color-muted-slate: #93939f;
+  --color-slate-custom: #75758a;
+  --color-hairline: #d9d9dd;
+  --color-border-light: #e5e7eb;
+
+  /* Semantics */
+  --color-focus-blue: #4c6ee6;
+  --color-form-focus-violet: #9b60aa;
+  --color-error-red: #b30000;
+
+  /* Shadcn standard theme bindings */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* Radius Scale from CORE-UI */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 30px;
+  --radius-pill: 32px;
+  --radius-full: 9999px;
+}
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #212121;
+  --card: #ffffff;
+  --card-foreground: #212121;
+  --popover: #ffffff;
+  --popover-foreground: #212121;
+  --primary: #17171c;
+  --primary-foreground: #ffffff;
+  --secondary: #eeece7;
+  --secondary-foreground: #17171c;
+  --muted: #eeece7;
+  --muted-foreground: #75758a;
+  --accent: #edfce9;
+  --accent-foreground: #003c33;
+  --destructive: #b30000;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #d9d9dd;
+  --ring: #4c6ee6;
+  --radius: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: #071829;
+  --foreground: #ffffff;
+  --card: #0a1f33;
+  --card-foreground: #ffffff;
+  --popover: #0a1f33;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #17171c;
+  --secondary: #17171c;
+  --secondary-foreground: #ffffff;
+  --muted: #11283e;
+  --muted-foreground: #93939f;
+  --accent: #003c33;
+  --accent-foreground: #edfce9;
+  --destructive: #ff7759;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #4c6ee6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom UI utilities matching CORE-UI specifications */
+.font-display {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+.hero-headline {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 0.96;
+  font-weight: 400;
+}
+
+.product-headline {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  font-weight: 400;
+}
+
+.section-headline {
+  font-family: var(--font-sans), sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.mono-tag {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card-signature {
+  border-radius: 22px;
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-grid-subtle {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(217, 217, 221, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(217, 217, 221, 0.4) 1px, transparent 1px);
+}
+
+.bg-grid-dark {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
