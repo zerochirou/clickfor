@@ -23,7 +23,7 @@ export class ProductCategoryController {
   constructor(private productCategoryService: ProductCategoryService) {}
 
   @Post('/bulk')
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async createProductCategoryBulk(
     @Body() dto: CreateProductCategoryBulkDTO,
@@ -40,7 +40,7 @@ export class ProductCategoryController {
   }
 
   @Post()
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async createProductCategory(
     @Body() dto: CreateProductCategoryDTO,
@@ -52,7 +52,7 @@ export class ProductCategoryController {
   }
 
   @Patch('/:productCategoryId')
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async updateProductCategory(
     @Body() dto: UpdateProductCategoryDTO,
@@ -69,7 +69,7 @@ export class ProductCategoryController {
   }
 
   @Delete('/:productCategoryId')
-  @UseGuards(WorkspaceGuard, WorkspaceRoleGuard)
+  @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async deleteProductCategory(
     @Param('workspaceId') workspaceId: string,

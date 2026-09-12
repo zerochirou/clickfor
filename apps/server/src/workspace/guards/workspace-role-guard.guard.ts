@@ -9,15 +9,16 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 import { fromNodeHeaders } from 'better-auth/node';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { auth } from 'src/auth';
+import type { AuthenticatedRequest } from 'src/auth/types/auth.types';
 import { DbService } from 'src/db/db.service';
 import { ROLES_KEY } from 'src/workspace/decorators/role.decorator';
 
-const ROLE_HIERARCHY: Record<Role, number> = {
+export const ROLE_HIERARCHY: Record<Role, number> = {
   STAFF: 1,
-  ADMIN: 2,
-  MANAGER: 3,
+  MANAGER: 2,
+  ADMIN: 3,
   OWNER: 4,
 };
 
@@ -29,53 +30,89 @@ export class WorkspaceRoleGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // 1. Ambil role yang dibutuhkan dari metadata (jika ada)
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    const request: Request = context.switchToHttp().getRequest();
-    try {
-      const session = await auth.api.getSession({
-        headers: fromNodeHeaders(request.headers),
-      });
+    const request = context.switchToHttp().getRequest<Request>();
+    const authReq = request as AuthenticatedRequest;
 
-      if (!session || !session.user) {
-        throw new UnauthorizedException('You must login first.');
+    try {
+      // 1. Session verification & caching
+      if (!authReq.user || !authReq.session) {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session || !session.user) {
+          throw new UnauthorizedException('You must login first.');
+        }
+
+        authReq.user = session.user;
+        authReq.session = session.session;
       }
 
-      const userId = session.user.id;
-      const workspaceId = request.params.workspaceId as string;
+      const userId = authReq.user.id;
+      const body = request.body as Record<string, unknown> | undefined;
+      const query = request.query as Record<string, unknown> | undefined;
+      const workspaceId =
+        (request.params?.workspaceId as string) ||
+        (typeof body?.workspaceId === 'string'
+          ? body.workspaceId
+          : undefined) ||
+        (typeof query?.workspaceId === 'string'
+          ? query.workspaceId
+          : undefined);
 
       if (!workspaceId) {
-        throw new ForbiddenException('Item ID not found in request.');
+        throw new ForbiddenException('Workspace ID not found in request.');
       }
 
-      const workspace = await this.db.workspace.findUnique({
-        where: { id: workspaceId },
-      });
+      // 2. Reuse cached workspace member if already verified by WorkspaceGuard
+      let member = authReq.workspaceMember;
+      if (!member || member.workspaceId !== workspaceId) {
+        const dbMember = await this.db.workspaceMember.findUnique({
+          where: {
+            workspaceId_userId: {
+              workspaceId,
+              userId,
+            },
+          },
+          include: {
+            workspace: true,
+          },
+        });
 
-      if (!workspace) {
-        throw new NotFoundException('Item not found.');
+        if (!dbMember) {
+          const workspaceExists = await this.db.workspace.findUnique({
+            where: { id: workspaceId },
+            select: { id: true },
+          });
+
+          if (!workspaceExists) {
+            throw new NotFoundException('Workspace not found.');
+          }
+
+          throw new ForbiddenException(
+            'You do not have permission to access or modify this item.',
+          );
+        }
+
+        if (!dbMember.workspace.isActive) {
+          throw new ForbiddenException('This workspace is currently inactive.');
+        }
+
+        member = dbMember;
+        authReq.workspace = dbMember.workspace;
+        authReq.workspaceMember = dbMember;
+        authReq.memberRole = dbMember.role;
       }
 
-      // 2. Cek keanggotaan user di workspace beserta rolenya
-      const member = await this.db.workspaceMember.findFirst({
-        where: { workspaceId: workspace.id, userId: userId },
-      });
-
-      if (!member) {
-        throw new ForbiddenException(
-          'You do not have permission to access or modify this item.',
-        );
-      }
-
-      // 3. Jika endpoint memerlukan role tertentu, lakukan validasi hierarki
+      // 3. Validate Role Hierarchy if required
       if (requiredRoles && requiredRoles.length > 0) {
         const userRoleLevel = ROLE_HIERARCHY[member.role] || 0;
 
-        // Cek apakah user memiliki salah satu role yang memenuhi atau melebihi batas minimal
         const hasAccess = requiredRoles.some((role) => {
           const requiredLevel = ROLE_HIERARCHY[role] || 0;
           return userRoleLevel >= requiredLevel;

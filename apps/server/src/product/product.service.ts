@@ -21,32 +21,29 @@ export class ProductService {
     workspaceId: string,
   ) {
     try {
-      return this.db.$transaction(async (tx) => {
-        const category = await tx.productCategory.findFirstOrThrow({
-          where: {
-            id: categoryId,
-            workspaceId,
-          },
-        });
-        const sku = generateSKU({ category: category.name });
-        const product = await tx.product.create({
-          data: {
-            ...dto,
-            sku,
-            workspace: {
-              connect: {
-                id: workspaceId,
-              },
+      const category = await this.db.productCategory.findFirstOrThrow({
+        where: {
+          id: categoryId,
+          workspaceId,
+        },
+      });
+      const sku = generateSKU({ category: category.name });
+      return await this.db.product.create({
+        data: {
+          ...dto,
+          sku,
+          workspace: {
+            connect: {
+              id: workspaceId,
             },
-            category: {
-              connect: {
-                id: categoryId,
-              },
-            },
-            barcode: sku,
           },
-        });
-        return product;
+          category: {
+            connect: {
+              id: categoryId,
+            },
+          },
+          barcode: sku,
+        },
       });
     } catch (error) {
       handlePrismaError(error);
@@ -59,20 +56,18 @@ export class ProductService {
     workspaceId: string,
   ) {
     try {
-      return this.db.$transaction(async (tx) => {
-        await tx.product.findFirstOrThrow({
-          where: {
-            id: productId,
-            workspaceId,
-          },
-        });
-        const updatedProduct = await tx.product.update({
-          where: {
-            id: productId,
-          },
-          data: dto,
-        });
-        return updatedProduct;
+      await this.db.product.findFirstOrThrow({
+        where: {
+          id: productId,
+          workspaceId,
+        },
+      });
+
+      return await this.db.product.update({
+        where: {
+          id: productId,
+        },
+        data: dto,
       });
     } catch (error) {
       handlePrismaError(error);
@@ -81,18 +76,16 @@ export class ProductService {
 
   public async deleteProduct(productId: string, workspaceId: string) {
     try {
-      return this.db.$transaction(async (tx) => {
-        await tx.product.findFirstOrThrow({
-          where: {
-            id: productId,
-            workspaceId,
-          },
-        });
-        return await tx.product.delete({
-          where: {
-            id: productId,
-          },
-        });
+      await this.db.product.findFirstOrThrow({
+        where: {
+          id: productId,
+          workspaceId,
+        },
+      });
+      return await this.db.product.delete({
+        where: {
+          id: productId,
+        },
       });
     } catch (error) {
       handlePrismaError(error);
@@ -249,7 +242,8 @@ export class ProductService {
       throw new BadRequestException('Parameter fileName wajib diisi!');
     }
 
-    const uniqueFileName = `images/${Date.now()}-${fileName}`;
+    const cleanFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const uniqueFileName = `images/${Date.now()}-${cleanFileName}`;
     const bucketName = this.configService.getOrThrow<string>('BUCKET_PRODUCT');
 
     const uploadURL = await this.storageService.generatePresignedUploadURL({

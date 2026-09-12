@@ -8,6 +8,7 @@ import { CreateWorkspaceDTO } from './dtos/create-workspace.dto';
 import { UpdateWorkspaceDTO } from './dtos/update-workspace.dto';
 import { handlePrismaError } from 'src/common/utils/handle-prisma-error';
 import { UpdateMemberDTO } from './dtos/update-member.dto';
+import { ROLE_HIERARCHY } from './guards/workspace-role-guard.guard';
 
 @Injectable()
 export class WorkspaceService {
@@ -52,15 +53,11 @@ export class WorkspaceService {
 
   public async updateWorkspace(dto: UpdateWorkspaceDTO, workspaceId: string) {
     try {
-      return await this.db.$transaction(async (tx) => {
-        const workspace = await tx.workspace.update({
-          where: {
-            id: workspaceId,
-          },
-          data: dto,
-        });
-
-        return workspace;
+      return await this.db.workspace.update({
+        where: {
+          id: workspaceId,
+        },
+        data: dto,
       });
     } catch (error) {
       handlePrismaError(error);
@@ -88,6 +85,9 @@ export class WorkspaceService {
               userId: userId,
             },
           },
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       });
     } catch (error) {
@@ -117,6 +117,19 @@ export class WorkspaceService {
         where: {
           workspaceId: workspaceId,
         },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
       });
     } catch (error) {
       handlePrismaError(error);
@@ -127,24 +140,78 @@ export class WorkspaceService {
     workspaceId: string,
     memberId: string,
     dto: UpdateMemberDTO,
+    actorUserId?: string,
   ) {
     try {
-      if (dto.role === 'OWNER') {
-        throw new ForbiddenException('Cannot update owner role');
+      const targetMember = await this.db.workspaceMember.findFirst({
+        where: {
+          id: memberId,
+          workspaceId: workspaceId,
+        },
+      });
+
+      if (!targetMember) {
+        throw new NotFoundException('Member not found in workspace.');
       }
-      return await this.db.$transaction(async (tx) => {
-        await tx.workspaceMember.findFirstOrThrow({
+
+      // Security check: actor cannot change their own role
+      if (actorUserId && targetMember.userId === actorUserId) {
+        throw new ForbiddenException('You cannot modify your own role.');
+      }
+
+      // Security check: actor role validation against target member
+      if (actorUserId) {
+        const actorMember = await this.db.workspaceMember.findUnique({
           where: {
-            id: memberId,
-            workspaceId: workspaceId,
+            workspaceId_userId: {
+              workspaceId,
+              userId: actorUserId,
+            },
           },
         });
-        return await tx.workspaceMember.update({
-          where: {
-            id: memberId,
-          },
-          data: dto,
-        });
+
+        if (!actorMember) {
+          throw new ForbiddenException(
+            'You are not a member of this workspace.',
+          );
+        }
+
+        const actorLevel = ROLE_HIERARCHY[actorMember.role] || 0;
+        const targetLevel = ROLE_HIERARCHY[targetMember.role] || 0;
+        const newRoleLevel = ROLE_HIERARCHY[dto.role] || 0;
+
+        // An actor cannot demote or modify someone of equal or higher hierarchy (unless OWNER)
+        if (actorMember.role !== 'OWNER' && targetLevel >= actorLevel) {
+          throw new ForbiddenException(
+            'You cannot modify members with equal or higher role.',
+          );
+        }
+
+        // An actor cannot promote someone to a role higher than their own
+        if (actorMember.role !== 'OWNER' && newRoleLevel >= actorLevel) {
+          throw new ForbiddenException(
+            'You cannot assign a role equal to or higher than your own.',
+          );
+        }
+      }
+
+      // Owner role assignment restriction
+      if (dto.role === 'OWNER') {
+        throw new ForbiddenException(
+          'Owner role cannot be assigned directly. Use ownership transfer.',
+        );
+      }
+
+      // Target member is current owner restriction
+      if (targetMember.role === 'OWNER') {
+        throw new ForbiddenException('Cannot modify the workspace owner.');
+      }
+
+      return await this.db.workspaceMember.update({
+        where: {
+          id: memberId,
+        },
+        data: dto,
       });
     } catch (error) {
       handlePrismaError(error);

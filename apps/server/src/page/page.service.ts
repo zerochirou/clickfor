@@ -11,6 +11,12 @@ export class PageService {
   public async createPage(dto: CreatePageDTO, workspaceId: string) {
     const { themeId, ...rest } = dto;
     try {
+      if (themeId) {
+        await this.db.pageTheme.findFirstOrThrow({
+          where: { id: themeId, workspaceId },
+        });
+      }
+
       return await this.db.page.create({
         data: {
           workspace: { connect: { id: workspaceId } },
@@ -23,9 +29,23 @@ export class PageService {
     }
   }
 
-  public async updatePage(dto: UpdatePageDTO, pageId: string) {
+  public async updatePage(
+    dto: UpdatePageDTO,
+    pageId: string,
+    workspaceId: string,
+  ) {
     try {
+      await this.db.page.findFirstOrThrow({
+        where: { id: pageId, workspaceId },
+      });
+
       const { themeId, ...rest } = dto;
+      if (themeId) {
+        await this.db.pageTheme.findFirstOrThrow({
+          where: { id: themeId, workspaceId },
+        });
+      }
+
       return await this.db.page.update({
         where: { id: pageId },
         data: {
@@ -38,8 +58,12 @@ export class PageService {
     }
   }
 
-  public async deletePage(pageId: string) {
+  public async deletePage(pageId: string, workspaceId: string) {
     try {
+      await this.db.page.findFirstOrThrow({
+        where: { id: pageId, workspaceId },
+      });
+
       return await this.db.page.delete({
         where: { id: pageId },
       });
@@ -48,20 +72,13 @@ export class PageService {
     }
   }
 
-  public async getPageById(pageId: string) {
+  public async getPageById(pageId: string, workspaceId: string) {
     try {
-      return await this.db.page.findUnique({
-        where: { id: pageId },
-      });
-    } catch (error) {
-      handlePrismaError(error);
-    }
-  }
-
-  public async getAllPageProperties(pageId: string) {
-    try {
-      return await this.db.page.findMany({
-        where: { id: pageId },
+      return await this.db.page.findFirstOrThrow({
+        where: { id: pageId, workspaceId },
+        include: {
+          theme: true,
+        },
       });
     } catch (error) {
       handlePrismaError(error);
@@ -72,6 +89,12 @@ export class PageService {
     try {
       return await this.db.page.findMany({
         where: { workspaceId },
+        include: {
+          theme: true,
+        },
+        orderBy: {
+          title: 'asc',
+        },
       });
     } catch (error) {
       handlePrismaError(error);

@@ -32,14 +32,19 @@ export class WorkspaceInviteService {
   public async joinWithCode(dto: JoinCodeDTO, userId: string) {
     try {
       return await this.db.$transaction(async (tx) => {
-        const workspaceCode = await tx.workspaceJoinCode.findFirst({
+        const workspaceCode = await tx.workspaceJoinCode.findUnique({
           where: { code: dto.code },
         });
         if (!workspaceCode || !workspaceCode.isActive) {
           throw new NotFoundException('Workspace not found');
         }
-        const isUserExist = await tx.workspaceMember.findFirst({
-          where: { workspaceId: workspaceCode.workspaceId, userId: userId },
+        const isUserExist = await tx.workspaceMember.findUnique({
+          where: {
+            workspaceId_userId: {
+              workspaceId: workspaceCode.workspaceId,
+              userId: userId,
+            },
+          },
         });
         if (isUserExist) {
           throw new ConflictException('User already exists in workspace');
@@ -74,6 +79,7 @@ export class WorkspaceInviteService {
     try {
       return await this.db.workspaceJoinCode.findMany({
         where: { workspaceId: workspaceId },
+        orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
       handlePrismaError(error);

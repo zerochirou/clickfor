@@ -24,7 +24,6 @@ export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post('/category/:categoryId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async createProduct(
@@ -38,7 +37,6 @@ export class ProductController {
   }
 
   @Get('presigned-url')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async getProductImageUploadURL(
@@ -53,7 +51,6 @@ export class ProductController {
   }
 
   @Patch(':productId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async updateProduct(
@@ -67,7 +64,6 @@ export class ProductController {
   }
 
   @Delete(':productId')
-  @UseGuards(WorkspaceGuard)
   @UseGuards(WorkspaceRoleGuard)
   @Roles(Role.ADMIN)
   async deleteProduct(
