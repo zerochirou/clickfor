@@ -20,5 +20,8 @@ export function handlePrismaError(error: unknown): never {
     throw error;
   }
 
-  throw new InternalServerErrorException('An error occurred on the server');
+  console.error('Unhandled Database / Server Error:', error);
+  throw new InternalServerErrorException(
+    error instanceof Error ? error.message : 'An error occurred on the server',
+  );
 }

@@ -110,7 +110,6 @@ model Workspace {
   pageThemes         PageTheme[]
 
   @@index([ownerId])
-  @@map("workspaces")
 }
 
 model WorkspaceMember {
@@ -227,7 +226,6 @@ model Page {
   @@unique([workspaceId, title])
   @@index([workspaceId])
   @@index([themeId])
-  @@map("pages")
 }
 
 model PageTheme {
@@ -249,7 +247,6 @@ model PageTheme {
 
   @@unique([workspaceId, name])
   @@index([workspaceId])
-  @@map("page_themes")
 }
 
 enum ThemeMode {

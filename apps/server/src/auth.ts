@@ -97,10 +97,7 @@ export const auth = betterAuth({
       secure: isProduction,
       httpOnly: true,
     },
-    ipAddress: {
-      ipAddressHeaders: ['x-forwarded-for', 'x-real-ip'],
-      disableIpTracking: false,
-    },
+    disableCSRFCheck: false,
   },
   trustedOrigins: trustedOrigins,
   plugins: [bearer()],
